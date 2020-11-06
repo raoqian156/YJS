@@ -303,6 +303,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
   private void resetTimePan() {
     ((TextView) findViewById(R.id.tv_center)).setText("---\n00:00:00");
+    PhoneUtil.openVoice(getContext());
     findViewById(R.id.tv_center).setTag(0);
     findViewById(R.id.tv_center).setBackgroundResource(R.drawable.circle_bg_blue);
   }

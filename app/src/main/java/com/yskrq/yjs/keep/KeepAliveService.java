@@ -260,6 +260,7 @@ public class KeepAliveService extends Service {
         .getActivity(context, 0, intentTarget, PendingIntent.FLAG_CANCEL_CURRENT);
 
     Intent intent = new Intent(context, NotificationClickReceiver.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     Notification notification = NotificationUtils
         .createNotification(context, title, con, R.mipmap.ic_launcher, intent);
     notification.contentIntent = contentIntent;

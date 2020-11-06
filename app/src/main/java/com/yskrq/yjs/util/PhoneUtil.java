@@ -62,23 +62,28 @@ public class PhoneUtil {
 
 
   public static boolean openVoice(Context context) {//打开声音   result >> false-打开声音失败 true-打开声音成功
-    if (SPUtil.getInt(context, "voice.status") == 2) {
-      return true;
-    }
+//    if (SPUtil.getInt(context, "voice.status") == 2) {
+//      LOG.e("PhoneUtil", "openVoice.66:");
+//      return true;
+//    }
+    LOG.e("PhoneUtil", "openVoice.69:");
     NotificationManager notificationManager = (NotificationManager) context
         .getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationManager
         .isNotificationPolicyAccessGranted()) {
+      LOG.e("PhoneUtil", "openVoice.74:");
       return false;
     }
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager != null) {
+      LOG.e("PhoneUtil", "openVoice.79:");
       audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
       audioManager.getStreamVolume(AudioManager.STREAM_RING);
       LOG.e("SpeakManager", "openVoice.48:取消静音");
       SPUtil.saveInt(context, "voice.status", 2);
       return true;
     }
+    LOG.e("PhoneUtil", "openVoice.86:");
     return false;
   }
 

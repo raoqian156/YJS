@@ -58,7 +58,9 @@
         <activity
             android:name=".ui.SelectNumWindowActivity"
             android:theme="@style/WindowActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTop"
+            />
         <activity android:name=".ui.StatisticsActivity" />
 
         <activity android:name=".ui.PersonalAchievementActivity" />
