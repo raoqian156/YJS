@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="base_btn_back" type="id" />
+    <item name="base_title" type="id" />
+    <item name="tag_key" type="id" />
+</resources>

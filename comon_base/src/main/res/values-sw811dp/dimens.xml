@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<dimen name="padding_400px">450.5556dp</dimen>
+	<dimen name="text_size_super">63.0778sp</dimen>
+	<dimen name="text_size_big">49.5611sp</dimen>
+	<dimen name="text_size_middle">40.5500sp</dimen>
+	<dimen name="text_size_small">31.5389sp</dimen>
+	<dimen name="line_width">2.2528dp</dimen>
+	<dimen name="gash_width">4.5056dp</dimen>
+	<dimen name="gash_gap">4.5056dp</dimen>
+	<dimen name="btn_min_size">135.1667dp</dimen>
+	<dimen name="padding_10dp">22.5278dp</dimen>
+	<dimen name="padding_20dp">45.0556dp</dimen>
+	<dimen name="padding_30dp">67.5833dp</dimen>
+	<dimen name="padding_40dp">90.1111dp</dimen>
+	<dimen name="padding_60dp">90.1111dp</dimen>
+	<dimen name="padding_n_90dp">-157.6944dp</dimen>
+	<dimen name="padding_400dp">901.1111dp</dimen>
+	<dimen name="padding_pop_top_bottom">135.1667dp</dimen>
+	<dimen name="padding_pop_left_right">45.0556dp</dimen>
+	<dimen name="width_100dp">180.2222dp</dimen>
+	<dimen name="text_size_right_list">20.2750sp</dimen>
+</resources>

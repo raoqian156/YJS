@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0094fe</color>
+    <color name="colorPrimaryDark">#b0ccf0</color>
+    <color name="colorAccent">#84c225</color>
+
+    <color name="color_yellow">#F37A1D</color>
+    <color name="status_success">#B0CCF1</color>
+    <color name="status_over_time">#0093DD</color>
+    <color name="status_cancel">#8799A1</color>
+    <color name="status_error">#FB0002</color>
+    <color name="status_time_pass">#F47A1C</color>
+    <color name="color_yellow_bg">#F8E2D1</color>
+
+
+    <color name="text_black">#000</color>
+    <color name="text_gray">#AAAAAA</color>
+    <color name="text_white">#FFF</color>
+    <color name="bg_gray">#F4F4F4</color>
+</resources>

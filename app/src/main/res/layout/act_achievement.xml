@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_ache_zhongshu"
+            android:gravity="center"
+            android:padding="@dimen/padding_20dp"
+            android:text="我的钟数" />
+
+        <View style="@style/VerticalLine" />
+
+        <TextView
+            android:id="@+id/btn_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_ache_card"
+            android:gravity="center"
+            android:padding="@dimen/padding_20dp"
+            android:text="我的售卡" />
+
+        <View style="@style/VerticalLine" />
+
+        <TextView
+            android:id="@+id/btn_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_ache_yeji"
+            android:gravity="center"
+            android:padding="@dimen/padding_20dp"
+            android:text="开单业绩" />
+
+        <View style="@style/VerticalLine" />
+    </LinearLayout>
+</LinearLayout>

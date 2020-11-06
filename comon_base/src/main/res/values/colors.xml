@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00A0E9</color>
+    <color name="colorPrimaryDark">#1C3753</color>
+    <color name="colorAccent">#2EAB37</color>
+    <color name="topBg">#00A0E9</color>
+
+    <color name="gray_line">#CCCCCC</color>
+
+    <color name="room_blue_using">#0093dd</color>
+    <color name="room_white_shadow">#BF000000</color>
+    <color name="room_gray">#8799A3</color>
+    <color name="room_green">#84c225</color>
+    <color name="room_qian">#b0ccf0</color>
+    <color name="room_yellow">#FFEB3B</color>
+    <color name="room_text_blue">#00AAFF</color>
+    <color name="room_red">#E91E63</color>
+    <color name="room_red_cut">#F44336</color>
+
+</resources>

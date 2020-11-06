@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_title" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_person"
+        android:text="名称" />
+
+    <TextView
+        android:id="@+id/btn_pass"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_edit"
+        android:text="修改密码" />
+
+    <TextView
+        android:id="@+id/btn_photo"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_picture"
+        android:text="云相册" />
+
+    <TextView
+        android:id="@+id/btn_bg_setting"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_about"
+        android:text="后台运行设置" />
+
+    <TextView
+        android:id="@+id/btn_voice"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_about"
+        android:text="声音开关" />
+
+    <TextView
+        android:id="@+id/btn_about"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_about"
+        android:text="关于云上客" />
+
+    <TextView
+        android:id="@+id/btn_login_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="@dimen/padding_20dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/btn_warm_bg"
+        android:drawablePadding="10dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="退出登录"
+        android:textColor="@color/text_white" />
+
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="10dp"
+        android:gravity="center"
+        android:text="版本信息" />
+</LinearLayout>

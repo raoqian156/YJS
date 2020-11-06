@@ -1,0 +1,64 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TransActivity" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/activity_fade_in_out</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+    <!--初步设置activity进入和退出的动画-->
+    <style name="activity_fade_in_out" parent="android:Animation.Activity">
+        <item name="android:activityCloseExitAnimation">@anim/activity_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_out</item>
+        <item name="android:activityOpenEnterAnimation">@anim/activity_in</item>
+    </style>
+
+    <style name="VerticalLine">
+        <item name="android:layout_width">1px</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/gray_line</item>
+    </style>
+
+    <style name="HorizontalLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/gray_line</item>
+    </style>
+
+    <style name="Space">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="PopItemStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/padding_10dp</item>
+        <item name="android:paddingRight">@dimen/padding_10dp</item>
+    </style>
+
+    <style name="PopList">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:horizontalSpacing">10dp</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:divider">#999</item>
+        <item name="android:dividerHeight">1px</item>
+        <item name="android:numColumns">3</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:stretchMode">columnWidth</item>
+    </style>
+</resources>

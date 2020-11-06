@@ -1,0 +1,152 @@
+package com.yskrq.yjs;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TabHost;
+import android.widget.TextView;
+
+import com.yskrq.common.AppInfo;
+import com.yskrq.common.BaseActivity;
+import com.yskrq.common.LoginActivity;
+import com.yskrq.common.widget.DialogHelper;
+import com.yskrq.yjs.keep.KeepManager;
+import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.ui.HomeFragment;
+import com.yskrq.yjs.ui.MineFragment;
+import com.yskrq.yjs.util.PhoneUtil;
+import com.yskrq.yjs.widget.FragmentSaveTabHost;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import static com.yskrq.yjs.ui.ModifyPassActivity.RESULT_LOGIN_OUT;
+
+
+public class MainActivity extends BaseActivity implements TabHost.OnTabChangeListener {
+
+  private String texts[];
+  private int imageButton[] = {R.drawable.selector_home_pic_1, R.drawable.selector_home_pic_2,};
+  private Class fragmentArray[] = {HomeFragment.class,//首页
+      MineFragment.class,//我的
+  };
+
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    KeepManager.startAliveRun(this);
+    HttpManager.getWifiName(this);
+    if (PhoneUtil.needPermission(getContext())) {
+      AppInfo.setVoiceType(this, 1);
+    }
+    delete();
+  }
+
+  private boolean isInstallApp(String packageName) {
+    try {
+      PackageManager mPackageManager = getPackageManager();
+      if (mPackageManager == null) return false;
+      mPackageManager.getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+      return true;
+    } catch (PackageManager.NameNotFoundException e) {
+      return false;
+    }
+  }
+
+  String packagename = "uni.UNI3550698";
+
+  private void delete() {
+    if (isInstallApp(packagename)) {
+      DialogHelper.showRemind(this, "检测到老版本应用，是否卸载？", new DialogHelper.DialogConfirmListener() {
+        @Override
+        public void onSure() {
+          Intent deleteIntent = new Intent();
+          deleteIntent.setAction(Intent.ACTION_DELETE);
+          deleteIntent.setData(Uri.parse("package:" + packagename));
+          startActivityForResult(deleteIntent, 0);
+        }
+
+        @Override
+        public void onCancel() {
+
+        }
+      });
+    }
+
+  }
+
+  @Override
+  protected int layoutId() {
+    texts = new String[]{"云技师", "我的"};
+    //    HttpManager.getPersonal(MainController.this);
+    return R.layout.activity_main;
+  }
+
+  @Override
+  protected void initView() {
+    FragmentSaveTabHost tabhost = findViewById(android.R.id.tabhost);
+    tabhost.setup(this, getSupportFragmentManager(), R.id.main_content);
+    for (int i = 0; i < texts.length; i++) {
+      TabHost.TabSpec spec = tabhost.newTabSpec(texts[i]).setIndicator(getItemView(i));
+      tabhost.addTab(spec, fragmentArray[i], null);//R.layout.con_tab_content
+    }
+    tabhost.getTabWidget().setDividerDrawable(null);
+    tabhost.setOnTabChangedListener(this);
+    HttpManager.senError(MainActivity.this, "============登录 >> " + AppInfo
+        .getUserid(this) + " ============", null);
+  }
+
+  public static volatile boolean isShowToUser = false;
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    isShowToUser = true;
+    if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
+      for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+        fragment.onResume();
+      }
+    }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    isShowToUser = false;
+  }
+
+
+  private View getItemView(int i) {
+    //取得布局实例
+    View view = View.inflate(this, R.layout.con_tab_content, null);
+
+    //取得布局对象
+    ImageView imageView = view.findViewById(R.id.image);
+    TextView textView = view.findViewById(R.id.text);
+    //设置图标
+    imageView.setImageResource(imageButton[i]);
+    //设置标题
+    textView.setText(texts[i]);
+    return view;
+  }
+
+  @Override
+  public void onTabChanged(String tabId) {
+
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (resultCode == RESULT_LOGIN_OUT) {
+      KeepManager.stopAliveRun(getContext());
+      AppInfo.loginOut(getContext());
+      Intent intent = new Intent(this, LoginActivity.class);
+      startActivity(intent);
+      finish();
+    }
+  }
+}

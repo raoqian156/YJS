@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text_white"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                style="@style/TextLeftDot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="封面图" />
+
+            <TextView
+                android:id="@+id/tv_num1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:id="@+id/fl_photo"
+                android:layout_width="@dimen/width_100dp"
+                android:layout_height="@dimen/width_100dp">
+
+                <ImageView
+                    android:id="@+id/iv_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/btn_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:background="#33000000"
+                    android:padding="10dp"
+                    android:text="x" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/btn_take"
+                android:layout_width="@dimen/width_100dp"
+                android:layout_height="@dimen/width_100dp"
+                android:background="@drawable/stocke_gray_whitebg"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_take_photo" />
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalLine"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                style="@style/TextLeftDot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="轮播图" />
+
+            <TextView
+                android:id="@+id/tv_num2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

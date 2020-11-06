@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:drawableRight="@drawable/selector_checkbox"
+    android:text="服务项目"
+    android:background="@drawable/layer_gray_bottom_line"
+    android:layout_height="wrap_content"/>

@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yskrq.common">
+<!--    <activity-->
+<!--        android:name="com.yskrq.common.LoginActivity"-->
+<!--        android:screenOrientation="sensor">-->
+<!--        <intent-filter>-->
+<!--            <action android:name="android.intent.action.MAIN" />-->
+<!--            <action android:name="android.intent.action.VIEW" />-->
+
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
+<!--        </intent-filter>-->
+<!--    </activity>-->
+
+<!--    <activity-->
+<!--        android:name="com.yskrq.common.ui.TableWindowActivity"-->
+<!--        android:screenOrientation="sensor">-->
+<!--    </activity>-->
+</manifest>

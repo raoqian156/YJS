@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_title" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/padding_40dp"
+        android:src="@mipmap/code" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_10dp"
+        android:paddingLeft="@dimen/padding_20dp"
+        android:paddingRight="@dimen/padding_20dp"
+        android:text="\t\t湖南云上客信息科技有限公司是国内领先的O2O创新企业，基于云端SaaS技术而自主研发的云上客酒店O2O营销管理系统，云上客餐饮O2O营销管理系统，云上客沐足O2O营销管理系统，致力于为酒店、餐饮、沐足行业企业提供O2O营销整体解决方案。"
+        android:textColor="@color/text_black" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_10dp"
+        android:paddingLeft="@dimen/padding_20dp"
+        android:paddingRight="@dimen/padding_20dp"
+        android:text="\t\t云上客对外以“营销开源”为指导思想，通过营销吸粉、营销策划、营销展开、营销落地、营销分析五步曲，为您打造专属O2O自营销平台，让营销落地变的简单，帮助企业享受互联网大数据的红利。"
+        android:textColor="@color/text_black" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_10dp"
+        android:paddingLeft="@dimen/padding_20dp"
+        android:paddingRight="@dimen/padding_20dp"
+        android:text="\t\t云上客对内以“智慧互联”为指导思想，相继开发了“智慧酒店”“智慧餐厅”“智慧沐足”，完美对接监控系统，梯控系统，停车场系统，客控系统，自助入住机、智能电视机、无线网络管理，集成公安自动传输，智能点餐，智能出品，智能报钟器，智能钟房等系统。整合好酒店的人和设备，更好的服务好每一位消费者，有效帮助企业提升运转效率，降低运营成本。"
+        android:textColor="@color/text_black" />
+</LinearLayout>
