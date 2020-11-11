@@ -77,6 +77,8 @@ public class Constants {
     public static final String GetRelaxCdTechFac = "TPC_AddItem/GetRelaxCdTechFac";
     //    下单（也有权限）
     public static final String AddBillitem = "CA_FoodShop/AddBillitem";
+    //    下单（也有权限）
+    public static final String AddBillitemBigRelax = "CA_FoodShop/AddBillitemBigRelax";
     //    订单详情
     //    获取已点的商品项目列表
     public static final String selectddan = "CA_PosBillNew_Proc/selectddan";
@@ -121,6 +123,10 @@ public class Constants {
     //    修改密码
     public static final String UpdatePwd = "https://hotel1.yskvip.com:9092/User/UpdatePwd";
     public static final String UpdatePwd2 = "User/UpdatePwd2";
+    //     判断技师是否在上班中
+    public static final String GetRelaxTechJobStatus = "CA_SetV2_RelaxTech/GetRelaxTechJobStatus";
+    //     获取采耳商品
+    public static final String selectgoodsbigrelax = "CA_SetV2_Web_InvtItem/selectgoodsbigrelax";
 
 
     //    更新播报状态

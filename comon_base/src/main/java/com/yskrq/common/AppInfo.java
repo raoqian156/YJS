@@ -71,6 +71,7 @@ public class AppInfo {
   private final static String TAG_AUTO_LOGIN = "auto.login";
   private final static String TAG_SAVE_TECH = "sale.tech_num";
   private final static String TAG_SAVE_TYPE = "sale.tech_type";
+  private final static String TAG_SAVE_SEX = "sale.tech.sex";
   private final static String TAG_RUNNING = "home.running.target";
 
 
@@ -116,6 +117,14 @@ public class AppInfo {
     return SPUtil.getString(context, TAG_SAVE_TYPE);
   }
 
+  public static void setTechSex(Context context, String date) {
+    SPUtil.saveString(context, TAG_SAVE_SEX, date);
+  }
+
+
+  public static String getTechSex(Context context) {
+    return SPUtil.getString(context, TAG_SAVE_SEX);
+  }
 
   public static void saveRunningTargetTime(Context context, long l) {
     LOG.e("AppInfo", "saveRunningTargetTime.114:" + l);

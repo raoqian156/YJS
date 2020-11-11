@@ -94,7 +94,7 @@ public class SelectNumWindowActivity extends BaseActivity implements View.OnClic
     if (type.is(OpenTheStage)) {
       String account = data.get(String.class, "Account");
       setResult(RESULT_QUIT);
-      RoomProjectActivity.startNewOrder(this, account, facilityNo);
+      CarErProjectActivity.start(this, account, facilityNo);
       finish();
     }
   }

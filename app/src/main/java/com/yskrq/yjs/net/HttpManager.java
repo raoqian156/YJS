@@ -20,6 +20,7 @@ import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.net_library.url_conn.HttpSender;
 import com.yskrq.yjs.bean.CaiErListBean;
+import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.DianTypeBean;
 import com.yskrq.yjs.bean.HavedRoomBean;
 import com.yskrq.yjs.bean.KaiDanBean;
@@ -52,6 +53,7 @@ import java.util.List;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_SALE_DATE;
 import static com.yskrq.net_library.HttpProxy.TAG_CHANGE_URL;
 import static com.yskrq.yjs.net.Constants.TransCode.AddBillitem;
+import static com.yskrq.yjs.net.Constants.TransCode.AddBillitemBigRelax;
 import static com.yskrq.yjs.net.Constants.TransCode.BillingSaled;
 import static com.yskrq.yjs.net.Constants.TransCode.BrandnoOut;
 import static com.yskrq.yjs.net.Constants.TransCode.CancelTec;
@@ -66,6 +68,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.GetHotelCodePos;
 import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxCdTechFac;
 import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxReservation;
 import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxServerList;
+import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxTechJobStatus;
 import static com.yskrq.yjs.net.Constants.TransCode.GetServiceItem;
 import static com.yskrq.yjs.net.Constants.TransCode.InsertService;
 import static com.yskrq.yjs.net.Constants.TransCode.OpenTheStage;
@@ -100,6 +103,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.getTecPhotos;
 import static com.yskrq.yjs.net.Constants.TransCode.getWorkingTech;
 import static com.yskrq.yjs.net.Constants.TransCode.selectddan;
 import static com.yskrq.yjs.net.Constants.TransCode.selectgoods;
+import static com.yskrq.yjs.net.Constants.TransCode.selectgoodsbigrelax;
 import static com.yskrq.yjs.net.Constants.TransCode.selectzhtddan;
 
 /**
@@ -674,6 +678,14 @@ public class HttpManager {
     HttpProxy.bean(view, BrandnoOut, param, BaseBean.class);
   }
 
+  public static void GetRelaxTechJobStatus(HttpInnerListener listener, Context context) {
+    HttpProxy.inner(listener, context, GetRelaxTechJobStatus, getParam(context));
+  }
+
+  public static void selectgoodsbigrelax(BaseView view) {
+    HttpProxy.bean(view, selectgoodsbigrelax, getParam(view.getContext()), CaiErProductBean.class);
+  }
+
   public static void RelaxTechChangeItem(BaseView view, OrderListBean.ValueBean project,
                                          TechProjectBean.ValueBean item) {
     HashMap<String, String> param = getParam(view.getContext());
@@ -946,6 +958,49 @@ public class HttpManager {
         view.onResponseError(new RequestType(AddBillitem), new BaseBean("-1", reson));
       }
     }, "POSBillItemNoAdd", "输商品");
+  }
+
+  public static void AddBillitemBigRelax(final BaseView view, final String account,
+                                         final List<CaiErProductBean.ValueBean> sel,
+                                         final String facilityno) {
+    final HashMap<String, String> param = getParam(view.getContext());
+    param.put("account", account);
+    param.put("facilityno", facilityno);
+    List<CaiErProductBean.ValueBean.TransBean> data = CaiErProductBean.ValueBean
+        .getUploadXhl(sel, view.getContext(), account);
+    String json = new Gson().toJson(data);
+    param.put("xhl", json);
+    param.put("relaxgroupid", "");
+    HttpManager.GetRelaxTechJobStatus(new HttpInnerListener() {
+      @Override
+      public void onString(String json) {
+        BaseBean bean = new Gson().fromJson(json, BaseBean.class);
+        if (bean != null && bean.isOk()) {
+          checkrights(view.getContext(), new PermissionListener() {
+            @Override
+            public void permissionOK() {
+              LOG.e("HttpManager", "checkrights.745:");
+              HttpProxy.bean(view, AddBillitemBigRelax, param, BaseBean.class);
+            }
+
+            @Override
+            public void permissionDefine(String reson) {
+              LOG.e("HttpManager", "checkrights.746:" + reson);
+              view.onResponseError(new RequestType(AddBillitemBigRelax), new BaseBean("-1", reson));
+            }
+          }, "POSBillSend", "下单");
+        } else {
+          view.onResponseError(new RequestType(AddBillitemBigRelax),bean);
+        }
+      }
+
+      @Override
+      public void onEmptyResponse() {
+        view.onResponseError(new RequestType(AddBillitemBigRelax), new BaseBean("-1", "请求异常"));
+
+      }
+    }, view.getContext());
+
   }
 
 

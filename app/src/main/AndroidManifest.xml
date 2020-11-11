@@ -62,9 +62,11 @@
             android:launchMode="singleTop"
             />
         <activity android:name=".ui.StatisticsActivity" />
+        <activity android:name=".ui.CarErProjectActivity" />
 
         <activity android:name=".ui.PersonalAchievementActivity" />
         <activity android:name=".ui.MyOrderActivity" />
+        <activity android:name=".ui.CarErOrderListActivity" />
         <activity android:name=".ui.AddProjectActivity" />
         <activity android:name=".ui.RoomProjectActivity" />
         <activity android:name=".ui.PersonActivity" />

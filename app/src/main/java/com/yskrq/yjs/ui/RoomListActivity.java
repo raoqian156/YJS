@@ -44,7 +44,7 @@ public class RoomListActivity extends BaseActivity implements View.OnClickListen
 
   @Override
   protected int layoutId() {
-    return R.layout.act_room_caier;
+    return R.layout.act_room_list;
   }
 
   @Override

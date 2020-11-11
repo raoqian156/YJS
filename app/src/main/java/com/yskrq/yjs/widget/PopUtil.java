@@ -22,6 +22,7 @@ import com.rq.rvlibrary.EasyViewHolder;
 import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
 import com.yskrq.yjs.R;
+import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
 import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.bean.RoomBean;
@@ -89,12 +90,38 @@ public class PopUtil {
             holder.getItemView(R.id.btn_item_add).setVisibility(View.VISIBLE);
             holder.setItemText(R.id.tv_num, bean.getShowNum() + "");
           }
+        } else if (data instanceof CaiErProductBean.ValueBean) {
+          CaiErProductBean.ValueBean bean = (CaiErProductBean.ValueBean) data;
+          holder.setItemText(R.id.tv_name, bean.getName());
+          holder.setItemText(R.id.tv_price, "￥" + bean.getPrice());
+          holder.getItemView(R.id.btn_item_cut).setVisibility(View.VISIBLE);
+          holder.getItemView(R.id.btn_item_add).setVisibility(View.VISIBLE);
+          holder.setItemText(R.id.tv_num, bean.getNum() + "");
         }
       }
     };
     mAdapter.addOnItemClickListener(new OnItemClickListener() {
       @Override
       public void onItemClick(BaseViewHolder holder, Object o, View view, int position) {
+        if (o instanceof CaiErProductBean.ValueBean) {
+          CaiErProductBean.ValueBean bean = (CaiErProductBean.ValueBean) o;
+          if (view.getId() == R.id.btn_item_add) {
+            bean.showSizeAdd();
+          } else if (view.getId() == R.id.btn_item_cut) {
+            bean.showSizeCut();
+          }
+          mAdapter.notifyDataSetChanged();
+          mClickListener.onItemClick(ACTION_CHANGE, null, view);
+          int size = Math.min(3, mAdapter.getData().size());
+          if (size == 0) {
+            mClickListener.onItemClick(ACTION_CLEAR, null, view);
+            popWindow.dissmiss();
+            return;
+          }
+          LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height * size);
+          rv.setLayoutParams(lp);
+          return;
+        }
         RoomProjectListBean.ValueBean bean = (RoomProjectListBean.ValueBean) o;
         if (view.getId() == R.id.btn_item_add) {
           bean.showSizeAdd();

@@ -2,7 +2,6 @@ package com.yskrq.yjs.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.view.View;
 
 import com.rq.rvlibrary.BaseAdapter;
@@ -18,7 +17,6 @@ import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
-import com.yskrq.yjs.bean.RoomProjectListBean;
 import com.yskrq.yjs.net.HttpManager;
 
 import java.util.ArrayList;
@@ -27,28 +25,17 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.yskrq.yjs.net.Constants.TransCode.AddBillitem;
+import static com.yskrq.yjs.net.Constants.TransCode.AddBillitemBigRelax;
 import static com.yskrq.yjs.net.Constants.TransCode.selectddan;
 
-public class OrderListActivity extends BaseActivity implements View.OnClickListener,
-                                                               OnItemClickListener {
+public class CarErOrderListActivity extends BaseActivity implements View.OnClickListener,
+                                                                    OnItemClickListener {
 
-  public static void start(Activity context, String account,
-                           List<RoomProjectListBean.ValueBean> array, String facilityno) {
+  public static void start(Activity context, String account, List<CaiErProductBean.ValueBean> array,
+                           String facilityno) {
     ArrayList pass = new ArrayList();
     if (array != null) pass.addAll(array);
-    Intent intent = new Intent(context, OrderListActivity.class);
-    intent.putExtra("account", account);
-    intent.putExtra("facilityno", facilityno);
-    intent.putExtra("array", pass);
-    context.startActivityForResult(intent, 12);
-  }
-
-  public static void startCaiEr(Activity context, String account,
-                                List<CaiErProductBean.ValueBean> array, String facilityno) {
-    ArrayList pass = new ArrayList();
-    if (array != null) pass.addAll(array);
-    Intent intent = new Intent(context, OrderListActivity.class);
+    Intent intent = new Intent(context, CarErOrderListActivity.class);
     intent.putExtra("account", account);
     intent.putExtra("facilityno", facilityno);
     intent.putExtra("array", pass);
@@ -62,18 +49,12 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
   BaseAdapter topAdapter, bottomAdapter;
   String account, facilityno;
-  List<RoomProjectListBean.ValueBean> selects = new ArrayList<>();
-  List<CaiErProductBean.ValueBean> selectCarEr = new ArrayList<>();
+  List<CaiErProductBean.ValueBean> selects = new ArrayList<>();
 
   @Override
   protected void initView() {
-    try {
-      selects.addAll((ArrayList<RoomProjectListBean.ValueBean>) getIntent()
-          .getSerializableExtra("array"));
-    } catch (Exception e) {
-      selectCarEr.addAll((ArrayList<CaiErProductBean.ValueBean>) getIntent()
-          .getSerializableExtra("array"));
-    }
+    selects
+        .addAll((ArrayList<CaiErProductBean.ValueBean>) getIntent().getSerializableExtra("array"));
     account = getIntent().getStringExtra("account");
     facilityno = getIntent().getStringExtra("facilityno");
     initTitle(facilityno + ":订单明细");
@@ -82,36 +63,12 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
       @Override
       public void onBindEasyHolder(BaseViewHolder holder, int position, Object o) {
         super.onBindEasyHolder(holder, position, o);
-        if(o instanceof CaiErProductBean.ValueBean){
-
-          return;
-        }
-        RoomProjectListBean.ValueBean bean = (RoomProjectListBean.ValueBean) o;
+        CaiErProductBean.ValueBean bean = (CaiErProductBean.ValueBean) o;
         holder.setItemText(R.id.tv_name, bean.getName());
         holder.setItemText(R.id.tv_price, "￥" + bean.getPrice());
         holder.setItemText(R.id.tv_money, "￥" + bean.getAllPrice());
-        if (TextUtils.isEmpty(bean.getTechnician() + bean.getTechnicianSell())) {
-          holder.setItemText(R.id.tv_num, bean.getShowNum() + "");
-          holder.getItemView(R.id.btn_cut).setVisibility(View.VISIBLE);
-          holder.getItemView(R.id.btn_add).setVisibility(View.VISIBLE);
-        } else {
-          StringBuffer show = new StringBuffer();
-          if (!TextUtils.isEmpty(bean.getTechnician())) {
-            show.append("、" + bean.getTechnician());
-          }
-          if (!TextUtils.isEmpty(bean.getTechnicianSell())) {
-            show.append("、" + bean.getTechnicianSell());
-          }
-          if (!TextUtils.isEmpty(show.toString())) {
-            holder.getItemView(R.id.btn_cut).setVisibility(View.GONE);
-            holder.getItemView(R.id.btn_add).setVisibility(View.GONE);
-            holder.setItemText(R.id.tv_num, show.toString().substring(1) + "号");
-          } else {
-            holder.getItemView(R.id.btn_cut).setVisibility(View.VISIBLE);
-            holder.getItemView(R.id.btn_add).setVisibility(View.VISIBLE);
-            holder.setItemText(R.id.tv_num, bean.getShowNum() + "");
-          }
-        }
+        holder.getItemView(R.id.btn_cut).setVisibility(View.VISIBLE);
+        holder.getItemView(R.id.btn_add).setVisibility(View.VISIBLE);
       }
     };
     topAdapter.addOnItemClickListener(this, R.id.btn_add, R.id.btn_cut);
@@ -143,14 +100,14 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
   private void refusePrice() {
     double all = 0;
-    List<RoomProjectListBean.ValueBean> copy = BaseAdapter.deepCopy(topAdapter.getData());
+    List<CaiErProductBean.ValueBean> copy = BaseAdapter.deepCopy(topAdapter.getData());
     int remove = -1;
     int num = 0;
     for (int i = 0; i < copy.size(); i++) {
-      RoomProjectListBean.ValueBean item = copy.get(i);
-      if (item.getShowNum() > 0) {
+      CaiErProductBean.ValueBean item = copy.get(i);
+      if (item.getNum() > 0) {
         all += item.getAllPrice();
-        num += item.getShowNum();
+        num += item.getNum();
       } else {
         remove = i;
       }
@@ -171,11 +128,11 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
       }
       bottomAdapter.setData(bean.getValue());
       refusePrice();
-    } else if (type.is(AddBillitem)) {
+    } else if (type.is(AddBillitemBigRelax)) {
+      toast(data.getRespMsg());
       setResult(RESULT_QUIT);
       finish();
     }
-    LOG.e("OrderListActivity", "onResponseSucceed.141:" + type.getErrorMsg());
   }
 
   @Override
@@ -199,18 +156,19 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
   @OnClick({R.id.btn_commit})
   public void onClick(View v) {
     if (v.getId() == R.id.btn_commit) {
-      List<RoomProjectListBean.ValueBean> sel = topAdapter.getData();
+      List<CaiErProductBean.ValueBean> sel = topAdapter.getData();
       if (sel == null || sel.size() == 0) {
         toast("未添加任何项目/商品");
         return;
       }
-      HttpManager.AddBillitem(this, account, sel, facilityno);
+      LOG.bean("CarErOrderListActivity", sel);
+      HttpManager.AddBillitemBigRelax(this, account, sel, facilityno);
     }
   }
 
   @Override
   public void onItemClick(BaseViewHolder holder, Object o, View view, int position) {
-    RoomProjectListBean.ValueBean bean = (RoomProjectListBean.ValueBean) o;
+    CaiErProductBean.ValueBean bean = (CaiErProductBean.ValueBean) o;
     if (view.getId() == R.id.btn_cut) {
       bean.showSizeCut();
       topAdapter.notifyDataSetChanged();

@@ -113,6 +113,7 @@ public class HttpManagerBase {
                 teach.setAll(json);
                 AppInfo.setTechNum(view.getContext(), (String) teach.get(String.class, "Value"));
                 AppInfo.setTechType(view.getContext(), (String) teach.get(String.class, "Comment"));
+                AppInfo.setTechSex(view.getContext(), (String) teach.get(String.class, "sex"));
                 getFoot(login, bean, new HttpInnerListener() {
                   @Override
                   public void onString(String json) {

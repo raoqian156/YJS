@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.rq.rvlibrary.BaseAdapter;
 import com.rq.rvlibrary.BaseViewHolder;
 import com.rq.rvlibrary.EasyViewHolder;
@@ -18,6 +19,7 @@ import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
+import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.MainActivity;
 import com.yskrq.yjs.R;
@@ -330,7 +332,20 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         }
         AddProjectWindowActivity.start(getActivity(), first.getIndexnumber(), first.getAccount());
       } else if ("呼叫服务".equals(o)) {
-        AddProjectActivity.start(getActivity());
+        HttpManager.GetRelaxTechJobStatus(new HttpInnerListener() {
+          @Override
+          public void onString(String json) {
+            BaseBean bean=new Gson().fromJson(json,BaseBean.class);
+            if(bean!=null&&bean.isOk()){
+              AddProjectActivity.start(getActivity());
+            }
+          }
+
+          @Override
+          public void onEmptyResponse() {
+
+          }
+        },getContext());
       } else if ("包厢点单".equals(o)) {
         if (first == null) {
           toast("未发现上点的项目，暂不可加项目");
@@ -381,17 +396,33 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       showZhongDialog();
     } else if (v.getId() == R.id.tv_center && v.getTag() instanceof Integer) {
       int tag = (int) v.getTag();// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
-      if (tag == 1 && first != null) {//代打卡
-        HttpManager.brandnoIn(this, first.getSeqnum(), first.getAccount());
-      } else if (tag == 2 && first != null) {
-        HttpManager.BrandnoOut(this, first.getSeqnum(), first.getAccount());
-      }
+      sing(tag, first);
     } else if (v.getId() == R.id.btn_refuse) {//刷新
       isRefuse = true;
       lastRefuseTime = 0;
       LOG.e("HomeFragment", "refuseList.327:");
       loadData();
     }
+  }
+
+  private void sing(final int tag, final RelaxListBean.ValueBean first) {//上下钟打卡
+    if (first == null) return;
+    DialogHelper
+        .showRemind(getContext(), tag == 1 ? "是否上钟?" : "是否下钟?", new DialogHelper.DialogConfirmListener() {
+          @Override
+          public void onSure() {
+            if (tag == 1) {
+              HttpManager.brandnoIn(HomeFragment.this, first.getSeqnum(), first.getAccount());
+            } else {
+              HttpManager.BrandnoOut(HomeFragment.this, first.getSeqnum(), first.getAccount());
+            }
+          }
+
+          @Override
+          public void onCancel() {
+
+          }
+        });
   }
 
   @Override
