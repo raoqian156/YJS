@@ -171,6 +171,7 @@ public class HttpSender {
             });
           }
         } catch (final Exception e) {
+          LOG.e("HttpSender", "run.174:"+e.getMessage());
           waitRequest.remove(path);
           e.printStackTrace();
           main.post(new Runnable() {

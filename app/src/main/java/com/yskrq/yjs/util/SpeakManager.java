@@ -25,7 +25,7 @@ public class SpeakManager {
         .getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationManager
         .isNotificationPolicyAccessGranted()) {
-      HttpManager.senError(context,"静音失败",null);
+      HttpManager.senError(context, "静音失败", null);
       LOG.e("SpeakManager", "closeVoice.29:+静音失败");
     } else {
       AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -55,29 +55,36 @@ public class SpeakManager {
   }
 
   public static int isRead(final Context context, final RelaxListBean.ValueBean first) {
-    if (first == null) return 0;
-    if (first.hasNewTask()) {
+    if (first == null) {
       openVoice(context);
-      Speaker.speakOut(context, "您有新的任务", new Speaker.OnSpeakListener() {
-        @Override
-        public void onFinish(int status) {
-          if (TextToSpeech.SUCCESS == status) {
-            HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
-                .getFacilityno());
-          }
-        }
-      });
+      return 0;
+    }
+    if (first.hasNewTask()) {
+      //      openVoice(context);
+      //      Speaker.speakOut(context, "您有新的任务", new Speaker.OnSpeakListener() {
+      //        @Override
+      //        public void onFinish(int status) {
+      //          if (TextToSpeech.SUCCESS == status) {
+      //            HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
+      //                .getFacilityno());
+      //          }
+      //        }
+      //      });
+      HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
+          .getFacilityno());
       return 1;
     } else if (first.cuizhong(AppInfo.getCuiZHongMinutes(context))) {
       openVoice(context);
-      String brand = getReadBrand(context) + "号技师";
-      Speaker.speakOut(context, brand + "还有 " + AppInfo
-          .getCuiZHongMinutes(context) + " 分钟下钟", new Speaker.OnSpeakListener() {
+      final String brand = getReadBrand(context) + "号技师";
+      final String spearOut = brand + "还有 " + AppInfo.getCuiZHongMinutes(context) + " 分钟下钟";
+      Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
+          LOG.e("SpeakManager", "onFinish.83:" + status);
           if (TextToSpeech.SUCCESS == status) {
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 0);
+            Speaker.speakOut(context, spearOut, null);
           }
         }
       });
@@ -85,12 +92,15 @@ public class SpeakManager {
     } else if (first.daozhong()) {
       openVoice(context);
       String brand = getReadBrand(context) + "号技师";
-      Speaker.speakOut(context, brand + "已到钟", new Speaker.OnSpeakListener() {
+      final String spearOut = brand + "已到钟";
+      Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
+          LOG.e("SpeakManager", "onFinish.98:" + status);
           if (TextToSpeech.SUCCESS == status) {
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 1);
+            Speaker.speakOut(context, spearOut, null);
           }
         }
       });

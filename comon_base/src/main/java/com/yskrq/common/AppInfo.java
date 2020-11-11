@@ -215,7 +215,7 @@ public class AppInfo {
 
   private static boolean isLocationOk(String latSave, String lonSave, double latitude,
                                       double longitude) {
-    if(TextUtils.isEmpty(latSave)||TextUtils.isEmpty(lonSave)){
+    if (TextUtils.isEmpty(latSave) || TextUtils.isEmpty(lonSave)) {
       return true;
     }
     double lat = Double.parseDouble(latSave);
@@ -243,7 +243,6 @@ public class AppInfo {
     SPUtil.saveString(context, "username", "");
     SPUtil.saveString(context, "apptoken", "");
     SPUtil.saveString(context, "userid", "");
-    SPUtil.saveString(context, "pass", "");
     setTechNum(context, "");
     setProfitCenter(context, "");
     setWorkDate(context, "");

@@ -1,6 +1,5 @@
 package com.yskrq.common;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smarx.notchlib.NotchScreenManager;
+import com.yskrq.common.ui.LoadingDialog;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.BaseView;
@@ -154,15 +154,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
   }
 
-  ProgressDialog progressDialog;
+  LoadingDialog progressDialog;
 
   @Override
   public void showLoading(String... str) {
     if (progressDialog == null) {
-      progressDialog = new ProgressDialog(this);
+      progressDialog = new LoadingDialog(this);
     }
     if (str.length > 0) {
-      progressDialog.setMessage(str[0]);
+      progressDialog.setTitle(str[0]);
     }
     progressDialog.show();
   }

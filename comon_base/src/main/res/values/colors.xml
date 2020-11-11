@@ -9,6 +9,7 @@
 
     <color name="room_blue_using">#0093dd</color>
     <color name="room_white_shadow">#BF000000</color>
+    <color name="dialog_pan_bg">#33000000</color>
     <color name="room_gray">#8799A3</color>
     <color name="room_green">#84c225</color>
     <color name="room_qian">#b0ccf0</color>

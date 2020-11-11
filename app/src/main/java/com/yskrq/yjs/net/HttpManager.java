@@ -221,7 +221,7 @@ public class HttpManager {
     final HashMap<String, String> map = getParam(context);
     map.put("computername", "");
     map.put("hoteldate", "NEW_TEST_" + new SimpleDateFormat("yyyyMMdd")
-        .format(System.currentTimeMillis()));
+        .format(System.currentTimeMillis()) + AppInfo.getWorkDate(context));
     map.put("sremark", msg);
     HttpSender.post(url, map, listener);
   }

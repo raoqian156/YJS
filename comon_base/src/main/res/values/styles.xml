@@ -13,6 +13,11 @@
         <item name="android:windowAnimationStyle">@style/activity_fade_in_out</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+    <style name="LoadingDialog" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@drawable/conner_dialog_bg</item>
+    </style>
     <!--初步设置activity进入和退出的动画-->
     <style name="activity_fade_in_out" parent="android:Animation.Activity">
         <item name="android:activityCloseExitAnimation">@anim/activity_out</item>

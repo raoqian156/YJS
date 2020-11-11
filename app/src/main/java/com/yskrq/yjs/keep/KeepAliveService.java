@@ -29,8 +29,12 @@ import com.yskrq.yjs.util.SpeakManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+
+import static com.yskrq.yjs.util.SpeakManager.openVoice;
 
 
 /**
@@ -41,7 +45,7 @@ public class KeepAliveService extends Service {
 
   public static final int NOTIFICATION_ID = 12345;
   public volatile static boolean stop = false;
-  public static int REFUSE_TIME_DURATION = 30;//秒
+  public static int REFUSE_TIME_DURATION = 10;//秒
 
   private boolean isScreenON = true;//控制暂停
   private MediaPlayer mediaPlayer;
@@ -115,6 +119,7 @@ public class KeepAliveService extends Service {
     stopSelf();
   }
 
+  SimpleDateFormat sdf = new SimpleDateFormat("hh:mm：ss");
 
   private void start() {
     new Thread(new Runnable() {
@@ -124,6 +129,14 @@ public class KeepAliveService extends Service {
           try {
             if (stop) {
               return;
+            }
+            int delayTime = (int) (AppInfo
+                .getRunningLeftTime(KeepAliveService.this) / 1000 % REFUSE_TIME_DURATION);
+            if (delayTime > 0) {
+              if (delayTime * 2 > REFUSE_TIME_DURATION) {
+                onRead();
+              }
+              Thread.sleep(delayTime * 1000L);
             }
             onRead();
             Thread.sleep(REFUSE_TIME_DURATION * 1000L);
@@ -166,16 +179,32 @@ public class KeepAliveService extends Service {
       workDateCheckTime = System.currentTimeMillis();
       HttpManager.justRefuseSaleDate(context);
     }
+    final StringBuffer logInfo = new StringBuffer();
+    final Map<String, String> param = new HashMap<>();
+    param.put("groupid", AppInfo.getGroupId(context));
+    param.put("brandno", AppInfo.getTechNum(context));
+    param.put("profitcenter", AppInfo.getProfitCenter(context));
+    param.put("hoteldate", AppInfo.getWorkDate(context));
     HttpManager.GetRelaxServerList(context, new HttpInnerListener() {
       @Override
       public void onString(String json) {
-        HttpManager.senError(context, AppInfo.getUserid(context) + ".保活测试->" + AppInfo
-            .getTechNum(context) + ":" + json, null);
+        logInfo.append("POST>>" + new Gson().toJson(param));
+        logInfo.append("\n" + AppInfo.getUserid(context) + ".保活测试->" + AppInfo
+            .getTechNum(context) + ":" + json);
+        HttpManager.senError(context, logInfo.toString(), null);
         final RelaxListBean bean = new Gson().fromJson(json, RelaxListBean.class);
         KeepAliveService.notify(context, bean);
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
-          SpeakManager.isRead(context, bean.getValue().get(0));
+          RelaxListBean.ValueBean first = bean.getValue().get(0);
+          //          try {
+          //            int keepTime = Integer.parseInt(first.getSid());
+          //            delayTime = keepTime % REFUSE_TIME_DURATION;
+          //          } catch (Exception e) {
+          //
+          //          }
+          SpeakManager.isRead(context, first);
         } else {
+          openVoice(context);
           AppInfo.clearNotify(context);
         }
         notifyUser(context);
