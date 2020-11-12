@@ -155,6 +155,7 @@ public class HttpManager {
       @Override
       public void onString(String json) {
         BaseBean dateBean = new Gson().fromJson(json, BaseBean.class);
+        senError(context, json, "REFUSE", null);
         if (dateBean != null && "0".equals(dateBean.getRespCode())) {
           AppInfo.setWorkDate(context, dateBean.getRespMsg());
         }
@@ -220,12 +221,22 @@ public class HttpManager {
 
 
   public static void senError(Context context, String msg, HttpInnerListener listener) {
+    senError(context, msg, null, listener);
+  }
+
+  public static void senError(Context context, String msg, String tag, HttpInnerListener listener) {
     LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
     final String url = "https://hotel17.yskvip.com:9092/RM_Others/wirtelog";
     final HashMap<String, String> map = getParam(context);
     map.put("computername", "");
-    map.put("hoteldate", "NEW_TEST_" + new SimpleDateFormat("yyyyMMdd")
-        .format(System.currentTimeMillis()) + AppInfo.getWorkDate(context));
+    String techNum = AppInfo.getTechNum(context);
+    if (tag == null) {
+      map.put("hoteldate", "NEW_TEST_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
+          .format(System.currentTimeMillis()));
+    } else {
+      map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
+          .format(System.currentTimeMillis()));
+    }
     map.put("sremark", msg);
     HttpSender.post(url, map, listener);
   }
@@ -990,7 +1001,7 @@ public class HttpManager {
             }
           }, "POSBillSend", "下单");
         } else {
-          view.onResponseError(new RequestType(AddBillitemBigRelax),bean);
+          view.onResponseError(new RequestType(AddBillitemBigRelax), bean);
         }
       }
 

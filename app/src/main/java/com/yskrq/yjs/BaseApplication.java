@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.BASE;
 import com.yskrq.yjs.util.ImageLoadUtil;
+import com.yskrq.yjs.util.status.NetWorkMonitorManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ public class BaseApplication extends Application implements Application.Activity
     CrashReport.initCrashReport(getApplicationContext(), "0fb8de5348", false);
     registerActivityLifecycleCallbacks(this);
     RunningHelper.getInstance().start(this);
+    NetWorkMonitorManager.getInstance().init(this);
   }
 
   @Override

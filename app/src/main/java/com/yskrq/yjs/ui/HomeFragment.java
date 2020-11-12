@@ -13,6 +13,7 @@ import com.rq.rvlibrary.EasyViewHolder;
 import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
 import com.yskrq.common.AppInfo;
+import com.yskrq.common.BASE;
 import com.yskrq.common.BaseFragment;
 import com.yskrq.common.OnClick;
 import com.yskrq.common.util.LOG;
@@ -34,6 +35,9 @@ import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.LocationUtil;
 import com.yskrq.yjs.util.PhoneUtil;
 import com.yskrq.yjs.util.SpeakManager;
+import com.yskrq.yjs.util.status.NetWorkMonitor;
+import com.yskrq.yjs.util.status.NetWorkMonitorManager;
+import com.yskrq.yjs.util.status.NetWorkState;
 import com.yskrq.yjs.widget.PopUtil;
 
 import java.text.SimpleDateFormat;
@@ -78,6 +82,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     super.onCreate(savedInstanceState);
     KeepAliveService.addRefuseListener(this);
     RunningHelper.getInstance().register(this);
+    NetWorkMonitorManager.getInstance().register(this);
     canCaiEr = "1".equals(AppInfo.getTechType(getContext()));
     LOG.e("HomeFragment", "onCreate.canCaiEr:" + canCaiEr);
 
@@ -88,6 +93,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   public void onDestroy() {
     super.onDestroy();
     KeepAliveService.removeRefuseListener(this);
+    RunningHelper.getInstance().remove(this);
+    NetWorkMonitorManager.getInstance().unregister(this);
   }
 
   @Override
@@ -281,7 +288,15 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
   }
 
+  @NetWorkMonitor
+  public void onNetChange(NetWorkState state) {
+    if (state != NetWorkState.NONE) {
+      loadData();
+    }
+  }
+
   private void loadData(String... hoteDate) {
+    LOG.e("HomeFragment", "loadData.291:" + BASE.getUseFrom());
     HttpManager.GetRelaxServerList(this, hoteDate);
     if (canCaiEr) HttpManager.SelectServerlistView(this, hoteDate);
   }
@@ -335,8 +350,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         HttpManager.GetRelaxTechJobStatus(new HttpInnerListener() {
           @Override
           public void onString(String json) {
-            BaseBean bean=new Gson().fromJson(json,BaseBean.class);
-            if(bean!=null&&bean.isOk()){
+            BaseBean bean = new Gson().fromJson(json, BaseBean.class);
+            if (bean != null && bean.isOk()) {
               AddProjectActivity.start(getActivity());
             }
           }
@@ -345,7 +360,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
           public void onEmptyResponse() {
 
           }
-        },getContext());
+        }, getContext());
       } else if ("包厢点单".equals(o)) {
         if (first == null) {
           toast("未发现上点的项目，暂不可加项目");
@@ -380,7 +395,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   }
 
   @OnClick({R.id.btn_to_tai, R.id.btn_modify, R.id.btn_sign, R.id.btn_add, R.id.tv_center, R.id.btn_refuse})
-  //, R.id.tv_test_1, R.id.tv_test_2
   public void onClick(View v) {
     if (v.getId() == R.id.btn_to_tai) {
       RoomListActivity.start(getContext());

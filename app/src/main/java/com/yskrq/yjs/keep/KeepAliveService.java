@@ -119,8 +119,6 @@ public class KeepAliveService extends Service {
     stopSelf();
   }
 
-  SimpleDateFormat sdf = new SimpleDateFormat("hh:mm：ss");
-
   private void start() {
     new Thread(new Runnable() {
       @Override
@@ -175,7 +173,7 @@ public class KeepAliveService extends Service {
   static long workDateCheckTime = 0;
 
   private static void onRunning(final Context context) {
-    if (System.currentTimeMillis() - workDateCheckTime > 1000 * 60 * 60) {
+    if (System.currentTimeMillis() - workDateCheckTime > 1000 * 60 * 30) {
       workDateCheckTime = System.currentTimeMillis();
       HttpManager.justRefuseSaleDate(context);
     }
@@ -196,12 +194,6 @@ public class KeepAliveService extends Service {
         KeepAliveService.notify(context, bean);
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
-          //          try {
-          //            int keepTime = Integer.parseInt(first.getSid());
-          //            delayTime = keepTime % REFUSE_TIME_DURATION;
-          //          } catch (Exception e) {
-          //
-          //          }
           SpeakManager.isRead(context, first);
         } else {
           openVoice(context);
@@ -298,7 +290,6 @@ public class KeepAliveService extends Service {
     mNManager.notify(NOTIFICATION_ID, notification);
   }
 
-
   //将keepAliveBinder交给RemoteService
   public IBinder onBind(Intent intent) {
     return keepAliveBinder;
@@ -340,17 +331,6 @@ public class KeepAliveService extends Service {
 
   public static void startForeground(Service service) {
     notifyUser(service);
-    //    Intent intent = new Intent(service.getApplicationContext(), NotificationClickReceiver.class);
-    //    intent.setAction(NotificationClickReceiver.CLICK_NOTIFICATION);
-    //    String title = "上班中";
-    //    String content = "";
-    //    //    if (getJsonObject(service.getApplicationContext()) != null) {
-    //    //      title = getJsonObject(service.getApplicationContext()).get("brandno") + " 号技师";
-    //    //      content = "播报服务已开启";
-    //    //    }
-    //    Notification notification = NotificationUtils
-    //        .createNotification(service, title, content, R.drawable.ic_launcher_background, intent);
-    //    service.startForeground(NOTIFICATION_ID, notification);
   }
 
   private void registerScreenStateReceiver() {

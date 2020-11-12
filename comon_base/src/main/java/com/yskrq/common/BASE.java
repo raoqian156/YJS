@@ -24,4 +24,17 @@ public class BASE {
     }
     context.startActivity(intent);
   }
+  public static String getUseFrom() {
+    StackTraceElement[] stacks = new Exception().getStackTrace();
+    if (stacks != null) {
+      try {
+        String classname = stacks[2].getFileName(); //获取调用者的类名
+        String method_name = stacks[2].getMethodName(); //获取调用者的方法名
+        int line = stacks[2].getLineNumber(); //获取调用者的方法名
+        return classname + "[" + method_name + "]." + line;
+      } catch (Exception e) {
+      }
+    }
+    return "";
+  }
 }

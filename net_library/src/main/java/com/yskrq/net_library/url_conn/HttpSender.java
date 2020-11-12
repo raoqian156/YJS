@@ -85,7 +85,8 @@ public class HttpSender {
   private static void innerPost(final String url, final Map<String, String> params,
                                 final HttpInnerListener listener) {
     final String path = url;
-    if (waitRequest.contains(path)) {
+    if (waitRequest.contains(path) && !"https://hotel17.yskvip.com:9092/RM_Others/wirtelog"
+        .equals(path)) {
       LOG.e("HttpSender", "重复请求，被拦截:" + path);
       return;
     }
@@ -171,7 +172,7 @@ public class HttpSender {
             });
           }
         } catch (final Exception e) {
-          LOG.e("HttpSender", "run.174:"+e.getMessage());
+          LOG.e("HttpSender", "run.174:" + e.getMessage());
           waitRequest.remove(path);
           e.printStackTrace();
           main.post(new Runnable() {
