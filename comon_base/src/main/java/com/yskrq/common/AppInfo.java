@@ -6,9 +6,17 @@ import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yskrq.common.bean.LoginBean;
+import com.yskrq.common.bean.TecColorBean;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
+
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.WIFI_SERVICE;
 
@@ -155,8 +163,22 @@ public class AppInfo {
     return SPUtil.init(context).getString("Wait.TIME", "");
   }
 
+  public static List<TecColorBean.ValueBean> getColors(Context context) {
+    String save = SPUtil.init(context).getString("tech.colors", "");
+    Type type = new TypeToken<ArrayList<TecColorBean.ValueBean>>() {}.getType();
+    List<TecColorBean.ValueBean> lists = new Gson().fromJson(save, type);
+    LOG.bean("AppInfo", lists);
+    return lists;
+  }
+
+  public static void saveColor(Context context, List<? extends Serializable> colors) {//通知需要展示的状态
+    String save = new Gson().toJson(colors);
+    LOG.e("AppInfo", "saveColor.164:" + save);
+    SPUtil.saveString(context, "tech.colors", save);
+  }
 
   public static void setWaitType(Context context, int tag) {//通知需要展示的状态
+    LOG.showUserWhere("setWaitType -> " + tag);
     SPUtil.saveInt(context, "Wait.TYPE", tag);
   }
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TabHost;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.LoginActivity;
+import com.yskrq.common.util.LOG;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
@@ -148,5 +150,33 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
       startActivity(intent);
       finish();
     }
+  }
+
+  long quitTime;
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    LOG.e("MainActivity", "onKeyDown.159:");
+    if (keyCode == KeyEvent.KEYCODE_BACK) {
+      if (System.currentTimeMillis() - quitTime > 2000) {
+        quitTime = System.currentTimeMillis();
+        toast("再点一次退出当前应用");
+        return true;
+      }
+      LOG.e("MainActivity", "onKeyDown.160:");
+    }
+    return super.onKeyDown(keyCode, event);
+  }
+
+  @Override
+  public void onBackPressed() {
+    LOG.e("MainActivity", "onBackPressed.173:");
+    if (System.currentTimeMillis() - quitTime > 2000) {
+      LOG.e("MainActivity", "onBackPressed.173:");
+      quitTime = System.currentTimeMillis();
+      toast("再点一次退出当前应用");
+      return;
+    }
+    super.onBackPressed();
   }
 }

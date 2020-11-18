@@ -59,6 +59,13 @@ public class RelaxListBean extends BaseBean {
     private String rsuhtimes;
     private String uploadstatus;
 
+    public String getStatusColor() {
+      //  this ==null    htmlBrandColor3
+      //   relaxclocktype   0 -> htmlBrandColor1   other ->htmlBrandColor2
+      String bgColorStr = "#fff";
+      return bgColorStr;
+    }
+
     public String getAccount() {
       return account;
     }
@@ -253,6 +260,10 @@ public class RelaxListBean extends BaseBean {
 
     public boolean hasNewTask() {
       return "0".equals(getUploadstatus()) && getShowStatus() == 1;
+    }
+
+    public boolean needCloseVoice() {
+      return "9001".equals(getGroupid());
     }
   }
 }

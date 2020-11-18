@@ -58,6 +58,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
   }
 
   String account, facilityno;
+  boolean canAdd = false;
   BaseAdapter topAdapter, bottomAdapter;
 
   @Override
@@ -79,6 +80,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
 
   private void setView() {
     account = getIntent().getStringExtra("account");
+    canAdd = getIntent().getBooleanExtra("canAdd", false);
     facilityno = getIntent().getStringExtra("facilityno");
     setString2View(R.id.tv_order_no, "账单:(" + account + ")");
     if (getIntent().getBooleanExtra("canAdd", false)) {
@@ -205,7 +207,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
 
   @Override
   public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
-    if(type.is(selectddan)&&"10".equals(data.getRespCode())){
+    if (type.is(selectddan) && "10".equals(data.getRespCode())) {
       return;
     }
     super.onResponseError(type, data);
@@ -255,7 +257,11 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
   @OnClick({R.id.btn_add, R.id.iv_ck_over, R.id.tv_pay_ed, R.id.btn_refuse})
   public void onClick(View v) {
     if (v.getId() == R.id.btn_add) {
-      RoomProjectActivity.start(this, account, facilityno);
+      if (canAdd) {
+        CarErProjectActivity.start(this, account, facilityno);
+      } else {
+        RoomProjectActivity.start(this, account, facilityno);
+      }
       finish();
     } else if (v.getId() == R.id.btn_refuse) {
       onRefuse();

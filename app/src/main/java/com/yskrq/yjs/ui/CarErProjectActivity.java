@@ -41,6 +41,7 @@ public class CarErProjectActivity extends BaseActivity implements OnItemClickLis
     Intent intent = new Intent(context, CarErProjectActivity.class);
     intent.putExtra("account", account);
     intent.putExtra("facilityno", facilityno);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     context.startActivity(intent);
   }
 
@@ -181,10 +182,11 @@ public class CarErProjectActivity extends BaseActivity implements OnItemClickLis
       rightAdapter.display(input);
     }
   }
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-     if (resultCode == RESULT_QUIT) {
+    if (resultCode == RESULT_QUIT) {
       finish();
     }
   }

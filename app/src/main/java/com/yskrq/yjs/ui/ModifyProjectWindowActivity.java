@@ -69,6 +69,7 @@ public class ModifyProjectWindowActivity extends BaseActivity implements View.On
         selected = selects.get(0);
       }
     } else if (type.is(RelaxTechChangeItem)) {
+      toast(data.getRespMsg());
       finish();
     }
   }
@@ -86,7 +87,7 @@ public class ModifyProjectWindowActivity extends BaseActivity implements View.On
     } else if (v.getId() == R.id.btn_cancel) {
       finish();
     } else if (v.getId() == R.id.btn_sure) {
-      if(selected==null){
+      if (selected == null) {
         finish();
         return;
       }

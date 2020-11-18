@@ -10,10 +10,21 @@
         android:layout_height="200dp"
         android:background="@color/colorPrimary" />
 
+
     <include
         android:id="@+id/title"
         layout="@layout/include_title" />
 
+    <TextView
+        android:id="@+id/tv_net_error"
+        android:layout_width="wrap_content"
+        android:layout_margin="6dp"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="无网络"
+        android:textColor="@color/room_red" />
     <!--    <TextView-->
     <!--        android:id="@+id/title"-->
     <!--        android:layout_width="match_parent"-->

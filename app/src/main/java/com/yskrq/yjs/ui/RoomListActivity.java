@@ -24,7 +24,7 @@ import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.RoomBean;
 import com.yskrq.yjs.bean.RoomLeftBean;
 import com.yskrq.yjs.net.HttpManager;
-import com.yskrq.yjs.widget.PopUtil;
+import com.yskrq.yjs.util.DoubleClickHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -183,6 +183,7 @@ public class RoomListActivity extends BaseActivity implements View.OnClickListen
     }
   }
 
+
   @Override
   public void onItemClick(BaseViewHolder holder, Object o, View view, int position) {
     if (o instanceof RoomLeftBean.FixingTypeValueBean) {
@@ -191,34 +192,32 @@ public class RoomListActivity extends BaseActivity implements View.OnClickListen
       leftAdapter.notifyDataSetChanged();
       rightAdapter.display(bean.getTypeCode());
     } else {
+      if (!DoubleClickHelper.isDoubleClick(view)) {
+        return;
+      }
       final RoomBean.FixingViewValueBean bean = (RoomBean.FixingViewValueBean) o;
-      PopUtil.showCaoErRoom(this, view, bean, new PopUtil.OnPopClickListener() {
-        @Override
-        public void onPopClick(int position, Object data, View clickFrom) {
-          if (position == 0) {//开单
-            SelectNumWindowActivity.start(RoomListActivity.this, bean.getFacilityNo());
-          } else if (position == 1) {//查看单据
-            HttpManager.selectzhtddan(new HttpInnerListener() {
-              @Override
-              public void onString(String json) {
-                BaseBean b = new Gson().fromJson(json, BaseBean.class);
-                if ("0".equals(b.getRespCode())) {
-                  String account = BaseBean.getStrInJson("Account", json);
-                  OrderDetailActivity
-                      .startCanAdd(RoomListActivity.this, account, bean.getFacilityNo());
-                } else {
-                  Toast.makeText(RoomListActivity.this, "当前房间无数据", Toast.LENGTH_SHORT).show();
-                }
-              }
-
-              @Override
-              public void onEmptyResponse() {
-
-              }
-            }, RoomListActivity.this, bean.getFacilityNo());
+      boolean isUsed = "0".equals(bean.getStatus());
+      if (isUsed) {
+        HttpManager.selectzhtddan(new HttpInnerListener() {
+          @Override
+          public void onString(String json) {
+            BaseBean b = new Gson().fromJson(json, BaseBean.class);
+            if ("0".equals(b.getRespCode())) {
+              String account = BaseBean.getStrInJson("Account", json);
+              OrderDetailActivity.startCanAdd(RoomListActivity.this, account, bean.getFacilityNo());
+            } else {
+              Toast.makeText(RoomListActivity.this, "当前房间无数据", Toast.LENGTH_SHORT).show();
+            }
           }
-        }
-      });
+
+          @Override
+          public void onEmptyResponse() {
+
+          }
+        }, RoomListActivity.this, bean.getFacilityNo());
+      } else {
+        SelectNumWindowActivity.start(RoomListActivity.this, bean.getFacilityNo());
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import com.yskrq.common.R;
 import com.yskrq.common.bean.LoginBean;
 import com.yskrq.common.bean.LoginBean2;
 import com.yskrq.common.bean.ProfitCenterBean;
+import com.yskrq.common.bean.TecColorBean;
 import com.yskrq.common.bean.UpdateBean;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
@@ -21,6 +22,7 @@ import com.yskrq.net_library.RequestType;
 
 import java.util.HashMap;
 
+import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_TEC_COLOR_STATUS;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.LOGIN_Luo;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.SELECT_FOOT_Liu;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.SELECT_LOGIN_Liu;
@@ -70,7 +72,7 @@ public class HttpManagerBase {
             if (bean == null || bean.getUpdate() == null || AppUtils.getVersion(view.getContext())
                                                                     .equals(bean.getUpdate()
                                                                                 .getAPPVersion())) {
-              toMain(view,login);
+              toMain(view, login);
 
             } else {
               view.onResponseError(new RequestType(LOGIN_Luo).more(login), bean);
@@ -125,7 +127,24 @@ public class HttpManagerBase {
                         AppInfo
                             .setProfitCenter(view.getContext(), bean.getProfitCenter_value().get(0)
                                                                     .getCode());
-                        view.onResponseSucceed(new RequestType(LOGIN_Luo), login);
+                        getColors(login, new HttpInnerListener() {
+                          @Override
+                          public void onString(String json) {
+                            TecColorBean tecColorBean = new Gson()
+                                .fromJson(json, TecColorBean.class);
+                            if (tecColorBean != null && tecColorBean.isOk()) {
+                              AppInfo.saveColor(view.getContext(), tecColorBean.getValue());
+                              view.onResponseSucceed(new RequestType(LOGIN_Luo), login);
+                            } else {
+                              view.onResponseError(new RequestType(LOGIN_Luo), tecColorBean);
+                            }
+                          }
+
+                          @Override
+                          public void onEmptyResponse() {
+
+                          }
+                        }, view);
                       } else {
                         view.onResponseError(new RequestType(LOGIN_Luo), bean);
                       }
@@ -168,6 +187,14 @@ public class HttpManagerBase {
     param.put("ShopsId", bean.getShopsid());
     param.put("UserId", bean.getUserid());
     HttpProxy.inner(listener, view, getTechNo, param);
+  }
+
+  public static void getColors(LoginBean bean, HttpInnerListener listener, BaseView view) {
+    HashMap<String, String> param = new HashMap<>();
+    param.put("APPToken", bean.getApptoken());
+    param.put("ShopsId", bean.getShopsid());
+    param.put("UserId", bean.getUserid());
+    HttpProxy.inner(listener, view, GET_TEC_COLOR_STATUS, param);
   }
 
   private static void getUpdate(LoginBean bean, HttpInnerListener listener, BaseView view) {

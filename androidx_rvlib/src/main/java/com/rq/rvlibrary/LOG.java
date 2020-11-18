@@ -1,12 +1,10 @@
-package com.yskrq.common.util;
+package com.rq.rvlibrary;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.yskrq.net_library.BuildConfig;
-
-public class LOG {
+class LOG {
 
     public static boolean showDebug() {
         return BuildConfig.SHOW_LOG;
@@ -19,7 +17,8 @@ public class LOG {
     }
 
     public static void d(String tag, String con) {
-        if (showDebug()) Log.d(tag, con);
+        if (showDebug())
+            Log.d(tag, con);
     }
 
     public static void i(String tag, String con) {
@@ -31,7 +30,7 @@ public class LOG {
     public static void bean(String tag, Object obj, String... url) {
         if (showDebug()) {
             try {
-                bean(tag, new Gson().toJson(obj).trim(), url);
+                bean(tag, obj.toString(), url);
             } catch (OutOfMemoryError error) {
                 if (obj != null) {
                     Log.e("LOG", "post: = " + obj.toString());
@@ -58,8 +57,7 @@ public class LOG {
             return;
         }
         String outPut = log.replaceAll(":\\{", ":,{").replaceAll(":\\[\\{", ":[,{")
-                           .replaceAll("\\}", "},").replaceAll("\\]", "],")
-                           .replaceAll("\\\\\"", "");
+                .replaceAll("\\}", "},").replaceAll("\\]", "],").replaceAll("\\\\\"", "");
         String[] outs = outPut.split(",");
         String SPACE = "";
         int lineNumLength = String.valueOf(outs.length).length();
@@ -70,7 +68,8 @@ public class LOG {
                     SPACE = SPACE.substring(0, SPACE.lastIndexOf("\t"));
                 }
             }
-            Log.w("BEAN." + tag, "    --" + showLine + "->" + SPACE + outs[i].replaceAll("\"", ""));
+            outs[i] = outs[i].replaceAll("\"", "");
+            Log.w("BEAN." + tag, "    --" + showLine + "->" + SPACE + outs[i]);
             if (outs[i].startsWith("{") || outs[i].contains("[")) {
                 SPACE = SPACE + "\t";
             }
@@ -119,11 +118,7 @@ public class LOG {
                 show += "==> " + classname3 + "[" + method_name3 + "]." + line3;
                 String tag = classname;
                 if (object != null) {
-                    if(object[0] instanceof String){
-                        tag= (String) object[0];
-                    }else {
-                        tag = object[0].getClass().getSimpleName();
-                    }
+                    tag = object[0].getClass().getSimpleName();
                 }
                 Log.e(tag, show);
             } catch (Exception e) {
@@ -136,24 +131,24 @@ public class LOG {
      * 一般是和后台联调错误需要通过沟通解决
      */
     public static void utilLog(String tag) {
-        //        if (!showDebug()) return;
-        //        String packageName = "com.hz.huarun";
+//        if (!showDebug()) return;
+//        String packageName = "com.hz.huarun";
         String con = "";
         StackTraceElement[] stacks = new Exception().getStackTrace();
         StringBuffer stringBuffer = new StringBuffer();
-        //        String simpleName = classname.substring(classname.lastIndexOf(".") + 1);
+//        String simpleName = classname.substring(classname.lastIndexOf(".") + 1);
         if (stacks != null) {
             stringBuffer.append("\t【异常起源】>>\t");
-            int start = Math.min(stacks.length - 1, 10);
+            int start = stacks.length - 1;//Math.min(stacks.length - 1, 10);
             int recoderIndex = start;
 
             for (int i = start; i >= 0; i--) {
                 String classname = stacks[i].getClassName(); //获取调用者的类名
                 String method_name = stacks[i].getMethodName(); //获取调用者的方法名
                 int line = stacks[i].getLineNumber(); //获取调用者的方法名
-                //                if (recoderIndex == -1 && classname.contains(packageName)) {//项目代码开始
-                //                    recoderIndex = i;
-                //                }
+//                if (recoderIndex == -1 && classname.contains(packageName)) {//项目代码开始
+//                    recoderIndex = i;
+//                }
                 if (i <= recoderIndex) {
                     if (LOG.class.getName().equals(classname)) {
                         continue;
@@ -161,8 +156,7 @@ public class LOG {
                     if (i != recoderIndex) {
                         stringBuffer.append(tag + "|\t\t\t\t\t");
                     }
-                    stringBuffer
-                            .append(i + "[" + classname + "." + method_name + " LINE " + line + "]  \n");
+                    stringBuffer.append(i + "[" + classname + "." + method_name + " LINE " + line + "]  \n");
                 }
 
             }

@@ -105,8 +105,10 @@ public class SpeakManager {
         }
       });
       return 3;
-    } else {
+    } else if (first.needCloseVoice()) {
       closeVoice(context);
+    } else {
+      openVoice(context);
     }
     return 0;
   }

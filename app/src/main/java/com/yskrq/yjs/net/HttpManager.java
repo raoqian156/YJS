@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
+import com.yskrq.common.BASE;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.MD5Util;
@@ -1016,11 +1017,13 @@ public class HttpManager {
 
 
   public static void SelectServerlistView(BaseView view, String... hote) {
+    LOG.e("HttpManager", "SelectServerlistView.1019:" + BASE.getUseFrom());
     HashMap<String, String> param = getParam(view.getContext());
     param.put("stype", "0");
     if (hote.length > 0) {
       param.put("hoteldate", hote[0]);
     }
+    if(TextUtils.isEmpty(param.get("hoteldate")))return;
     HttpProxy.bean(view, SelectServerlistView, param, CaiErListBean.class);
   }
 

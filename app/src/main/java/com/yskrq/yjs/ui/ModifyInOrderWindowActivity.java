@@ -9,6 +9,7 @@ import android.widget.TimePicker;
 
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.util.LOG;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
@@ -83,6 +84,7 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
         }
       }
     } else if (type.is(RelaxTechChangeItem)) {
+      LOG.e("ModifyInOrderWindowActivity", "onResponseSucceed.86:" + data.getRespMsg());
       toast(data.getRespMsg());
       setResult(TAG_REFUSE_ITEM);
       finish();

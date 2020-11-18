@@ -52,14 +52,6 @@ public class RoomProjectActivity extends BaseActivity implements OnItemClickList
     context.startActivity(intent);
   }
 
-  public static void startNewOrder(Context context, String account, String facilityno) {
-    Intent intent = new Intent(context, RoomProjectActivity.class);
-    intent.putExtra("account", account);
-    intent.putExtra("facilityno", facilityno);
-    intent.putExtra("isNew", true);
-    context.startActivity(intent);
-  }
-
   @Override
   protected int layoutId() {
     return R.layout.act_room_project;

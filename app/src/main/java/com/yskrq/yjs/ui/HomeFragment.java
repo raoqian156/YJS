@@ -16,6 +16,7 @@ import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
 import com.yskrq.common.BaseFragment;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.bean.TecColorBean;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
 import com.yskrq.common.widget.DialogHelper;
@@ -87,6 +88,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     LOG.e("HomeFragment", "onCreate.canCaiEr:" + canCaiEr);
 
     HttpManager.refuseSaleDate(this);
+
+    AppInfo.getColors(getContext());
   }
 
   @Override
@@ -123,6 +126,20 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     new RecyclerUtil(newTaskAdapter).set2View((RecyclerView) findViewById(R.id.recycler_new_task));
     clickAdapter.addOnItemClickListener(this);
     newTaskAdapter.addOnItemClickListener(this);
+    try {
+      String color1 = null, color2 = null;
+      for (TecColorBean.ValueBean color : AppInfo.getColors(getContext())) {
+        if ("htmlBrandColor1".equals(color.getEntry())) {
+          color1 = color.getData();
+        } else if ("htmlBrandColor2".equals(color.getEntry())) {
+          color2 = color.getData();
+        }
+      }
+      newTaskAdapter.setPassData(color1, color2);
+    } catch (Exception e) {
+
+    }
+
     setTextView2View("技师号:" + AppInfo.getTechNum(getContext()), R.id.tv_num);
     List<String> btn = new ArrayList<>();
     btn.add("包厢点单");//晚一点
@@ -231,12 +248,14 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
 
   private void refuseList(RelaxListBean bean) {
+    if (bean == null) return;
     Context context = getContext();
-    if (bean == null || bean.getValue() == null || bean.getValue().size() <= 0) {
+    if (bean.getValue() == null || bean.getValue().size() <= 0) {
       findViewById(R.id.ll_new_task).setVisibility(View.GONE);
       openRunning = false;
       resetTimePan();
       first = null;
+      LOG.e("HomeFragment", "setWaitType.253:");
       AppInfo.setWaitType(context, 0);
       AppInfo.setWait(context, "");
       AppInfo.saveRunningTargetTime(context, 0);
@@ -290,8 +309,11 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
   @NetWorkMonitor
   public void onNetChange(NetWorkState state) {
-    if (state != NetWorkState.NONE) {
+    if (state == NetWorkState.NONE) {
+      findViewById(R.id.tv_net_error).setVisibility(View.VISIBLE);
+    } else {
       loadData();
+      findViewById(R.id.tv_net_error).setVisibility(View.GONE);
     }
   }
 
@@ -341,8 +363,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       } else if ("我的预约".equals(o)) {
         MyOrderActivity.start(getContext());
       } else if ("加项目".equals(o)) {
-        if (first == null) {
-          toast("未发现上点的项目，暂不可加项目");
+        if (first == null || first.getShowStatus() != 2) {
+          toast("未发现已上钟的项目，暂不可加项目");
           return;
         }
         AddProjectWindowActivity.start(getActivity(), first.getIndexnumber(), first.getAccount());
@@ -353,17 +375,21 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
             BaseBean bean = new Gson().fromJson(json, BaseBean.class);
             if (bean != null && bean.isOk()) {
               AddProjectActivity.start(getActivity());
+            } else if (bean != null) {
+              toast(bean.getRespMsg());
+            } else {
+              toast(json);
             }
           }
 
           @Override
           public void onEmptyResponse() {
-
+            toast("网络数据异常，请稍后重试");
           }
         }, getContext());
       } else if ("包厢点单".equals(o)) {
-        if (first == null) {
-          toast("未发现上点的项目，暂不可加项目");
+        if (first == null || first.getShowStatus() != 2) {
+          toast("未发现已上钟的项目，暂不可点单");
           return;
         }
         RoomProjectActivity.start(getActivity(), first.getAccount(), first.getFacilityno());
@@ -403,13 +429,14 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     } else if (v.getId() == R.id.btn_sign) {//考勤打卡
       toSign();
     } else if (v.getId() == R.id.btn_add) {//加钟
-      if (first == null) {
-        toast("未发现上点的项目，暂不可加加钟");
+      if (first == null || first.getShowStatus() != 2) {
+        toast("未发现已上钟的项目，暂不可加钟");
         return;
       }
       showZhongDialog();
     } else if (v.getId() == R.id.tv_center && v.getTag() instanceof Integer) {
       int tag = (int) v.getTag();// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
+      LOG.e("HomeFragment", "onClick.433:" + tag);
       sing(tag, first);
     } else if (v.getId() == R.id.btn_refuse) {//刷新
       isRefuse = true;
@@ -539,16 +566,25 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   public void onSecond() {
     LOG.e("HomeFragment", "onSecond.467:");
     if (!MainActivity.isShowToUser || getContext() == null) {
+      LOG.e("HomeFragment", "onSecond.563:");
       return;
     }
     if (System.currentTimeMillis() - lastRefuseTime < 900) {
+      LOG.e("HomeFragment", "onSecond.567:");
       return;
     }
     lastRefuseTime = System.currentTimeMillis();
-    if (!openRunning) return;
+    if (!openRunning) {
+      LOG.e("HomeFragment", "onSecond.572:");
+      return;
+    }
     TextView textView = findViewById(R.id.tv_center);
-    if (AppInfo.getWaitType(getContext()) == 0) return;
+    if (AppInfo.getWaitType(getContext()) == 0) {
+      LOG.e("HomeFragment", "onSecond.577:");
+      return;
+    }
     int tag = AppInfo.getWaitType(getContext());
+    LOG.e("HomeFragment", "onSecond.573:" + tag);
     if (tag == 0) {
       openRunning = false;
       resetTimePan();

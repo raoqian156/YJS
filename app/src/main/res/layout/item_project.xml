@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="#000"
     android:orientation="vertical">
 
     <View style="@style/HorizontalLine" />
@@ -33,7 +35,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                tools:textColor="#fff"
                 android:paddingTop="2dp"
+                android:text="111111111111111111111"
                 android:paddingBottom="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -42,6 +46,7 @@
 
             <TextView
                 android:id="@+id/btn_dot"
+                android:layout_marginRight="@dimen/padding_10dp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="right"
@@ -51,7 +56,6 @@
                 android:textColor="@color/text_white"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@id/tv_2"
-                app:layout_constraintLeft_toRightOf="@id/tv_2"
                 app:layout_constraintRight_toRightOf="@id/tv_2"
                 app:layout_constraintTop_toTopOf="@id/tv_2" />
         </androidx.constraintlayout.widget.ConstraintLayout>

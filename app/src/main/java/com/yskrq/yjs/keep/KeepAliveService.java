@@ -204,7 +204,7 @@ public class KeepAliveService extends Service {
 
       @Override
       public void onEmptyResponse() {
-
+        notifyUser(context);
       }
 
     });
@@ -229,6 +229,7 @@ public class KeepAliveService extends Service {
         AppInfo.setWait(context, "");
       }
     } else {
+      LOG.e("KeepAliveService", "setWaitType.232:");
       AppInfo.setWaitType(context, 0);
       AppInfo.setWait(context, "");
       AppInfo.saveRunningTargetTime(context, 0);

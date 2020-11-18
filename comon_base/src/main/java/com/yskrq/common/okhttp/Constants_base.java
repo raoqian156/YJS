@@ -16,5 +16,6 @@ public class Constants_base {
         public static final String getTechNo = "TPC_AddItem/getTechNo";
 
         public static final String GET_SALE_DATE = "CA_Restaurant/SelectHotelDate";
+        public static final String GET_TEC_COLOR_STATUS = "RM_Others/ShowBrandStatusColor";
     }
 }
