@@ -1,4 +1,4 @@
-package com.yskrq.test;
+package com.yskrq.common.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,12 +8,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-
-import com.yskrq.common.util.MD5Util;
-import com.yskrq.common.util.SPUtil;
-
-import java.security.MessageDigest;
-import java.util.Locale;
 
 public class UUID {
 
@@ -175,42 +169,5 @@ public class UUID {
       ex.printStackTrace();
       return "";
     }
-  }
-
-
-  /**
-   * 取SHA1
-   *
-   * @param data 数据
-   *
-   * @return 对应的hash值
-   */
-  private static byte[] getHashByString(String data) {
-    try {
-      MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
-      messageDigest.reset();
-      messageDigest.update(data.getBytes("UTF-8"));
-      return messageDigest.digest();
-    } catch (Exception e) {
-      return "".getBytes();
-    }
-  }
-
-  /**
-   * 转16进制字符串
-   *
-   * @param data 数据
-   *
-   * @return 16进制字符串
-   */
-  private static String bytesToHex(byte[] data) {
-    StringBuilder sb = new StringBuilder();
-    String stmp;
-    for (int n = 0; n < data.length; n++) {
-      stmp = (Integer.toHexString(data[n] & 0xFF));
-      if (stmp.length() == 1) sb.append("0");
-      sb.append(stmp);
-    }
-    return sb.toString().toUpperCase(Locale.CHINA);
   }
 }

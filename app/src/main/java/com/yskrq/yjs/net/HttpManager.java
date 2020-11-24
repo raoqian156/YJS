@@ -137,7 +137,8 @@ public class HttpManager {
         param.put("computername", saveName);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      param.put("computermac", "error.get");
+      param.put("computername", "error.get");
     }
     param.put("shopsid", AppInfo.getShopsid(context));
     param.put("opid", AppInfo.getUserid(context));
