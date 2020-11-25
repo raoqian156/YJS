@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.smarx.notchlib.NotchScreenManager;
 import com.yskrq.common.ui.LoadingDialog;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.BaseView;
 import com.yskrq.net_library.RequestType;
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
   @Override
   public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
     dismissLoading();
-    toast(data.getRespMsg());
+    if (data != null) toast(data.getRespMsg());
   }
 
   @Override
@@ -123,12 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
   }
 
   protected final void toast(final String toast) {
-    main.post(new Runnable() {
-      @Override
-      public void run() {
-        Toast.makeText(BaseActivity.this, toast, Toast.LENGTH_LONG).show();
-      }
-    });
+    ToastUtil.show(toast);
   }
 
   protected final boolean is(Class<?> clazz) {

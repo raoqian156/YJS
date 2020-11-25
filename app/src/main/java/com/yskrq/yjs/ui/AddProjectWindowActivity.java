@@ -24,7 +24,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.getIscalctime;
 public class AddProjectWindowActivity extends BaseActivity implements View.OnClickListener {
 
 
-  public static void start(Activity activity, String indexnumber, String account) {
+  public static void start(final Activity activity, final String indexnumber, final String account) {
     Intent intent = new Intent(activity, AddProjectWindowActivity.class);
     intent.putExtra("indexNum", indexnumber);
     intent.putExtra("account", account);

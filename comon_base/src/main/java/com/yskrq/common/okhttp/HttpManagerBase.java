@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
+import com.yskrq.common.BASE;
 import com.yskrq.common.R;
 import com.yskrq.common.bean.LoginBean;
 import com.yskrq.common.bean.LoginBean2;
@@ -14,12 +15,15 @@ import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.MD5Util;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.UUID;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.BaseView;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
+import com.yskrq.net_library.url_conn.HttpSender;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_TEC_COLOR_STATUS;
@@ -220,5 +224,27 @@ public class HttpManagerBase {
     param.put("APPToken", login.getApptoken());
     param.put("UserId", login.getUserid());
     HttpProxy.inner(listener, view, SELECT_FOOT_Liu, param);
+  }
+
+  public static void senError(String tag, String msg) {
+    LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
+    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
+    final HashMap<String, String> map = new HashMap<>();
+    String techNum = "nullContext";
+    try {
+      techNum = UUID.getDeviceId(BASE.getCxt());
+    } catch (Exception e) {
+
+    }
+    map.put("sremark", msg);
+    map.put("computername", "");
+    if (tag == null) {
+      map.put("hoteldate", "BASE_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
+          .format(System.currentTimeMillis()));
+    } else {
+      map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
+          .format(System.currentTimeMillis()));
+    }
+    HttpSender.post(url, map, null);
   }
 }

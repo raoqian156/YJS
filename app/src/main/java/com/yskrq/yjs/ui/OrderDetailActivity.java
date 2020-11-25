@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
@@ -33,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static com.yskrq.yjs.net.Constants.TransCode.DelItem;
-import static com.yskrq.yjs.net.Constants.TransCode.checkrights;
 import static com.yskrq.yjs.net.Constants.TransCode.getPaidMoney;
 import static com.yskrq.yjs.net.Constants.TransCode.selectddan;
 
@@ -195,10 +195,6 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
       setDanInfo(BaseAdapter.deepCopy(bean.getValue()));
     } else if (type.is(getPaidMoney)) {
       refusePayed((MoneyListBean) data);
-    } else if (type.is(checkrights)) {
-      if (deleteOrder != null) HttpManager
-          .DelItem(OrderDetailActivity.this, deleteOrder.getAccount(), deleteOrder
-              .getIndexNumber() + "", deleteOrder.getSeqNum() + "", deleteOrder.getTechnician());
     } else if (type.is(DelItem)) {
       toast(data.getRespMsg());
       finish();
@@ -207,7 +203,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
 
   @Override
   public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
-    if (type.is(selectddan) && "10".equals(data.getRespCode())) {
+    if (type.is(selectddan) && data != null && "10".equals(data.getRespCode())) {
       return;
     }
     super.onResponseError(type, data);
@@ -218,7 +214,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
     findViewById(R.id.rv_payed)
         .setVisibility(findViewById(R.id.tv_pay_ed).isSelected() ? View.VISIBLE : View.GONE);
     MoneyListBean bean = data;
-
+    if (bean == null) return;
     if (bean.getValues() != null && bean.getValues().size() > 0) {
       try {
         for (MoneyListBean.ValueBean item : bean.getValues()) {
@@ -226,6 +222,8 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
         }
       } catch (Exception e) {
       }
+    } else if (bean.getValues() == null) {
+      return;
     }
     setString2View(R.id.tv_pay_ed, "￥" + allPayed);
     LOG.e("OrderDetailActivity", "onResponseSucceed.161:" + bean.getValues().size());
@@ -281,26 +279,34 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
   @Override
   public void onItemClick(BaseViewHolder holder, Object o, View view, int position) {
     OrderListBean.ValueBean bean = (OrderListBean.ValueBean) o;
-    if (!"5".equals(bean.getStatus())) PopUtil.showTuiProject(this, view, bean, this);
+    boolean isTech = true;
+    if (TextUtils.isEmpty(bean.getGroupId())) {
+      isTech = false;
+    }
+    if (!"5".equals(bean.getStatus())) PopUtil.showTuiProject(this, view, bean, this, isTech);
   }
 
   @Override
   public void onPopClick(int position, Object data, View clickFrom) {
     final OrderListBean.ValueBean bean = (OrderListBean.ValueBean) data;
     if (position == 0) {//修改项目
-      ModifyInOrderWindowActivity.start(this, bean);
+      if (TextUtils.isEmpty(bean.getGroupId())) {
+        HttpManager
+            .DelCommodity(this, bean.getAccount(), bean.getItemCount(), bean.getSeqNum() + "");
+      } else {
+        ModifyInOrderWindowActivity.start(this, bean);
+      }
     } else if (position == 2) {
       if ("9000".equals(bean.getGroupId()) || "9001".equals(bean.getGroupId()) || "9002"
           .equals(bean.getGroupId())) {
-        DialogHelper.showRemind(this, "确定推掉该技师吗?", new DialogHelper.DialogConfirmListener() {
+        DialogHelper.showRemind(this, "确定退掉该技师吗?", new DialogHelper.DialogConfirmListener() {
           @Override
           public void onSure() {
-
+            HttpManager.CancelTec(OrderDetailActivity.this, bean.getAccount());
           }
 
           @Override
           public void onCancel() {
-            HttpManager.CancelTec(OrderDetailActivity.this, bean.getAccount());
           }
         });
       }
@@ -309,18 +315,16 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
         DialogHelper.showRemind(this, "确定推掉该项目吗?", new DialogHelper.DialogConfirmListener() {
           @Override
           public void onSure() {
-            deleteOrder = bean;
-            HttpManager.checkrights(OrderDetailActivity.this);
+            HttpManager.DelItem(OrderDetailActivity.this, bean.getAccount(), bean
+                .getIndexNumber() + "", bean.getSeqNum() + "", bean.getTechnician());
           }
 
           @Override
           public void onCancel() {
-            deleteOrder = null;
           }
         });
       }
     }
   }
 
-  OrderListBean.ValueBean deleteOrder = null;
 }

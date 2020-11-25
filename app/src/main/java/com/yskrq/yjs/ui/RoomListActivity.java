@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.rq.rvlibrary.BaseAdapter;
@@ -206,7 +205,7 @@ public class RoomListActivity extends BaseActivity implements View.OnClickListen
               String account = BaseBean.getStrInJson("Account", json);
               OrderDetailActivity.startCanAdd(RoomListActivity.this, account, bean.getFacilityNo());
             } else {
-              Toast.makeText(RoomListActivity.this, "当前房间无数据", Toast.LENGTH_SHORT).show();
+              toast("当前房间无数据");
             }
           }
 

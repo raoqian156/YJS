@@ -9,9 +9,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.widget.Toast;
 
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.ToastUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +110,7 @@ public class DownloadUtils {
           break;
         //下载失败
         case DownloadManager.STATUS_FAILED:
-          Toast.makeText(mContext, "下载失败", Toast.LENGTH_SHORT).show();
+          ToastUtil.show("下载失败");
           cursor.close();
           mContext.unregisterReceiver(receiver);
           break;

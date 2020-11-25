@@ -3,7 +3,6 @@ package com.yskrq.yjs.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.rq.rvlibrary.BaseAdapter;
@@ -13,6 +12,7 @@ import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.RequestType;
@@ -38,7 +38,7 @@ public class SelectNumWindowActivity extends BaseActivity implements View.OnClic
           intent.putExtra("facilityNo", facilityNo);
           activity.startActivityForResult(intent, 0x01101);
         } else {
-          Toast.makeText(activity, "当前房间已开台", Toast.LENGTH_SHORT).show();
+          ToastUtil.show("当前房间已开台");
         }
       }
 

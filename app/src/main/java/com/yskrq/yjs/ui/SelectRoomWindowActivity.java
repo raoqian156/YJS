@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.rq.rvlibrary.BaseAdapter;
@@ -17,6 +16,7 @@ import com.rq.rvlibrary.RecyclerUtil;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.RoomListBean;
@@ -54,14 +54,16 @@ public class SelectRoomWindowActivity extends BaseActivity implements View.OnCli
           Intent intent = new Intent(activity, SelectRoomWindowActivity.class);
           intent.putExtra("data", bean.getFixingView_value());
           activity.startActivity(intent);
+        } else if (bean != null) {
+          ToastUtil.show(bean.getRespMsg());
         } else {
-          Toast.makeText(activity, "数据查询异常,请稍后重试", Toast.LENGTH_LONG).show();
+          ToastUtil.show("数据查询异常,请稍后重试");
         }
       }
 
       @Override
       public void onEmptyResponse() {
-        Toast.makeText(activity, "数据查询异常,请稍后重试", Toast.LENGTH_LONG).show();
+        dialog.dismiss();
       }
     });
   }
@@ -139,6 +141,7 @@ public class SelectRoomWindowActivity extends BaseActivity implements View.OnCli
     if (v.getId() == R.id.btn_cancel) {
       finish();
     } else if (v.getId() == R.id.btn_sure) {
+      if (mAdapter.getDataSize() <= 0) return;
       int select = (int) mAdapter.getNullablePass(0);
       RoomListBean.FixingViewValueBean item = (RoomListBean.FixingViewValueBean) mAdapter
           .getDataItem(select);

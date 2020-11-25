@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.rq.rvlibrary.BaseAdapter;
@@ -12,6 +11,7 @@ import com.rq.rvlibrary.BaseViewHolder;
 import com.rq.rvlibrary.EasyViewHolder;
 import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
 import com.yskrq.common.BaseFragment;
@@ -48,7 +48,6 @@ import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import ecomm.lib_comm.permission.PermissionUtil;
 
 import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_SALE_DATE;
@@ -81,6 +80,11 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    try {
+      CrashReport.setUserId(AppInfo.getUserid(HomeFragment.this.getContext()));
+    } catch (Exception e) {
+
+    }
     KeepAliveService.addRefuseListener(this);
     RunningHelper.getInstance().register(this);
     NetWorkMonitorManager.getInstance().register(this);
@@ -122,8 +126,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       }
     };
     newTaskAdapter = new BaseAdapter(getContext(), R.layout.item_main_new_task, HomeZuItemViewHolder.class);
-    new RecyclerUtil(clickAdapter).row(4).set2View((RecyclerView) findViewById(R.id.recycler));
-    new RecyclerUtil(newTaskAdapter).set2View((RecyclerView) findViewById(R.id.recycler_new_task));
+    setRecyclerView(R.id.recycler, new RecyclerUtil(clickAdapter).row(4));
+    setRecyclerView(R.id.recycler_new_task, newTaskAdapter);
     clickAdapter.addOnItemClickListener(this);
     newTaskAdapter.addOnItemClickListener(this);
     try {
@@ -140,7 +144,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
     }
 
-    setTextView2View("技师号:" + AppInfo.getTechNum(getContext()), R.id.tv_num);
+    setTextView2View(R.id.tv_num, "技师号:" + AppInfo.getTechNum(getContext()));
     List<String> btn = new ArrayList<>();
     btn.add("包厢点单");//晚一点
     btn.add("个人业绩");
@@ -150,7 +154,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     //采耳子页面        //晚一点
     clickAdapter.setData(btn);
     if (canCaiEr) {
-      findViewById(R.id.ll_caier).setVisibility(View.VISIBLE);
+      setVisibility(R.id.ll_caier, View.VISIBLE);
       caierAdapter = new BaseAdapter(getContext(), R.layout.item_caier, EasyViewHolder.class) {
         @Override
         public void onBindEasyHolder(BaseViewHolder holder, int position, Object o) {
@@ -163,7 +167,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         }
       };
       caierAdapter.addOnItemClickListener(this, R.id.btn_commit);
-      new RecyclerUtil(caierAdapter).set2View((RecyclerView) findViewById(R.id.recycler_caier));
+      setRecyclerView(R.id.recycler_caier, caierAdapter);
     }
   }
 
@@ -230,11 +234,11 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         } else {
           Speaker.speakOut(getContext(), "有新的呼叫服务");
         }
-        findViewById(R.id.line_caier).setVisibility(View.VISIBLE);
+        setVisibility(R.id.line_caier, View.VISIBLE);
         caierAdapter.setHeadHolder(0, null, EasyViewHolder.class, R.layout.item_caier_head, null);
         caierAdapter.setData(bean.getValue());
       } else {
-        findViewById(R.id.line_caier).setVisibility(View.GONE);
+        setVisibility(R.id.line_caier, View.GONE);
         caierAdapter.clearHeadView();
         caierAdapter.setData(null);
       }
@@ -251,7 +255,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (bean == null) return;
     Context context = getContext();
     if (bean.getValue() == null || bean.getValue().size() <= 0) {
-      findViewById(R.id.ll_new_task).setVisibility(View.GONE);
+      setVisibility(R.id.ll_new_task, View.GONE);
       openRunning = false;
       resetTimePan();
       first = null;
@@ -279,7 +283,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
 
     openRunning = true;
-    findViewById(R.id.ll_new_task).setVisibility(View.VISIBLE);
+    setVisibility(R.id.ll_new_task, View.VISIBLE);
     first = bean.getValue().get(0);
     int readTag = SpeakManager.isRead(getContext(), first);
 
@@ -310,10 +314,10 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   @NetWorkMonitor
   public void onNetChange(NetWorkState state) {
     if (state == NetWorkState.NONE) {
-      findViewById(R.id.tv_net_error).setVisibility(View.VISIBLE);
+      setVisibility(R.id.tv_net_error, View.VISIBLE);
     } else {
       loadData();
-      findViewById(R.id.tv_net_error).setVisibility(View.GONE);
+      setVisibility(R.id.tv_net_error, View.GONE);
     }
   }
 
@@ -332,7 +336,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       }
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
       simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-      findViewById(R.id.tv_center).setTag(tag);
+
+      setViewTag(R.id.tv_center, tag);
       LOG.e("HomeFragment", "needRunning.251:");
       openRunning = true;
     } catch (Exception e) {
@@ -340,11 +345,12 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
   }
 
+
   private void resetTimePan() {
-    ((TextView) findViewById(R.id.tv_center)).setText("---\n00:00:00");
-    PhoneUtil.openVoice(getContext());
-    findViewById(R.id.tv_center).setTag(0);
-    findViewById(R.id.tv_center).setBackgroundResource(R.drawable.circle_bg_blue);
+    setTextView2View(R.id.tv_center, "---\n00:00:00");
+    PhoneUtil.openVoice(HomeFragment.this.getContext());
+    setViewTag(R.id.tv_center, 0);
+    setViewBackResource(R.id.tv_center, R.drawable.circle_bg_blue);
   }
 
   @Override
@@ -393,9 +399,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
           return;
         }
         RoomProjectActivity.start(getActivity(), first.getAccount(), first.getFacilityno());
-      } else {
-
-        toast("点击了" + o);
       }
     } else if (o instanceof RelaxListBean.ValueBean) {
       final RelaxListBean.ValueBean itemFrom = (RelaxListBean.ValueBean) o;
@@ -536,14 +539,12 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (!MainActivity.isShowToUser) {
       return;
     }
-    if (!AppInfo.canSign(getContext(), latitude, longitude)) {
-      toast("请确认当前WIFI和地点能够进行打卡操作");
-      String wifiName = SPUtil.getString(getContext(), "Sign.wifi");
-      String lat = SPUtil.getString(getContext(), "Sign.lat");
-      String lon = SPUtil.getString(getContext(), "Sign.lon");
-      HttpManager
-          .senError(getContext(), "wifiName<" + wifiName + ">  lat<" + lat + ">  lon<" + lon + ">", null);
-      dismissLoading();
+    int signStatus = AppInfo.canSign(getContext(), latitude, longitude);
+    if (signStatus == 1) {
+      toast("请确认当前WIFI后进行打卡操作");
+      return;
+    } else if (signStatus == 2) {
+      toast("当前位置不在打卡范围内");
       return;
     }
     if ("上班".equals(btnStr)) {
@@ -578,7 +579,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       LOG.e("HomeFragment", "onSecond.572:");
       return;
     }
-    TextView textView = findViewById(R.id.tv_center);
     if (AppInfo.getWaitType(getContext()) == 0) {
       LOG.e("HomeFragment", "onSecond.577:");
       return;
@@ -589,20 +589,20 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       openRunning = false;
       resetTimePan();
     } else if (tag == 1) {
-      textView.setBackgroundResource(R.drawable.circle_bg_blue);
-      textView.setText("上钟\n" + "00:00:00");
+      setViewBackResource(R.id.tv_center, R.drawable.circle_bg_blue);
+      setTextView2View(R.id.tv_center, "上钟\n" + "00:00:00");
     } else if (tag == 2) {
       long timeLeft = AppInfo.getRunningLeftTime(getContext());
       SimpleDateFormat simpleDateFormat;
       simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
       if (timeLeft < 0) {
         timeLeft = -timeLeft;
-        textView.setBackgroundResource(R.drawable.circle_bg_red);
+        setViewBackResource(R.id.tv_center, R.drawable.circle_bg_red);
       } else {
-        textView.setBackgroundResource(R.drawable.circle_bg_green);
+        setViewBackResource(R.id.tv_center, R.drawable.circle_bg_green);
       }
       simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-      textView.setText(simpleDateFormat.format(timeLeft));
+      setTextView2View(R.id.tv_center, simpleDateFormat.format(timeLeft));
     } else {
       resetTimePan();
     }

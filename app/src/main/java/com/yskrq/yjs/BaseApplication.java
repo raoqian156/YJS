@@ -2,6 +2,7 @@ package com.yskrq.yjs;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.tencent.bugly.crashreport.CrashReport;
@@ -14,9 +15,12 @@ import androidx.annotation.Nullable;
 
 public class BaseApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
+  public static Context ctx;
+
   @Override
   public void onCreate() {
     super.onCreate();
+    BaseApplication.ctx = this;
     BASE.setMainClass(MainActivity.class, true);
     //    CrashHandler.getInstance().init(this);
     CrashReport.initCrashReport(getApplicationContext(), "0fb8de5348", false);
@@ -37,6 +41,7 @@ public class BaseApplication extends Application implements Application.Activity
 
   @Override
   public void onActivityResumed(@NonNull Activity activity) {
+    BASE.setContext(activity);
     ImageLoadUtil.setActivity(activity);
   }
 

@@ -24,9 +24,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
   @Override
   protected void initView() {
     initTitle("我的");
-    setTextView2View(AppUtils.getVersion(getContext()), R.id.tv_version);
+    setTextView2View( R.id.tv_version, AppUtils.getVersion(getContext()));
     if (!PhoneUtil.needPermission(getContext())) {
-      findViewById(R.id.btn_voice).setVisibility(View.GONE);
+      setVisibility(R.id.btn_voice,View.GONE);
     }
   }
 

@@ -24,6 +24,7 @@ public class BASE {
     }
     context.startActivity(intent);
   }
+
   public static String getUseFrom() {
     StackTraceElement[] stacks = new Exception().getStackTrace();
     if (stacks != null) {
@@ -36,5 +37,15 @@ public class BASE {
       }
     }
     return "";
+  }
+
+  private static Context context;
+
+  public static void setContext(Context context) {
+    BASE.context = context;
+  }
+
+  public static Context getCxt() {
+    return context;
   }
 }

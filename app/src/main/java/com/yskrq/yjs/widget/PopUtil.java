@@ -387,7 +387,7 @@ public class PopUtil {
 
   public static void showTuiProject(Activity context, final View view,
                                     final OrderListBean.ValueBean bean,
-                                    final OnPopClickListener listener) {
+                                    final OnPopClickListener listener, boolean isTech) {
     if (System.currentTimeMillis() - lastDisTime < 300) return;
     View contentView = LayoutInflater.from(context).inflate(R.layout.pop_tui_project, null);
 
@@ -396,6 +396,9 @@ public class PopUtil {
 
     final PopupWindow mPopupWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     mPopupWindow.setOutsideTouchable(true);
+    if (!isTech) {
+      ((TextView) contentView.findViewById(R.id.btn_0)).setText("退商品");
+    }
     //    );
     //    popWindow.setParent(click);
     //    popWindow.show();

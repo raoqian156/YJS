@@ -35,18 +35,22 @@ public class AppInfo {
   }
 
   public static String getGroupId(Context context) {
+    if (context == null) return "getGroupId";
     return SPUtil.getString(context, "groupid");
   }
 
   public static String getShopsid(Context context) {
+    if (context == null) return "getShopsid";
     return SPUtil.getString(context, "shopsid");
   }
 
   public static String getUserid(Context context) {
+    if (context == null) return "getUserid";
     return SPUtil.getString(context, "userid");
   }
 
   public static String getToken(Context context) {
+    if (context == null) return "getToken";
     return SPUtil.getString(context, "apptoken");
   }
 
@@ -54,15 +58,18 @@ public class AppInfo {
     if (loginBean != null) {
       return loginBean.getUsername();
     }
+    if (context == null) return "getName";
     return SPUtil.getString(context, "username");
   }
 
   public static String getProfitCenter(Context context) {
+    if (context == null) return "getProfitCenter";
     return SPUtil.getString(context, "profitCenter");
   }
 
-  public static String getWorkDate(Context c) {
-    return SPUtil.getString(c, "mWorkDate");
+  public static String getWorkDate(Context context) {
+    if (context == null) return "getWorkDate";
+    return SPUtil.getString(context, "mWorkDate");
   }
 
   public static void setWorkDate(Context context, String comment) {
@@ -84,10 +91,12 @@ public class AppInfo {
 
 
   public static String getPhoneName(Context context) {
+    if (context == null) return "getPhoneName";
     return SPUtil.getString(context, TAG_COMPUTER_NAME);
   }
 
   public static String getSaleDate(Context context) {
+    if (context == null) return "getSaleDate";
     return SPUtil.getString(context, TAG_SALE_DATE);
   }
 
@@ -105,6 +114,7 @@ public class AppInfo {
   }
 
   public static boolean isAutoLogin(Context context) {
+    if (context == null) return false;
     LOG.e("AppInfo", "setAutoLogin.86:" + (SPUtil.getInt(context, TAG_AUTO_LOGIN) == 1));
     return SPUtil.getInt(context, TAG_AUTO_LOGIN) == 1;
   }
@@ -114,6 +124,7 @@ public class AppInfo {
   }
 
   public static String getTechNum(Context context) {
+    if (context == null) return "getTechNum";
     return SPUtil.getString(context, TAG_SAVE_TECH);
   }
 
@@ -122,6 +133,7 @@ public class AppInfo {
   }
 
   public static String getTechType(Context context) {
+    if (context == null) return "getTechType";
     return SPUtil.getString(context, TAG_SAVE_TYPE);
   }
 
@@ -131,6 +143,7 @@ public class AppInfo {
 
 
   public static String getTechSex(Context context) {
+    if (context == null) return "getTechSex";
     return SPUtil.getString(context, TAG_SAVE_SEX);
   }
 
@@ -160,6 +173,7 @@ public class AppInfo {
   }
 
   public static String getWait(Context context) {
+    if (context == null) return "getWait";
     return SPUtil.init(context).getString("Wait.TIME", "");
   }
 
@@ -204,6 +218,7 @@ public class AppInfo {
   }
 
   public static String getWifiName(Context context) {
+    if (context == null) return "getWifiName";
     WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
     Log.d("wifiInfo", wifiInfo.toString());
@@ -212,7 +227,15 @@ public class AppInfo {
     return wifiInfo.getSSID().replaceAll("\"", "");
   }
 
-  public static boolean canSign(Context context, double latitude, double longitude) {
+  /**
+   * @param context
+   * @param latitude
+   * @param longitude
+   *
+   * @return 1.wifi名错误   2.打卡范围错误
+   */
+  public static int canSign(Context context, double latitude, double longitude) {
+    if (context == null) return -1;
     String wifiName = SPUtil.getString(context, "Sign.wifi");
     boolean isWifiOk = false;
     if (TextUtils.isEmpty(wifiName)) {
@@ -230,6 +253,9 @@ public class AppInfo {
         }
       }
     }
+    if (!isWifiOk) {
+      return 1;
+    }
     String lat = SPUtil.getString(context, "Sign.lat");
     String lon = SPUtil.getString(context, "Sign.lon");
     boolean locationOK = false;
@@ -238,10 +264,13 @@ public class AppInfo {
     } else {
       locationOK = isLocationOk(lat, lon, latitude, longitude);
     }
+    if (!locationOK) {
+      return 2;
+    }
     LOG.e("AppInfo", "canSign.wifiName:" + wifiName + ",lat:" + lat + ",lon:" + lon);
     LOG.e("AppInfo", "canSign.get.wifiName:" + getWifiName(context) + ",lat:" + latitude + ",lon:" + longitude);
     LOG.e("AppInfo", "canSign.isWifiOk:" + isWifiOk + ",locationOK:" + locationOK);
-    return isWifiOk && locationOK;
+    return 0;
   }
 
   private static boolean isLocationOk(String latSave, String lonSave, double latitude,

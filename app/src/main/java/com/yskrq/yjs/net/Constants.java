@@ -77,7 +77,7 @@ public class Constants {
     public static final String GetRelaxCdTechFac = "TPC_AddItem/GetRelaxCdTechFac";
     //    下单（也有权限）
     public static final String AddBillitem = "CA_FoodShop/AddBillitem";
-    //    下单（也有权限）
+    //    采耳下单（也有权限）
     public static final String AddBillitemBigRelax = "CA_FoodShop/AddBillitemBigRelax";
     //    订单详情
     //    获取已点的商品项目列表

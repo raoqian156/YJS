@@ -5,12 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.rq.rvlibrary.BaseAdapter;
 import com.rq.rvlibrary.RecyclerUtil;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.ui.LoadingDialog;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.BaseView;
 import com.yskrq.net_library.RequestType;
@@ -40,7 +41,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
 
   @Override
   public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
-    toast(data.getRespMsg());
+    if (data != null) toast(data.getRespMsg());
   }
 
   @Override
@@ -65,7 +66,11 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
     }
   }
 
-  protected <T extends View> T findViewById(int vId) {
+  private <T extends View> T findViewById(int vId) {
+    if (view == null) {
+      onViewEmpty();
+      return null;
+    }
     return view.findViewById(vId);
   }
 
@@ -78,7 +83,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   protected void toast(String con) {
-    Toast.makeText(getActivity(), con, Toast.LENGTH_LONG).show();
+    ToastUtil.show(con);
   }
 
   @Override
@@ -125,7 +130,41 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
 
   protected abstract void initView();
 
-  protected void setTextView2View(String con, int vId) {
+  protected void setViewTag(int vId, Object tag) {
+    View view = findViewById(vId);
+    if (view == null) {
+      return;
+    }
+    view.setTag(tag);
+  }
+
+  private void onViewEmpty() {
+    toast("程序异常，请重新登陆");
+    StringBuffer sb = new StringBuffer();
+    sb.append("\nwhere:BaseFragment -> onViewEmpty");
+    sb.append("\nwhere:getContext()==null -> " + (getContext() == null));
+    sb.append("\nAppInfo.getTechNum:" + AppInfo.getTechNum(BASE.getCxt()));
+    sb.append("\nAppInfo.getWorkDate:" + AppInfo.getWorkDate(BASE.getCxt()));
+    HttpManagerBase.senError("VIEW_ERROR", sb.toString());
+  }
+
+  protected void setViewBackResource(int vId, int res) {
+    View view = findViewById(vId);
+    if (view == null) {
+      return;
+    }
+    view.setBackgroundResource(res);
+  }
+
+  protected void setVisibility(int vid, int visible) {
+    View view = findViewById(vid);
+    if (view == null) {
+      return;
+    }
+    view.setVisibility(visible);
+  }
+
+  protected void setTextView2View(int vId, String con) {
     if (findViewById(vId) instanceof TextView) {
       ((TextView) findViewById(vId)).setText(con);
     }
@@ -139,7 +178,6 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
     util.context(getActivity());
     RecyclerView recyclerView = view.findViewById(vId);
     if (recyclerView == null) {
-      LOG.e(this.getClass().getSimpleName(), "setRecyclerView.error:NULL");
       return;
     }
     if (recyclerView.getLayoutManager() == null && util.context(getActivity()).build() != null) {

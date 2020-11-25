@@ -13,6 +13,7 @@ import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.MD5Util;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.util.UUID;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.BaseView;
@@ -20,6 +21,7 @@ import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.net_library.url_conn.HttpSender;
+import com.yskrq.yjs.BaseApplication;
 import com.yskrq.yjs.bean.CaiErListBean;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.DianTypeBean;
@@ -61,6 +63,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.CancelTec;
 import static com.yskrq.yjs.net.Constants.TransCode.CardSaled;
 import static com.yskrq.yjs.net.Constants.TransCode.ChangeRoom;
 import static com.yskrq.yjs.net.Constants.TransCode.CheckTechDestineStatus;
+import static com.yskrq.yjs.net.Constants.TransCode.DelCommodity;
 import static com.yskrq.yjs.net.Constants.TransCode.DelItem;
 import static com.yskrq.yjs.net.Constants.TransCode.GetData;
 import static com.yskrq.yjs.net.Constants.TransCode.GetFixingOnUse;
@@ -228,10 +231,22 @@ public class HttpManager {
 
   public static void senError(Context context, String msg, String tag, HttpInnerListener listener) {
     LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
-    final String url = "https://hotel17.yskvip.com:9092/RM_Others/wirtelog";
-    final HashMap<String, String> map = getParam(context);
+    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
+    final HashMap<String, String> map = new HashMap<>();
+    String techNum = "nullContext";
+
+    if (context != null) {
+      map.putAll(getParam(context));
+      techNum = AppInfo.getTechNum(context);
+    } else {
+      try {
+        techNum = UUID.getDeviceId(BaseApplication.ctx);
+      } catch (Exception e) {
+
+      }
+    }
+    map.put("sremark", msg);
     map.put("computername", "");
-    String techNum = AppInfo.getTechNum(context);
     if (tag == null) {
       map.put("hoteldate", "NEW_TEST_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
           .format(System.currentTimeMillis()));
@@ -239,13 +254,12 @@ public class HttpManager {
       map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
           .format(System.currentTimeMillis()));
     }
-    map.put("sremark", msg);
     HttpSender.post(url, map, listener);
   }
 
   public static void senDetachError(Context context, String msg, HttpInnerListener listener) {
     LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
-    final String url = "https://hotel17.yskvip.com:9092/RM_Others/wirtelog";
+    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
     final HashMap<String, String> map = getParam(context);
     map.put("computername", "");
     map.put("hoteldate", "Detach_" + new SimpleDateFormat("yyyyMMdd")
@@ -318,21 +332,43 @@ public class HttpManager {
     HttpProxy.inner(innerListener, context, GetRelaxServerList, getParam(context));
   }
 
-  public static void CancelTec(BaseView view, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("account", account);
-    param.put("tecid", AppInfo.getTechNum(view.getContext()));
-    HttpProxy.bean(view, CancelTec, param, BaseBean.class);
+  public static void CancelTec(final BaseView view, final String account) {
+    checkPermission("RelaxBrandDel", "退技师", view.getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam(view.getContext());
+        param.put("account", account);
+        param.put("tecid", AppInfo.getTechNum(view.getContext()));
+        HttpProxy.bean(view, CancelTec, param, BaseBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(CancelTec), new BaseBean(CancelTec, rea));
+      }
+    });
   }
 
-  public static void DelItem(BaseView view, String account, String indexNum, String seqnum,
-                             String tecid) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("account", account);
-    param.put("tecid", tecid);
-    param.put("indexNum", indexNum);
-    param.put("seqnum", seqnum);
-    HttpProxy.bean(view, DelItem, param, BaseBean.class);
+  public static void DelItem(final BaseView view, final String account, final String indexNum,
+                             final String seqnum, final String tecid) {
+
+    checkPermission("POSBillItemNoDecreaseBrandNo", "退项目", view
+        .getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam(view.getContext());
+        param.put("account", account);
+        param.put("tecid", tecid);
+        param.put("indexNum", indexNum);
+        param.put("seqnum", seqnum);
+        HttpProxy.bean(view, DelItem, param, BaseBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(DelItem), new BaseBean(DelItem, rea));
+      }
+    });
   }
 
   public static void UpdateStatueYes(BaseView view, String account, String facilityno,
@@ -345,10 +381,40 @@ public class HttpManager {
     HttpProxy.bean(view, UpdateStatueYes, param, BaseBean.class);
   }
 
-  public static void SelectDataByStatus(Context view, HttpInnerListener listener) {
-    HashMap<String, String> param = getParam(view);
-    param.put("Type", "空台");
-    HttpProxy.inner(listener, view, SelectDataByStatus, param);
+  public static void DelCommodity(final BaseView view, final String account, final String icount,
+                                  final String seqnum) {
+    checkPermission("POSBillItemNoDecrease", "退商品", view.getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam(view.getContext());
+        param.put("account", account);
+        param.put("icount", icount);
+        param.put("seqnum", seqnum);
+        HttpProxy.bean(view, DelCommodity, param, BaseBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(DelCommodity), new BaseBean(DelCommodity, rea));
+
+      }
+    });
+  }
+
+  public static void SelectDataByStatus(final Context view, final HttpInnerListener listener) {
+    checkPermission("POSBillFacilityNoChange", "设施转台", view, new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam(view);
+        param.put("Type", "空台");
+        HttpProxy.inner(listener, view, SelectDataByStatus, param);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        listener.onEmptyResponse();
+      }
+    });
   }
   //
   //  public static void getCommonParam(final BaseView view) {
@@ -370,7 +436,7 @@ public class HttpManager {
     HttpProxy.bean(view, ChangeRoom, param, BaseBean.class);
   }
 
-  public static void getIscalctime(BaseView view) {
+  public static void getIscalctime(final BaseView view) {
     HashMap<String, String> param = getParam(view.getContext());
     param.put("sbrandno", AppInfo.getTechNum(view.getContext()));
     HttpProxy.bean(view, getIscalctime, param, TechProjectBean.class);
@@ -825,11 +891,21 @@ public class HttpManager {
     HttpProxy.bean(view, SelectType, param, DianTypeBean.class);
   }
 
-  public static void getWorkingTech(BaseView view, String key, String itemno) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("key", key);
-    param.put("itemno", itemno);
-    HttpProxy.bean(view, getWorkingTech, param, TechListBean.class);
+  public static void getWorkingTech(final BaseView view, final String key, final String itemno) {
+    checkPermission("RelaxOrderClock", "点钟", view.getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam(view.getContext());
+        param.put("key", key);
+        param.put("itemno", itemno);
+        HttpProxy.bean(view, getWorkingTech, param, TechListBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(getWorkingTech), new BaseBean(getWorkingTech, rea));
+      }
+    });
   }
 
   public static void CheckTechDestineStatus(BaseView view, String brandno) {
@@ -863,88 +939,61 @@ public class HttpManager {
     HttpProxy.bean(view, OpenTheStage, param, BaseBean.class);
   }
 
-  public static void checkrights(BaseView view) {
-    //    1、关单权限：functionname=POSBillClose 、 description=单据关单
-    //    2、清洁房、脏房设置权限：functionname=POSFacilityNoSetSale 、 description=设施设置为可用
-    //    3、录商品权限：functionname=POSBillItemNoAdd 、 description=输商品
-    //    4、单据结帐权限：functionname=POSBillFolioCredit 、 description=单据结帐
-    //    5、新建预约(修改)权限：functionname=RelaxNewDestine 、 description=新建预约
-    //    6、取消预约权限：functionname=RelaxCancelDestine 、 description=取消预约
-    //    7、退商品(项目)权限：functionname=POSBillItemNoDecrease 、 description=退商品
-    //    8、开单(房)权限：functionname=POSBillNew 、 description=开新单
-    //    9、换房(台)权限：functionname=POSBillFacilityNoChange 、 description=设施转台
-    //    10、关单权限:functionname=POSBillClose、description=单据关单
-    //    11、收银应收挂账权限:functionname=POSCreditConfer、description=收银应收挂账
-    //    12、项目修改权限:functionname=POSBillItemUpBrandNo、description=项目修改
-    //    13、设施上钟编辑权限:functionname=RelaxClockEdit、description=设施上钟编辑
-    //    14、修改技师上钟时间权限:functionname=RelaxClockEditTime、description=修改技师上钟时间
-    //    15、加单权限:functionname=POSBillItemNoAdd、description=加菜
-    //    16、退项目 functionname=POSBillItemNoDecreaseBrandNo、description=退项目
-
-
-    //    moduleid: '2002', functionname: 'POSBillNew', description: '开新单', accesstype: '0'
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("moduleid", "2002");
-    param.put("functionname", "POSBillItemNoDecreaseBrandNo");
-    param.put("description", "退项目");
-    param.put("accesstype", "0");
-    HttpProxy.bean(view, checkrights, param, YuYueBean.class);
-  }
-
-  private interface PermissionListener {
-    void permissionOK();
-
-    void permissionDefine(String reson);
-  }
-
-  public static void checkrights(Context context, final PermissionListener listener,
-                                 String... paramString) {
-    //    1、关单权限：functionname=POSBillClose 、 description=单据关单
-    //    2、清洁房、脏房设置权限：functionname=POSFacilityNoSetSale 、 description=设施设置为可用
-    //    3、录商品权限：functionname=POSBillItemNoAdd 、 description=输商品
-    //    4、单据结帐权限：functionname=POSBillFolioCredit 、 description=单据结帐
-    //    5、新建预约(修改)权限：functionname=RelaxNewDestine 、 description=新建预约
-    //    6、取消预约权限：functionname=RelaxCancelDestine 、 description=取消预约
-    //    7、退商品(项目)权限：functionname=POSBillItemNoDecrease 、 description=退商品
-    //    8、开单(房)权限：functionname=POSBillNew 、 description=开新单
-    //    9、换房(台)权限：functionname=POSBillFacilityNoChange 、 description=设施转台
-    //    10、关单权限:functionname=POSBillClose、description=单据关单
-    //    11、收银应收挂账权限:functionname=POSCreditConfer、description=收银应收挂账
-    //    12、项目修改权限:functionname=POSBillItemUpBrandNo、description=项目修改
-    //    13、设施上钟编辑权限:functionname=RelaxClockEdit、description=设施上钟编辑
-    //    14、修改技师上钟时间权限:functionname=RelaxClockEditTime、description=修改技师上钟时间
-    //    15、加单权限:functionname=POSBillItemNoAdd、description=加菜
-    //    16、退项目 functionname=POSBillItemNoDecreaseBrandNo、description=退项目
-
-
-    //    moduleid: '2002', functionname: 'POSBillNew', description: '开新单', accesstype: '0'
+  //    1、关单权限：functionname=POSBillClose 、 description=单据关单
+  //    2、清洁房、脏房设置权限：functionname=POSFacilityNoSetSale 、 description=设施设置为可用
+  //    3、录商品权限：functionname=POSBillItemNoAdd 、 description=输商品
+  //    4、单据结帐权限：functionname=POSBillFolioCredit 、 description=单据结帐
+  //    5、新建预约(修改)权限：functionname=RelaxNewDestine 、 description=新建预约
+  //    6、取消预约权限：functionname=RelaxCancelDestine 、 description=取消预约
+  //    7、退商品(项目)权限：functionname=POSBillItemNoDecrease 、 description=退商品
+  //    8、开单(房)权限：functionname=POSBillNew 、 description=开新单
+  //    9、换房(台)权限：functionname=POSBillFacilityNoChange 、 description=设施转台
+  //    10、关单权限:functionname=POSBillClose、description=单据关单
+  //    11、收银应收挂账权限:functionname=POSCreditConfer、description=收银应收挂账
+  //    12、项目修改权限:functionname=POSBillItemUpBrandNo、description=项目修改
+  //    13、设施上钟编辑权限:functionname=RelaxClockEdit、description=设施上钟编辑
+  //    14、修改技师上钟时间权限:functionname=RelaxClockEditTime、description=修改技师上钟时间
+  //    15、加单权限:functionname=POSBillItemNoAdd、description=加菜
+  //    16、退项目 functionname=POSBillItemNoDecreaseBrandNo、description=退项目
+  //    moduleid: '2002', functionname: 'POSBillNew', description: '开新单', accesstype: '0'
+  public static void checkPermission(String functionName, String description, Context context,
+                                     final OnPermissionCheck check) {
     HashMap<String, String> param = getParam(context);
     param.put("moduleid", "2002");
+    param.put("functionname", functionName);
+    param.put("description", description);
     param.put("accesstype", "0");
-    try {
-      param.put("functionname", paramString[0]);
-      param.put("description", paramString[1]);
-    } catch (Exception e) {
-      listener.permissionDefine("未进行权限检查");
-    }
     HttpProxy.inner(new HttpInnerListener() {
       @Override
       public void onString(String json) {
         BaseBean bean = new Gson().fromJson(json, BaseBean.class);
-        if (bean != null && bean.isOk()) {
-          listener.permissionOK();
-        } else if (bean != null) {
-          listener.permissionDefine(bean.getRespMsg());
-        } else {
-          listener.permissionDefine("请求异常");
+        try {
+          int level = Integer.parseInt(bean.getRespMsg());
+          if (level >= 2) {
+            if (check != null) check.onPermissionOk();
+          } else {
+            if (check != null) check.onPermissionError("当前用户无操作权限");
+            ToastUtil.show("当前用户无操作权限");
+          }
+        } catch (Exception e) {
+          if (check != null) check.onPermissionError("操作权限查询失败");
+          ToastUtil.show("操作权限查询失败");
         }
       }
 
       @Override
       public void onEmptyResponse() {
-        listener.permissionDefine("请求异常");
+        if (check != null) check.onPermissionError("数据获取异常");
+        ToastUtil.show("数据获取异常");
       }
     }, context, checkrights, param);
+  }
+
+  public interface OnPermissionCheck {
+
+    void onPermissionOk();
+
+    void onPermissionError(String rea);
   }
 
   public static void AddBillitem(final BaseView view, final String account,
@@ -958,19 +1007,17 @@ public class HttpManager {
     String json = new Gson().toJson(data);
     param.put("xhl", json);
     param.put("RoundKind", "");
-    checkrights(view.getContext(), new PermissionListener() {
+    checkPermission("POSBillItemNoAdd", "输商品", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void permissionOK() {
-        LOG.e("HttpManager", "checkrights.745:");
+      public void onPermissionOk() {
         HttpProxy.bean(view, AddBillitem, param, BaseBean.class);
       }
 
       @Override
-      public void permissionDefine(String reson) {
-        LOG.e("HttpManager", "checkrights.746:" + reson);
-        view.onResponseError(new RequestType(AddBillitem), new BaseBean("-1", reson));
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(AddBillitem), new BaseBean(AddBillitem, rea));
       }
-    }, "POSBillItemNoAdd", "输商品");
+    });
   }
 
   public static void AddBillitemBigRelax(final BaseView view, final String account,
@@ -989,28 +1036,27 @@ public class HttpManager {
       public void onString(String json) {
         BaseBean bean = new Gson().fromJson(json, BaseBean.class);
         if (bean != null && bean.isOk()) {
-          checkrights(view.getContext(), new PermissionListener() {
+          checkPermission("POSBillSend", "下单", view.getContext(), new OnPermissionCheck() {
             @Override
-            public void permissionOK() {
+            public void onPermissionOk() {
               LOG.e("HttpManager", "checkrights.745:");
               HttpProxy.bean(view, AddBillitemBigRelax, param, BaseBean.class);
             }
 
             @Override
-            public void permissionDefine(String reson) {
+            public void onPermissionError(String reson) {
               LOG.e("HttpManager", "checkrights.746:" + reson);
-              view.onResponseError(new RequestType(AddBillitemBigRelax), new BaseBean("-1", reson));
+              view.onResponseError(new RequestType(AddBillitemBigRelax), new BaseBean(AddBillitemBigRelax, reson));
             }
-          }, "POSBillSend", "下单");
+          });
         } else {
-          view.onResponseError(new RequestType(AddBillitemBigRelax), bean);
+          view.onConnectError(new RequestType(AddBillitemBigRelax));
         }
       }
 
       @Override
       public void onEmptyResponse() {
-        view.onResponseError(new RequestType(AddBillitemBigRelax), new BaseBean("-1", "请求异常"));
-
+        view.onConnectError(new RequestType(AddBillitemBigRelax));
       }
     }, view.getContext());
 
@@ -1024,7 +1070,7 @@ public class HttpManager {
     if (hote.length > 0) {
       param.put("hoteldate", hote[0]);
     }
-    if(TextUtils.isEmpty(param.get("hoteldate")))return;
+    if (TextUtils.isEmpty(param.get("hoteldate"))) return;
     HttpProxy.bean(view, SelectServerlistView, param, CaiErListBean.class);
   }
 

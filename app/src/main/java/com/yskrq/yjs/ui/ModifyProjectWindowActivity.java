@@ -3,10 +3,10 @@ package com.yskrq.yjs.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.R;
@@ -29,7 +29,7 @@ public class ModifyProjectWindowActivity extends BaseActivity implements View.On
 
   public static void start(Activity activity, RelaxListBean.ValueBean first) {
     if (first == null) {
-      Toast.makeText(activity, "未发现上点的项目，暂不可更改项目", Toast.LENGTH_LONG).show();
+      ToastUtil.show("未发现上点的项目，暂不可更改项目");
       return;
     }
     Intent intent = new Intent(activity, ModifyProjectWindowActivity.class);
