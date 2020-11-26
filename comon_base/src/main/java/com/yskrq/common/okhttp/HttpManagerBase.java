@@ -69,17 +69,34 @@ public class HttpManagerBase {
           return;
         }
         SPUtil.saveString(view.getContext(), TAG_CHANGE_URL, login.getServerip());
-        getUpdate(login, new HttpInnerListener() {
+        getLogin(login, new HttpInnerListener() {
           @Override
           public void onString(String json) {
-            UpdateBean bean = new Gson().fromJson(json, UpdateBean.class);
-            if (bean == null || bean.getUpdate() == null || AppUtils.getVersion(view.getContext())
-                                                                    .equals(bean.getUpdate()
-                                                                                .getAPPVersion())) {
-              toMain(view, login);
+            final LoginBean2 bean = new Gson().fromJson(json, LoginBean2.class);
+            if ("0".equals(bean.getError())) {
+              if (bean.getUser_value() != null && bean.getUser_value().size() > 0) {
+                login.setShopsid(bean.getUser_value().get(0).getShopsID());
+                login.setGroupid(bean.getUser_value().get(0).getGroupId());
+                login.setUsername(bean.getUser_value().get(0).getShopsName());
+                getUpdate(login, new HttpInnerListener() {
+                  @Override
+                  public void onString(String json) {
+                    UpdateBean bean = new Gson().fromJson(json, UpdateBean.class);
+                    if (bean == null || bean.getUpdate() == null || AppUtils
+                        .getVersion(view.getContext()).equals(bean.getUpdate().getAPPVersion())) {
+                      toMain(view, login);
 
-            } else {
-              view.onResponseError(new RequestType(LOGIN_Luo).more(login), bean);
+                    } else {
+                      view.onResponseError(new RequestType(LOGIN_Luo).more(login), bean);
+                    }
+                  }
+
+                  @Override
+                  public void onEmptyResponse() {
+
+                  }
+                }, view);
+              }
             }
           }
 
@@ -232,14 +249,14 @@ public class HttpManagerBase {
     final HashMap<String, String> map = new HashMap<>();
     String techNum = "nullContext";
     try {
-      techNum = UUID.getDeviceId(BASE.getCxt());
+      techNum = AppInfo.getTechNum(BASE.getCxt());
     } catch (Exception e) {
-
+      techNum = UUID.getDeviceId(BASE.getCxt());
     }
     map.put("sremark", msg);
     map.put("computername", "");
     if (tag == null) {
-      map.put("hoteldate", "BASE_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
+      map.put("hoteldate", "NEW_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
           .format(System.currentTimeMillis()));
     } else {
       map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")

@@ -25,7 +25,6 @@ public class SpeakManager {
         .getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationManager
         .isNotificationPolicyAccessGranted()) {
-      HttpManager.senError(context, "静音失败", null);
       LOG.e("SpeakManager", "closeVoice.29:+静音失败");
     } else {
       AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);

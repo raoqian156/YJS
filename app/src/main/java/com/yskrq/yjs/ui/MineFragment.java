@@ -10,7 +10,6 @@ import com.yskrq.common.OnClick;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.keep.KeepManager;
-import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.PhoneUtil;
 
 import static com.yskrq.yjs.util.PhoneUtil.toStartInterface;
@@ -24,15 +23,14 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
   @Override
   protected void initView() {
     initTitle("我的");
-    setTextView2View( R.id.tv_version, AppUtils.getVersion(getContext()));
-    if (!PhoneUtil.needPermission(getContext())) {
-      setVisibility(R.id.btn_voice,View.GONE);
-    }
+    setTextView2View(R.id.tv_version, AppUtils.getVersion(getContext()));
   }
 
-  @OnClick({R.id.btn_voice, R.id.tv_name, R.id.btn_pass, R.id.btn_about, R.id.btn_photo, R.id.btn_bg_setting, R.id.btn_login_out})
+  @OnClick({R.id.btn_battery_setting, R.id.btn_voice, R.id.tv_name, R.id.btn_pass, R.id.btn_about, R.id.btn_photo, R.id.btn_bg_setting, R.id.btn_login_out})
   public void onClick(View v) {
-    if (v.getId() == R.id.btn_voice) {
+    if (v.getId() == R.id.btn_battery_setting) {
+      AppUtils.requestIgnoreBatteryOptimizations(getContext());
+    } else if (v.getId() == R.id.btn_voice) {
       PhoneUtil.toOpen(getContext());
     } else if (v.getId() == R.id.tv_name) {
       PersonActivity.start(getContext());
@@ -51,11 +49,5 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
       startActivity(intent);
       getActivity().finish();
     }
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    HttpManager.senDetachError(getContext(), "Fragment.dismiss.onDetach", null);
   }
 }

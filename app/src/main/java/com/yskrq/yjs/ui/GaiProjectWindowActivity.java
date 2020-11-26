@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
-import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.R;
@@ -24,17 +23,24 @@ import static com.yskrq.yjs.net.Constants.TransCode.TechAddPro;
 import static com.yskrq.yjs.net.Constants.TransCode.getIscalctime;
 
 
-public class ModifyProjectWindowActivity extends BaseActivity implements View.OnClickListener {
+public class GaiProjectWindowActivity extends BaseActivity implements View.OnClickListener {
 
 
-  public static void start(Activity activity, RelaxListBean.ValueBean first) {
-    if (first == null) {
-      ToastUtil.show("未发现上点的项目，暂不可更改项目");
-      return;
-    }
-    Intent intent = new Intent(activity, ModifyProjectWindowActivity.class);
-    intent.putExtra("project", first);
-    activity.startActivity(intent);
+  public static void start(final Activity activity, final RelaxListBean.ValueBean first) {
+    HttpManager
+        .checkPermission("POSBillItemUpBrandNo", "项目修改", activity, new HttpManager.OnPermissionCheck() {
+          @Override
+          public void onPermissionOk() {
+            Intent intent = new Intent(activity, GaiProjectWindowActivity.class);
+            intent.putExtra("project", first);
+            activity.startActivity(intent);
+          }
+
+          @Override
+          public void onPermissionError(String rea) {
+
+          }
+        });
   }
 
   @Override

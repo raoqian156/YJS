@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 public class BaseApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
   public static Context ctx;
+  public static boolean isLogin = false;
 
   @Override
   public void onCreate() {
@@ -27,7 +28,27 @@ public class BaseApplication extends Application implements Application.Activity
     registerActivityLifecycleCallbacks(this);
     RunningHelper.getInstance().start(this);
     NetWorkMonitorManager.getInstance().init(this);
+
+//    initCloudChannel(this);
   }
+
+//  private static final String TAG = "BaseApplication";
+//
+//  private void initCloudChannel(Context applicationContext) {
+//    PushServiceFactory.init(applicationContext);
+//    CloudPushService pushService = PushServiceFactory.getCloudPushService();
+//    pushService.register(applicationContext, new CommonCallback() {
+//      @Override
+//      public void onSuccess(String response) {
+//        Log.d(TAG, "init cloudchannel success");
+//      }
+//
+//      @Override
+//      public void onFailed(String errorCode, String errorMessage) {
+//        Log.d(TAG, "init cloudchannel failed -- errorcode:" + errorCode + " -- errorMessage:" + errorMessage);
+//      }
+//    });
+//  }
 
   @Override
   public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {

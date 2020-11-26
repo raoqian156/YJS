@@ -12,7 +12,6 @@ import android.util.Log;
 
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
-import com.yskrq.yjs.net.HttpManager;
 
 public class PhoneUtil {
   /**
@@ -68,7 +67,6 @@ public class PhoneUtil {
 //      return true;
 //    }
     if(context==null) {
-      HttpManager.senError(null,"开启声音失败",null);
       return false;
     }
     LOG.e("PhoneUtil", "openVoice.69:");

@@ -338,7 +338,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
       setViewTag(R.id.tv_center, tag);
-      LOG.e("HomeFragment", "needRunning.251:");
       openRunning = true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -428,7 +427,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (v.getId() == R.id.btn_to_tai) {
       RoomListActivity.start(getContext());
     } else if (v.getId() == R.id.btn_modify) {//更改项目
-      ModifyProjectWindowActivity.start(getActivity(), first);
+      GaiProjectWindowActivity.start(getActivity(), first);
     } else if (v.getId() == R.id.btn_sign) {//考勤打卡
       toSign();
     } else if (v.getId() == R.id.btn_add) {//加钟
@@ -477,23 +476,25 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   }
 
   private void toSign() {
-    PermissionUtil.openLocate(getActivity(), new PermissionUtil.OnPermissionListener() {
+    DialogHelper.showCheckBoxPan(getContext(), new DialogHelper.DialogCheckListener() {
       @Override
-      public void onPermissionOk() {
-        DialogHelper.showCheckBoxPan(getContext(), new DialogHelper.DialogCheckListener() {
+      public void onSure(final String s) {
+        if (!AppInfo.needLocation(getContext())) {
+          showBanDialog(0, 0, s);
+          return;
+        }
+        PermissionUtil.openLocate(getActivity(), new PermissionUtil.OnPermissionListener() {
           @Override
-          public void onSure(String s) {
+          public void onPermissionOk() {
             signNet(s);
           }
-
-          @Override
-          public void onCancel() {
-
-          }
-        }, "打卡", "上班", "下班");
-
+        });
       }
-    });
+
+      @Override
+      public void onCancel() {
+      }
+    }, "打卡", "上班", "下班");
   }
 
   private void signNet(final String btnStr) {
@@ -511,7 +512,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
             dismissLoading();
           }
         });
-
   }
 
   private void showZhongDialog() {//加钟
@@ -565,26 +565,20 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
   @Override
   public void onSecond() {
-    LOG.e("HomeFragment", "onSecond.467:");
     if (!MainActivity.isShowToUser || getContext() == null) {
-      LOG.e("HomeFragment", "onSecond.563:");
       return;
     }
     if (System.currentTimeMillis() - lastRefuseTime < 900) {
-      LOG.e("HomeFragment", "onSecond.567:");
       return;
     }
     lastRefuseTime = System.currentTimeMillis();
     if (!openRunning) {
-      LOG.e("HomeFragment", "onSecond.572:");
       return;
     }
     if (AppInfo.getWaitType(getContext()) == 0) {
-      LOG.e("HomeFragment", "onSecond.577:");
       return;
     }
     int tag = AppInfo.getWaitType(getContext());
-    LOG.e("HomeFragment", "onSecond.573:" + tag);
     if (tag == 0) {
       openRunning = false;
       resetTimePan();
@@ -625,12 +619,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   @Override
   public void onHour() {
 
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    HttpManager.senDetachError(getContext(), "Fragment.dismiss.onDetach", null);
   }
 
   @Override

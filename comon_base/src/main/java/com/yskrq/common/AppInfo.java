@@ -39,6 +39,14 @@ public class AppInfo {
     return SPUtil.getString(context, "groupid");
   }
 
+  public static boolean isDebugUser(Context context) {
+    String url = SPUtil.getString(context, "HttpParamUtil.change.url");
+    if (!TextUtils.isEmpty(url)) {
+      return url.startsWith("hotel16");
+    }
+    return false;
+  }
+
   public static String getShopsid(Context context) {
     if (context == null) return "getShopsid";
     return SPUtil.getString(context, "shopsid");
@@ -210,6 +218,7 @@ public class AppInfo {
   }
 
   public static void setSignLat(Context context, String data) {
+    LOG.e("AppInfo", "setSignLat.221:" + data);
     SPUtil.saveString(context, "Sign.lat", data);
   }
 
@@ -271,6 +280,17 @@ public class AppInfo {
     LOG.e("AppInfo", "canSign.get.wifiName:" + getWifiName(context) + ",lat:" + latitude + ",lon:" + longitude);
     LOG.e("AppInfo", "canSign.isWifiOk:" + isWifiOk + ",locationOK:" + locationOK);
     return 0;
+  }
+
+  public static boolean needLocation(Context context) {
+    if (context == null) return false;
+    String lat = SPUtil.getString(context, "Sign.lat");
+    String lon = SPUtil.getString(context, "Sign.lon");
+    LOG.e("AppInfo", "needLocation.lat:" + lat + "  lon=" + lon);
+    if ("0".equals(lat) || "0".equals(lon)) {
+      return false;
+    }
+    return true;
   }
 
   private static boolean isLocationOk(String latSave, String lonSave, double latitude,

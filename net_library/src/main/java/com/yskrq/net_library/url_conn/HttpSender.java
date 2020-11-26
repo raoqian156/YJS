@@ -90,7 +90,7 @@ public class HttpSender {
       LOG.e("HttpSender", "重复请求，被拦截:" + path);
       return;
     }
-    waitRequest.add(path);
+    if (!path.contains("GetHotelCodePos")) waitRequest.add(path);
     final String tag = path.substring(path.lastIndexOf("/") + 1);
 
 

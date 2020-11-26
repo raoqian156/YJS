@@ -1,9 +1,11 @@
 package com.yskrq.yjs;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +15,10 @@ import android.widget.TextView;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.LoginActivity;
+import com.yskrq.common.okhttp.HttpManagerBase;
+import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
@@ -36,6 +41,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
       MineFragment.class,//我的
   };
 
+  @SuppressLint("InvalidWakeLockTag")
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -45,6 +51,57 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
       AppInfo.setVoiceType(this, 1);
     }
     delete();
+    BaseApplication.isLogin = true;
+    LOG.e("MainActivity", "onCreate.49:");
+
+    if (!AppUtils.isIgnoringBatteryOptimizations(this)) {
+      DialogHelper
+          .showRemind(this, "为了保持数据的实时性，需要忽略电池优化，是否前去开启？", new DialogHelper.DialogConfirmListener() {
+            @Override
+            public void onSure() {
+              AppUtils.requestIgnoreBatteryOptimizations(MainActivity.this);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+          });
+    } else {
+      if (AppInfo.isDebugUser(this)) ToastUtil.show("无需开启");
+    }
+    PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+    if (powerManager != null) {
+      mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
+    }
+  }
+
+  PowerManager.WakeLock mWakeLock;
+
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    isShowToUser = true;
+    if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
+      for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+        fragment.onResume();
+      }
+    }
+    if (mWakeLock != null) {
+      mWakeLock.acquire();
+    }
+  }
+
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    LOG.e("MainActivity", "onDestroy.54:");
+    BaseApplication.isLogin = false;
+    if (mWakeLock != null) {
+      mWakeLock.release();
+    }
   }
 
   private boolean isInstallApp(String packageName) {
@@ -97,22 +154,11 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
     tabhost.getTabWidget().setDividerDrawable(null);
     tabhost.setOnTabChangedListener(this);
-    HttpManager.senError(MainActivity.this, "============登录 >> " + AppInfo
-        .getUserid(this) + " ============", null);
+    HttpManagerBase.senError(AppInfo.getTechNum(this), "============登录 >> " + AppInfo
+        .getUserid(this) + " ============");
   }
 
   public static volatile boolean isShowToUser = false;
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    isShowToUser = true;
-    if (getSupportFragmentManager() != null && getSupportFragmentManager().getFragments() != null) {
-      for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-        fragment.onResume();
-      }
-    }
-  }
 
   @Override
   protected void onPause() {

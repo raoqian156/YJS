@@ -1,6 +1,5 @@
 package com.yskrq.yjs.ui;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -40,14 +39,10 @@ public class SelectRoomWindowActivity extends BaseActivity implements View.OnCli
   private static RoomSelectListener mRoomSelectListener;
 
   public static void start(final Context activity, final RoomSelectListener listener) {
-    final ProgressDialog dialog = new ProgressDialog(activity);
-    dialog.setMessage("数据加载中...");
-    dialog.show();
     mRoomSelectListener = listener;
     HttpManager.SelectDataByStatus(activity, new HttpInnerListener() {
       @Override
       public void onString(String json) {
-        dialog.dismiss();
         RoomListBean bean = new Gson().fromJson(json, RoomListBean.class);
         if (bean != null && bean.isOk() && bean.getFixingView_value() != null && bean
             .getFixingView_value().size() > 0) {
@@ -63,7 +58,6 @@ public class SelectRoomWindowActivity extends BaseActivity implements View.OnCli
 
       @Override
       public void onEmptyResponse() {
-        dialog.dismiss();
       }
     });
   }

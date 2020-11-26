@@ -1,8 +1,5 @@
 package com.yskrq.yjs.keep;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,12 +16,13 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.HttpInnerListener;
-import com.yskrq.yjs.MainActivity;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.util.NoticeUtil;
 import com.yskrq.yjs.util.SpeakManager;
 
 import java.text.SimpleDateFormat;
@@ -187,18 +185,18 @@ public class KeepAliveService extends Service {
       @Override
       public void onString(String json) {
         logInfo.append("POST>>" + new Gson().toJson(param));
-        logInfo.append("\n" + AppInfo.getUserid(context) + ".保活测试->" + AppInfo
-            .getTechNum(context) + ":" + json);
-        HttpManager.senError(context, logInfo.toString(), null);
         final RelaxListBean bean = new Gson().fromJson(json, RelaxListBean.class);
         KeepAliveService.notify(context, bean);
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
+          logInfo.append("first : " + first.toString());
           SpeakManager.isRead(context, first);
         } else {
+          logInfo.append("noTask");
           openVoice(context);
           AppInfo.clearNotify(context);
         }
+        HttpManagerBase.senError("Keep", logInfo.toString());
         notifyUser(context);
       }
 
@@ -256,7 +254,9 @@ public class KeepAliveService extends Service {
       con = "请重新登录";
     } else if (tag == 0) {
       title = AppInfo.getTechNum(context) + " 号技师";
-      con = "暂无新任务...";
+      SimpleDateFormat simpleDateFormat;
+      simpleDateFormat = new SimpleDateFormat("HH:mm");
+      con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
     } else if (tag == 1) {
       title = "您有新任务";
       con = "已等待" + AppInfo.getWait(context) + "分钟";
@@ -277,18 +277,7 @@ public class KeepAliveService extends Service {
       title = AppInfo.getTechNum(context) + " 号技师";
       con = "暂无新任务...";
     }
-    Intent intentTarget = new Intent(context, MainActivity.class);
-    PendingIntent contentIntent = PendingIntent
-        .getActivity(context, 0, intentTarget, PendingIntent.FLAG_CANCEL_CURRENT);
-
-    Intent intent = new Intent(context, NotificationClickReceiver.class);
-    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    Notification notification = NotificationUtils
-        .createNotification(context, title, con, R.mipmap.ic_launcher, intent);
-    notification.contentIntent = contentIntent;
-    NotificationManager mNManager = (NotificationManager) context
-        .getSystemService(NOTIFICATION_SERVICE);
-    mNManager.notify(NOTIFICATION_ID, notification);
+    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con);
   }
 
   //将keepAliveBinder交给RemoteService

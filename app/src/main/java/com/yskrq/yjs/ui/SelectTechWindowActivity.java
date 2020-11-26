@@ -39,10 +39,22 @@ import static com.yskrq.yjs.net.Constants.TransCode.getWorkingTech;
 
 public class SelectTechWindowActivity extends BaseActivity implements View.OnClickListener,
                                                                       OnItemClickListener {
-  public static void start(Activity context, String itemno, int requestCode) {
-    Intent intent = new Intent(context, SelectTechWindowActivity.class);
-    intent.putExtra("itemno", itemno);
-    context.startActivityForResult(intent, requestCode);
+  public static void start(final Activity context, final String itemno, final int requestCode) {
+    HttpManager
+        .checkPermission("RelaxOrderClock", "点钟", context, new HttpManager.OnPermissionCheck() {
+          @Override
+          public void onPermissionOk() {
+
+            Intent intent = new Intent(context, SelectTechWindowActivity.class);
+            intent.putExtra("itemno", itemno);
+            context.startActivityForResult(intent, requestCode);
+          }
+
+          @Override
+          public void onPermissionError(String rea) {
+
+          }
+        });
   }
 
   @Override

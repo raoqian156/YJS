@@ -265,5 +265,10 @@ public class RelaxListBean extends BaseBean {
     public boolean needCloseVoice() {
       return "9001".equals(getGroupid());
     }
+
+    @Override
+    public String toString() {
+      return "ValueBean{" + "account='" + account + '\'' + ", seqnum='" + seqnum + '\'' + ", facilityno='" + facilityno + '\'' + ", relaxclocktype='" + relaxclocktype + '\'' + ", relaxclockname='" + relaxclockname + '\'' + ", occurtime='" + occurtime + '\'' + ", expendtime='" + expendtime + '\'' + ", groupid='" + groupid + '\'' + ", sid='" + sid + '\'' + ", stime='" + stime + '\'' + ", countdowns='" + countdowns + '\'' + ", rsuhtimes='" + rsuhtimes + '\'' + '}';
+    }
   }
 }

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.MD5Util;
@@ -20,8 +21,6 @@ import com.yskrq.net_library.BaseView;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
-import com.yskrq.net_library.url_conn.HttpSender;
-import com.yskrq.yjs.BaseApplication;
 import com.yskrq.yjs.bean.CaiErListBean;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.DianTypeBean;
@@ -160,7 +159,7 @@ public class HttpManager {
       @Override
       public void onString(String json) {
         BaseBean dateBean = new Gson().fromJson(json, BaseBean.class);
-        senError(context, json, "REFUSE", null);
+        HttpManagerBase.senError(AppInfo.getTechNum(context), json);
         if (dateBean != null && "0".equals(dateBean.getRespCode())) {
           AppInfo.setWorkDate(context, dateBean.getRespMsg());
         }
@@ -222,50 +221,6 @@ public class HttpManager {
     map.put("facilityno", facilityno);
     map.put("sType", type + "");
     HttpProxy.inner(null, context, UpdateRelaxCountDown, map);
-  }
-
-
-  public static void senError(Context context, String msg, HttpInnerListener listener) {
-    senError(context, msg, null, listener);
-  }
-
-  public static void senError(Context context, String msg, String tag, HttpInnerListener listener) {
-    LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
-    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
-    final HashMap<String, String> map = new HashMap<>();
-    String techNum = "nullContext";
-
-    if (context != null) {
-      map.putAll(getParam(context));
-      techNum = AppInfo.getTechNum(context);
-    } else {
-      try {
-        techNum = UUID.getDeviceId(BaseApplication.ctx);
-      } catch (Exception e) {
-
-      }
-    }
-    map.put("sremark", msg);
-    map.put("computername", "");
-    if (tag == null) {
-      map.put("hoteldate", "NEW_TEST_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
-          .format(System.currentTimeMillis()));
-    } else {
-      map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
-          .format(System.currentTimeMillis()));
-    }
-    HttpSender.post(url, map, listener);
-  }
-
-  public static void senDetachError(Context context, String msg, HttpInnerListener listener) {
-    LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
-    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
-    final HashMap<String, String> map = getParam(context);
-    map.put("computername", "");
-    map.put("hoteldate", "Detach_" + new SimpleDateFormat("yyyyMMdd")
-        .format(System.currentTimeMillis()));
-    map.put("sremark", msg);
-    HttpSender.post(url, map, listener);
   }
 
   public static void getOpenAll(final BaseView view) {
@@ -858,6 +813,7 @@ public class HttpManager {
     HttpProxy.inner(new HttpInnerListener() {
       @Override
       public void onString(String json) {
+        LOG.bean("clockin_latitude", GetHotelCodePos);
         ListParamBean bean = new Gson().fromJson(json, ListParamBean.class);
         if (bean == null || bean.getValue() == null || bean.getValue().size() == 0) return;
         AppInfo.setSignLat(context, bean.getValue().get(0).getData());
