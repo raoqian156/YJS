@@ -1,5 +1,4 @@
 include ':test'
-include ':keeplive'
 include ':comon_base'
 include ':permmission'
 include ':net_library'
