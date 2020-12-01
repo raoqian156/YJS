@@ -94,6 +94,22 @@ public class HttpSender {
       @Override
       public void onString(String con) {
         if (listener != null) listener.onString(con);
+        if ("https://hotel16.yskvip.com:9092/RM_Others/wirtelog".equals(path)) return;
+        BaseBean base = new Gson().fromJson(con, BaseBean.class);
+        if (base != null && !base.isOk()) {
+          base.setAll(con);
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onLogicError(path, param);
+          }
+        } else if (base != null) {
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onTransError(path, param);
+          }
+        } else {
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onError(path, param);
+          }
+        }
       }
 
       public void onEmptyResponse() {
@@ -114,7 +130,9 @@ public class HttpSender {
     final String path = url;
     if (waitRequest.contains(path) && !"https://hotel16.yskvip.com:9092/RM_Others/wirtelog"
         .equals(path)) {
-
+      if (HttpSender.mNetErrorListeners != null) {
+        HttpSender.mNetErrorListeners.onError("拦截：" + path, params);
+      }
       LOG.e("HttpSender", "重复请求，被拦截:" + path);
       return;
     }

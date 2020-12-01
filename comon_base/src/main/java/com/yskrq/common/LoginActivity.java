@@ -18,6 +18,7 @@ import com.yskrq.common.ui.TableWindowActivity;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.common.widget.DownloadUtils;
 import com.yskrq.net_library.BaseBean;
@@ -151,13 +152,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
           @Override
           public void onCancel() {
+            if (updateBean != null && updateBean.getUpdate().isBForceUpdating()) {
+              ToastUtil.show("请更新到最新版本");
+              return;
+            }
             LoginBean login = (LoginBean) type.getMore();
             HttpManagerBase.toMain(LoginActivity.this, login);
           }
 
         });
       } else if (data instanceof BaseBean) {
-        toast(((BaseBean) data).getRespMsg());
+        ToastUtil.show(data.getRespMsg());
       }
     }
   }

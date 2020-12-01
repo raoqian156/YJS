@@ -133,14 +133,19 @@ public class HttpManager {
     try {
       param.put("computermac", UUID.getDeviceId(context));
       if (TextUtils.isEmpty(saveName)) {
-        param.put("computername", UUID.getDeviceId(context));
-      } else {
-        param.put("computername", saveName);
+        saveName = UUID.getDeviceId(context);
       }
+      param.put("computername", saveName);
+      param.put("sversion", AppUtils.getVersion(context));
+      param.put("smac", saveName);
+      param.put("rmastname", saveName);
     } catch (Exception e) {
       param.put("computermac", "error.get");
       param.put("computername", "error.get");
+      param.put("smac", "error.get");
+      param.put("sversion", "error.get");
     }
+    param.put("rmastname", "云技师");
     param.put("shopsid", AppInfo.getShopsid(context));
     param.put("opid", AppInfo.getUserid(context));
     param.put("profitcenter", AppInfo.getProfitCenter(context));

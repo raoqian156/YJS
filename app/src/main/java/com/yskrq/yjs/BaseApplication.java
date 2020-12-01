@@ -50,7 +50,6 @@ public class BaseApplication extends Application implements Application.Activity
       @Override
       public void onLogicError(String url, Map<String, String> params) {
         HttpManagerBase.senError("YJS_EMPTY_E3", "" + HttpSender.getRequestData(params).toString());
-
       }
     });
     //    initCloudChannel(this);

@@ -29,7 +29,7 @@ public class GaiProjectWindowActivity extends BaseActivity implements View.OnCli
 
   public static void start(final Activity activity, final RelaxListBean.ValueBean first) {
     if (first == null) {
-      ToastUtil.show("数据错误，请刷新后重试");
+      ToastUtil.show("未发现可修改项目");
       return;
     }
     HttpManager
@@ -110,7 +110,7 @@ public class GaiProjectWindowActivity extends BaseActivity implements View.OnCli
   @OnClick({R.id.btn_name, R.id.btn_cut, R.id.btn_add, R.id.btn_cancel, R.id.btn_sure})
   public void onClick(View v) {
     if (v.getId() == R.id.btn_name) {
-      if (selects == null||selects.size()==0) {
+      if (selects == null || selects.size() == 0) {
         this.isWaitToShow = true;
         ToastUtil.show("数据获取中...");
         HttpManager.getIscalctime(this);
