@@ -96,6 +96,7 @@ public class Constants {
     public static final String DelCommodity = "RM_Others/DelCommodity";
     //    采耳技师确定到场
     public static final String UpdateStatueYes = "RP_WaterBar/UpdateStatueYes";
+    public static final String LogExeVersion = "RM_Others/LogExeVersion";
 
 
     //    查看详情（判断此房间是否已开房）

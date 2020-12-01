@@ -21,6 +21,7 @@ import com.rq.rvlibrary.BaseViewHolder;
 import com.rq.rvlibrary.EasyViewHolder;
 import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
@@ -260,6 +261,10 @@ public class PopUtil {
                                                                final List<T> data,
                                                                final View clickFrom,
                                                                final OnChoiceListener listener) {
+    if(data==null){
+      ToastUtil.show("数据异常，请重试");
+      return;
+    }
     PickerOptions pickerOptions = new PickerOptions(TYPE_PICKER_OPTIONS);
     pickerOptions.context = controller;
     pickerOptions.textContentConfirm = "确认";

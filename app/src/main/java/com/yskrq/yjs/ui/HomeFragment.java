@@ -23,6 +23,7 @@ import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.RequestType;
+import com.yskrq.yjs.BaseApplication;
 import com.yskrq.yjs.MainActivity;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.RunningHelper;
@@ -81,7 +82,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     try {
-      CrashReport.setUserId(AppInfo.getUserid(HomeFragment.this.getContext()));
+      CrashReport.setUserId(AppInfo.getUserid(BaseApplication.ctx));
     } catch (Exception e) {
 
     }

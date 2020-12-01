@@ -7,8 +7,12 @@ import android.os.Bundle;
 
 import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.BASE;
+import com.yskrq.common.okhttp.HttpManagerBase;
+import com.yskrq.net_library.url_conn.HttpSender;
 import com.yskrq.yjs.util.ImageLoadUtil;
 import com.yskrq.yjs.util.status.NetWorkMonitorManager;
+
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,27 +32,47 @@ public class BaseApplication extends Application implements Application.Activity
     registerActivityLifecycleCallbacks(this);
     RunningHelper.getInstance().start(this);
     NetWorkMonitorManager.getInstance().init(this);
+    HttpSender.addNetErrorListener(new HttpSender.NetErrorListener() {
+      @Override
+      public void onError(String url, Map<String, String> params) {
+        StringBuffer msg = new StringBuffer();
+        msg.append(url + "\n");
+        msg.append(HttpSender.getRequestData(params).toString() + "\n");
+        HttpManagerBase.senError("YJS_EMPTY_E1", msg.toString());
+      }
 
-//    initCloudChannel(this);
+      @Override
+      public void onTransError(String url, Map<String, String> params) {
+        HttpManagerBase.senError("YJS_EMPTY_E2", "" + HttpSender.getRequestData(params).toString());
+
+      }
+
+      @Override
+      public void onLogicError(String url, Map<String, String> params) {
+        HttpManagerBase.senError("YJS_EMPTY_E3", "" + HttpSender.getRequestData(params).toString());
+
+      }
+    });
+    //    initCloudChannel(this);
   }
 
-//  private static final String TAG = "BaseApplication";
-//
-//  private void initCloudChannel(Context applicationContext) {
-//    PushServiceFactory.init(applicationContext);
-//    CloudPushService pushService = PushServiceFactory.getCloudPushService();
-//    pushService.register(applicationContext, new CommonCallback() {
-//      @Override
-//      public void onSuccess(String response) {
-//        Log.d(TAG, "init cloudchannel success");
-//      }
-//
-//      @Override
-//      public void onFailed(String errorCode, String errorMessage) {
-//        Log.d(TAG, "init cloudchannel failed -- errorcode:" + errorCode + " -- errorMessage:" + errorMessage);
-//      }
-//    });
-//  }
+  //  private static final String TAG = "BaseApplication";
+  //
+  //  private void initCloudChannel(Context applicationContext) {
+  //    PushServiceFactory.init(applicationContext);
+  //    CloudPushService pushService = PushServiceFactory.getCloudPushService();
+  //    pushService.register(applicationContext, new CommonCallback() {
+  //      @Override
+  //      public void onSuccess(String response) {
+  //        Log.d(TAG, "init cloudchannel success");
+  //      }
+  //
+  //      @Override
+  //      public void onFailed(String errorCode, String errorMessage) {
+  //        Log.d(TAG, "init cloudchannel failed -- errorcode:" + errorCode + " -- errorMessage:" + errorMessage);
+  //      }
+  //    });
+  //  }
 
   @Override
   public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {

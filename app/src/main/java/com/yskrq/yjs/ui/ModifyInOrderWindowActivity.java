@@ -53,6 +53,11 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
     setString2View(R.id.btn_name, project.getItemName());
     oldItemName = project.getItemName();
     setString2View(R.id.btn_time, project.getWaitBeginTimeDepart());
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
     HttpManager.getIscalctime(this);
   }
 
@@ -70,12 +75,17 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
     } else if (type.is(getIscalctime)) {
       TechProjectBean bean = (TechProjectBean) data;
       selects = bean.getValues();
+      LOG.e("ModifyInOrderWindowActivity", "onResponseSucceed.selects:"+selects.size());
       if (selects != null && selects.size() > 0) {
         for (TechProjectBean.ValueBean item : selects) {
           if (TextUtils.equals(oldItemName, item.getName())) {
             selected = item;
           }
         }
+      }
+      if(isWaitToShow){
+        isWaitToShow=false;
+        onClick(findViewById(R.id.btn_name));
       }
     } else if (type.is(RelaxTechChangeItem)) {
       LOG.e("ModifyInOrderWindowActivity", "onResponseSucceed.86:" + data.getRespMsg());
@@ -84,7 +94,23 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
       finish();
     }
   }
+  boolean isWaitToShow = false;
 
+  @Override
+  public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
+    super.onResponseError(type, data);
+    if (type.is(getIscalctime)) {
+      isWaitToShow = false;
+    }
+  }
+
+  @Override
+  public void onConnectError(@NonNull RequestType type) {
+    super.onConnectError(type);
+    if (type.is(getIscalctime)) {
+      isWaitToShow = false;
+    }
+  }
   @OnClick({R.id.btn_time, R.id.btn_name, R.id.btn_cut, R.id.btn_add, R.id.btn_cancel, R.id.btn_sure})
   public void onClick(final View v) {
     if (v.getId() == R.id.btn_name) {
@@ -92,8 +118,12 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
           .checkPermission("POSBillItemUpBrandNo", "项目修改", this, new HttpManager.OnPermissionCheck() {
             @Override
             public void onPermissionOk() {
-              if (selects != null && selects.size() > 0) {
-                ToastUtil.show("数据获取异常");
+
+              LOG.e("ModifyInOrderWindowActivity", "checkPermission.selects:"+selects.size());
+              if (selects == null || selects.size() ==0) {
+                ToastUtil.show("数据获取中...");
+                isWaitToShow=true;
+                HttpManager.getIscalctime(ModifyInOrderWindowActivity.this);
                 return;
               }
               PopUtil

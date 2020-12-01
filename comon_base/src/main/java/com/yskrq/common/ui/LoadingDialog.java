@@ -106,6 +106,11 @@ public class LoadingDialog extends Dialog {
     super.dismiss();
   }
 
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    valueAnimator.end();
+  }
 
   @Override
   public void setTitle(CharSequence title) {

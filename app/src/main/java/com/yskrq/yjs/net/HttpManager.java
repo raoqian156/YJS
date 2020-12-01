@@ -74,6 +74,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxServerList;
 import static com.yskrq.yjs.net.Constants.TransCode.GetRelaxTechJobStatus;
 import static com.yskrq.yjs.net.Constants.TransCode.GetServiceItem;
 import static com.yskrq.yjs.net.Constants.TransCode.InsertService;
+import static com.yskrq.yjs.net.Constants.TransCode.LogExeVersion;
 import static com.yskrq.yjs.net.Constants.TransCode.OpenTheStage;
 import static com.yskrq.yjs.net.Constants.TransCode.RelaxAddClock;
 import static com.yskrq.yjs.net.Constants.TransCode.RelaxTechChangeItem;
@@ -122,8 +123,6 @@ public class HttpManager {
     if (REAL_URL != null) return REAL_URL;
     return SPUtil.getString(context, TAG_CHANGE_URL);
   }
-
-  public static final int PAGE_SIZE = 20;
 
   public static HashMap<String, String> getParam(Context context) {
     //        <param name="computername"></param>平板自定义名称
@@ -507,6 +506,11 @@ public class HttpManager {
     HttpProxy.bean(view, SelectRestaurantView, param, RoomBean.class);
   }
 
+  public static void sendLoginInfo(BaseView view) {
+    HashMap<String, String> param = getParam(view.getContext());
+    HttpProxy.inner(null, view, LogExeVersion, param);
+  }
+
   public interface OnSaveSuccessListener {
 
     void onSuccess(String absolutePath);
@@ -737,6 +741,7 @@ public class HttpManager {
   public static void RelaxTechChangeItem(BaseView view, RelaxListBean.ValueBean project,
                                          TechProjectBean.ValueBean item) {
     HashMap<String, String> param = getParam(view.getContext());
+    LOG.e("HttpManager", "RelaxTechChangeItem.738:");
     param.put("account", project.getAccount());
     param.put("seqnum", project.getSeqnum());
     param.put("itemprice", item.getPrice() + "");

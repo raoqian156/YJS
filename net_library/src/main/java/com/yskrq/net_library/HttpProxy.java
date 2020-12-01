@@ -20,18 +20,18 @@ import java.util.HashMap;
  */
 public class HttpProxy {
 
-
   public static final String TAG_CHANGE_URL = "HttpParamUtil.change.url";
   private static boolean useOkHttp = false;
 
   /**
    * 返回数据不直接调动界面，使用内部逻辑，不切换线程
-   * 不会调用 {@link BaseView#onResponseSucceed(RequestType, BaseBean)}、{@link BaseView#onResponseError(RequestType)}
-   * 只会回调 {@link HttpInnerListener#onString(String)}、{@link HttpInnerListener#onEmptyResponse()}
+   * 不会调用 {@link BaseView#onResponseSucceed(RequestType, BaseBean)}
+   * 、{@link BaseView#onResponseError(RequestType, BaseBean)}
+   * 只会回调 {@link HttpInnerListener#onString(String)}
+   * 、{@link HttpInnerListener#onEmptyResponse()}
    */
   public static void inner(HttpInnerListener httpInnerListener, Context context, String path,
                            HashMap<String, String> param) {
-    String tag = "";
     if (path.startsWith("http")) {
     } else {
       path = "https://" + SPUtil.getString(context, "HttpParamUtil.change.url") + ":9092/" + path;
@@ -66,7 +66,6 @@ public class HttpProxy {
     //    if (useOkHttp) {
     //      HttpParamUtil.bean(view, path, param, clazz);
     //    } else {
-    String tag = path.substring(path.lastIndexOf("/") + 1);
     if (path.startsWith("http")) {
     } else {
       path = "https://" + SPUtil
@@ -97,7 +96,7 @@ public class HttpProxy {
           view.onResponseSucceed(new RequestType(tag), base);
         } else if (base != null) {
           view.onResponseError(new RequestType(tag), base);
-        }else {
+        } else {
           view.onConnectError(new RequestType(tag));
         }
       }

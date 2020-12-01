@@ -230,6 +230,7 @@ public  *;
 -keep public class * extends com.yskrq.net_library.BaseBean { *;}
 -keep public class * extends com.rq.rvlibrary.BaseViewHolder { *;}
 -dontwarn com.tencent.bugly.**
+-keep class com.yskrq.yjs.ui.HomeFragment {*;}
 -keep class com.sunmi.scan.* {*;}
 
 -dontwarn com.tencent.bugly.**

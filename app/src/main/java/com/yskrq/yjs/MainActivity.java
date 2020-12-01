@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     if (powerManager != null) {
       mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
     }
+    HttpManager.sendLoginInfo(this);
   }
 
   PowerManager.WakeLock mWakeLock;

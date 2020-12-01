@@ -30,9 +30,24 @@ import java.util.Map;
 import java.util.Set;
 
 public class HttpSender {
-  private static final String TAG = "HttpSender";
+  /**
+   * 此接口作为日志记录作用
+   */
+  public interface NetErrorListener {
 
-  private static Handler main = new Handler(Looper.getMainLooper());
+    void onError(String url, Map<String, String> params);
+
+    void onTransError(String url, Map<String, String> params);
+
+    void onLogicError(String url, Map<String, String> params);
+  }
+
+  private static NetErrorListener mNetErrorListeners = null;
+
+  public static void addNetErrorListener(NetErrorListener listener) {
+    HttpSender.mNetErrorListeners = listener;
+  }
+
 
   //访问网络获取数据
   public static void post(final OnHttpListener listener, final String url,
@@ -43,6 +58,9 @@ public class HttpSender {
 
       @Override
       public void onEmptyResponse() {
+        if (mNetErrorListeners != null) {
+          mNetErrorListeners.onError(url, params);
+        }
         listener.onConnectError(new RequestType(tag).with("-1", "请求异常"));
       }
 
@@ -55,17 +73,22 @@ public class HttpSender {
           listener.onResponseSucceed(new RequestType(tag), base);
         } else if (base != null) {
           base.setAll(con);
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onLogicError(url, params);
+          }
           LOG.e("HttpSender", "onString.49:");
           listener.onResponseError(new RequestType(tag), base);
         } else {
-          LOG.e("HttpSender", "onString.52:");
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onTransError(url, params);
+          }
           listener.onConnectError(new RequestType(tag).with("-1", "请求异常"));
         }
       }
     });
   }
 
-  public static void post(String path, HashMap<String, String> param,
+  public static void post(final String path, final HashMap<String, String> param,
                           final HttpInnerListener listener) {
     innerPost(path, param, new HttpInnerListener() {
       @Override
@@ -74,12 +97,16 @@ public class HttpSender {
       }
 
       public void onEmptyResponse() {
+        if (mNetErrorListeners != null) {
+          mNetErrorListeners.onError(path, param);
+        }
         if (listener != null) listener.onEmptyResponse();
       }
     });
   }
 
   private static Set<String> waitRequest = new HashSet<>();
+  private static Handler main = new Handler(Looper.getMainLooper());
 
   //访问网络获取数据
   private static void innerPost(final String url, final Map<String, String> params,
@@ -87,6 +114,7 @@ public class HttpSender {
     final String path = url;
     if (waitRequest.contains(path) && !"https://hotel16.yskvip.com:9092/RM_Others/wirtelog"
         .equals(path)) {
+
       LOG.e("HttpSender", "重复请求，被拦截:" + path);
       return;
     }
@@ -100,7 +128,7 @@ public class HttpSender {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        String stringBuffer = getRequestData(NET_PARAM_HELPER.getParam(params), "UTF-8").toString();
+        String stringBuffer = getRequestData(NET_PARAM_HELPER.getParam(params)).toString();
         LOG.e("HttpSender", "93:" + path + "?" + stringBuffer);
         byte[] data = stringBuffer.getBytes();//获得请求体
         InputStream inptStream = null;
@@ -206,11 +234,11 @@ public class HttpSender {
    * 封装请求体信息
    *
    * @param params:请求体内容
-   * @param encode:编码格式
    *
    * @return
    */
-  public static StringBuffer getRequestData(Map<String, String> params, String encode) {
+  public static StringBuffer getRequestData(Map<String, String> params) {
+    String encode = "UTF-8";
     if (params == null || params.size() == 0) return new StringBuffer();
     //存储封装好的请求体信息
     StringBuffer stringBuffer = new StringBuffer();
