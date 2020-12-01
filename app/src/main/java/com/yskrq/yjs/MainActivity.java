@@ -68,7 +68,9 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
             }
           });
     } else {
-      if (AppInfo.isDebugUser(this)) ToastUtil.show("无需开启");
+      if (AppInfo.isDebugUser(this)) {
+        ToastUtil.show("无需开启");
+      }
     }
     PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     if (powerManager != null) {
