@@ -1,9 +1,13 @@
 package com.yskrq.yjs.bean;
 
+import android.text.TextUtils;
+
+import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.BaseBean;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class RoomBean extends BaseBean {
 
@@ -305,5 +309,42 @@ public class RoomBean extends BaseBean {
     public void setBalance(String balance) {
       this.balance = balance;
     }
+
+    public String getColorCode(Object data) {
+      if (data == null) {
+        LOG.e("RoomBean", "getColorWith.缓存数据为空:");
+        return "#FFFFFF";
+      }
+      Map<String, String> colors = null;
+      if (data instanceof Map) {
+        try {
+          colors = (Map<String, String>) data;
+        } catch (Exception e) {
+          e.printStackTrace();
+          return "#FFFFFF";
+        }
+      }
+      if (colors == null) return "#FFFFFF";
+      String code = "";
+      if ("K".equals(ResourceType)) {
+        code = "htmlBrandColor7";
+      } else if ("M".equals(calctype)) {
+        code = "htmlBrandColor10";
+      } else if ("1".equals(CleanId)) {
+        code = "htmlBrandColordirty";
+      } else if ("1".equals(Status)) {
+        code = "htmlBrandColor3";
+      } else if ("0".equals(Status)) {
+        code = "htmlBrandColor1";
+      }
+      String color;
+      if (colors != null && !TextUtils.isEmpty(code)) {
+        color = colors.get(code);
+      } else {
+        color = "#FFFFFF";
+      }
+      return color;
+    }
+
   }
 }

@@ -97,6 +97,7 @@ public class Constants {
     //    采耳技师确定到场
     public static final String UpdateStatueYes = "RP_WaterBar/UpdateStatueYes";
     public static final String LogExeVersion = "RM_Others/LogExeVersion";
+    public static final String readlog = "https://hotel16.yskvip.com:9092/RM_Others/readlog";
 
 
     //    查看详情（判断此房间是否已开房）

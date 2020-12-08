@@ -253,9 +253,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
 
   private void refuseList(RelaxListBean bean) {
-    if (bean == null) return;
     Context context = getContext();
-    if (bean.getValue() == null || bean.getValue().size() <= 0) {
+    if (bean == null || bean.getValue() == null || bean.getValue().size() <= 0) {
       setVisibility(R.id.ll_new_task, View.GONE);
       openRunning = false;
       resetTimePan();
@@ -338,7 +337,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
       simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-      setViewTag(R.id.tv_center, tag);
       openRunning = true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -437,10 +435,14 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         return;
       }
       showZhongDialog();
-    } else if (v.getId() == R.id.tv_center && v.getTag() instanceof Integer) {
-      int tag = (int) v.getTag();// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
-      LOG.e("HomeFragment", "onClick.433:" + tag);
-      sing(tag, first);
+    } else if (v.getId() == R.id.tv_center) {
+      if (v.getTag() instanceof Integer) {
+        int tag = (int) v.getTag();// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
+        LOG.e("HomeFragment", "onClick.433:" + tag);
+        sing(tag, first);
+      } else {
+        LOG.e("HomeFragment", "onClick.446:");
+      }
     } else if (v.getId() == R.id.btn_refuse) {//刷新
       isRefuse = true;
       lastRefuseTime = 0;
@@ -450,7 +452,10 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   }
 
   private void sing(final int tag, final RelaxListBean.ValueBean first) {//上下钟打卡
-    if (first == null) return;
+    if (first == null) {
+      LOG.e("HomeFragment", "sing.454:");
+      return;
+    }
     DialogHelper
         .showRemind(getContext(), tag == 1 ? "是否上钟?" : "是否下钟?", new DialogHelper.DialogConfirmListener() {
           @Override
@@ -580,6 +585,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       return;
     }
     int tag = AppInfo.getWaitType(getContext());
+    setViewTag(R.id.tv_center, tag);
     if (tag == 0) {
       openRunning = false;
       resetTimePan();

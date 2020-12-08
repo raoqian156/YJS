@@ -516,6 +516,11 @@ public class HttpManager {
     HttpProxy.inner(null, view, LogExeVersion, param);
   }
 
+  public static void readLog(BaseView view) {
+//    HashMap<String, String> param = new HashMap<>();
+//    HttpProxy.bean(view, readlog, param, BaseBean.class);
+  }
+
   public interface OnSaveSuccessListener {
 
     void onSuccess(String absolutePath);

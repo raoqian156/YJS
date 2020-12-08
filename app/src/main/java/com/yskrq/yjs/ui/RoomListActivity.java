@@ -3,6 +3,7 @@ package com.yskrq.yjs.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -13,8 +14,10 @@ import com.rq.rvlibrary.BaseViewHolder;
 import com.rq.rvlibrary.EasyViewHolder;
 import com.rq.rvlibrary.OnItemClickListener;
 import com.rq.rvlibrary.RecyclerUtil;
+import com.yskrq.common.AppInfo;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.bean.TecColorBean;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.HttpInnerListener;
@@ -24,6 +27,10 @@ import com.yskrq.yjs.bean.RoomBean;
 import com.yskrq.yjs.bean.RoomLeftBean;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.DoubleClickHelper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,25 +81,23 @@ public class RoomListActivity extends BaseActivity implements View.OnClickListen
       public void onBindEasyHolder(BaseViewHolder holder, int position, Object o) {
         super.onBindEasyHolder(holder, position, o);
         RoomBean.FixingViewValueBean bean = (RoomBean.FixingViewValueBean) o;
-        //
-        //        itemView.setBackgroundColor("K".equals(item.getResourceType()) ? colorGreen
-        //            : "M".equals(item.getCalctype()) ? colorYellow
-        //            : "1".equals(item.getCleanId()) ? colorGray
-        //            : "1".equals(item.getStatus()) ? colorQian
-        //            : "0".equals(item.getStatus()) ? colorBlue
-        //            : Color.WHITE);
-        int bgRes = "K".equals(bean.getResourceType()) ? R.drawable.conner_4dp_green_btn : "1"
-            .equals(bean.getCleanId()) ? R.drawable.conner_4dp_gray_btn : "0".equals(bean
-            .getStatus()) ? R.drawable.conner_4dp_blue_btn : R.drawable.conner_4dp_use_btn;
-        holder.itemView.setBackgroundResource(bgRes);
-        ((TextView) holder.getItemView(R.id.tv_name)).setTextColor(Color
-            .parseColor(bgRes == R.drawable.conner_4dp_use_btn ? "#FFFFFF" : "#000000"));
+
+        GradientDrawable gd = new GradientDrawable();//创建drawable
+        gd.setColor(Color.parseColor(bean.getColorCode(getNullablePass(0))));
+        gd.setCornerRadius(10);
+        holder.itemView.setBackground(gd);
         holder.getItemView(R.id.iv_has)
               .setVisibility("0".equals(bean.getStatus()) ? View.VISIBLE : View.GONE);
         holder.setItemText(R.id.tv_name, bean.getDescription());
         holder.setItemText(R.id.tv_left_name, bean.getMostPerson());
       }
     };
+    List<TecColorBean.ValueBean> color = AppInfo.getColors(getContext());
+    Map<String, String> colors = new HashMap<>();
+    for (TecColorBean.ValueBean valueBean : color) {
+      colors.put(valueBean.getEntry(), valueBean.getData());
+    }
+    rightAdapter.setPassData(colors);
     new RecyclerUtil(rightAdapter).row(4)
                                   .set2View((RecyclerView) findViewById(R.id.recycler_right));
 

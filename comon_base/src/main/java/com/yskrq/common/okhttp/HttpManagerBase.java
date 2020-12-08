@@ -254,7 +254,8 @@ public class HttpManagerBase {
       techNum = UUID.getDeviceId(BASE.getCxt());
     }
     map.put("sremark", msg);
-    map.put("computername", "");
+    map.put("shopid", AppInfo.getShopsid(BASE.getCxt()));
+    map.put("brandno", techNum);
     if (tag == null) {
       map.put("hoteldate", "NEW_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
           .format(System.currentTimeMillis()));

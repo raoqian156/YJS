@@ -59,7 +59,7 @@ public class HttpSender {
       @Override
       public void onEmptyResponse() {
         if (mNetErrorListeners != null) {
-          mNetErrorListeners.onError(url, params);
+          mNetErrorListeners.onError(path, params);
         }
         listener.onConnectError(new RequestType(tag).with("-1", "请求异常"));
       }
@@ -73,16 +73,16 @@ public class HttpSender {
           listener.onResponseSucceed(new RequestType(tag), base);
         } else if (base != null) {
           base.setAll(con);
+          listener.onResponseError(new RequestType(tag), base);
           if (mNetErrorListeners != null) {
-            mNetErrorListeners.onLogicError(url, params);
+            mNetErrorListeners.onLogicError(path, params);
           }
           LOG.e("HttpSender", "onString.49:");
-          listener.onResponseError(new RequestType(tag), base);
         } else {
-          if (mNetErrorListeners != null) {
-            mNetErrorListeners.onTransError(url, params);
-          }
           listener.onConnectError(new RequestType(tag).with("-1", "请求异常"));
+          if (mNetErrorListeners != null) {
+            mNetErrorListeners.onTransError(path, params);
+          }
         }
       }
     });

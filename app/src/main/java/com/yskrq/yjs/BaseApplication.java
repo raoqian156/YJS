@@ -43,13 +43,18 @@ public class BaseApplication extends Application implements Application.Activity
 
       @Override
       public void onTransError(String url, Map<String, String> params) {
-        HttpManagerBase.senError("YJS_EMPTY_E2", "" + HttpSender.getRequestData(params).toString());
-
+        StringBuffer msg = new StringBuffer();
+        msg.append(url + "\n");
+        msg.append(HttpSender.getRequestData(params).toString() + "\n");
+        HttpManagerBase.senError("YJS_EMPTY_E2", msg.toString());
       }
 
       @Override
       public void onLogicError(String url, Map<String, String> params) {
-        HttpManagerBase.senError("YJS_EMPTY_E3", "" + HttpSender.getRequestData(params).toString());
+        StringBuffer msg = new StringBuffer();
+        msg.append(url + "\n");
+        msg.append(HttpSender.getRequestData(params).toString() + "\n");
+        HttpManagerBase.senError("YJS_EMPTY_E3", msg.toString());
       }
     });
     //    initCloudChannel(this);
