@@ -23,7 +23,6 @@ import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.RequestType;
-import com.yskrq.yjs.BaseApplication;
 import com.yskrq.yjs.MainActivity;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.RunningHelper;
@@ -82,7 +81,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     try {
-      CrashReport.setUserId(AppInfo.getUserid(BaseApplication.ctx));
+      CrashReport.setUserId(AppInfo.getUserid());
     } catch (Exception e) {
 
     }
@@ -91,9 +90,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     NetWorkMonitorManager.getInstance().register(this);
     canCaiEr = "1".equals(AppInfo.getTechType(getContext()));
     LOG.e("HomeFragment", "onCreate.canCaiEr:" + canCaiEr);
-
     HttpManager.refuseSaleDate(this);
-
     AppInfo.getColors(getContext());
   }
 
@@ -145,7 +142,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
     }
 
-    setTextView2View(R.id.tv_num, "技师号:" + AppInfo.getTechNum(getContext()));
+    setTextView2View(R.id.tv_num, "技师号:" + AppInfo.getTechNum());
     List<String> btn = new ArrayList<>();
     btn.add("包厢点单");//晚一点
     btn.add("个人业绩");
@@ -581,10 +578,10 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (!openRunning) {
       return;
     }
-    if (AppInfo.getWaitType(getContext()) == 0) {
+    if (AppInfo.getWaitType() == 0) {
       return;
     }
-    int tag = AppInfo.getWaitType(getContext());
+    int tag = AppInfo.getWaitType();
     setViewTag(R.id.tv_center, tag);
     if (tag == 0) {
       openRunning = false;

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import cn.jpush.android.api.JPushInterface;
 
 public class BaseApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
@@ -26,7 +27,10 @@ public class BaseApplication extends Application implements Application.Activity
   public void onCreate() {
     super.onCreate();
     BaseApplication.ctx = this;
+    BASE.setContext(this);
     BASE.setMainClass(MainActivity.class, true);
+    JPushInterface.setDebugMode(true);
+    JPushInterface.init(this);
     //    CrashHandler.getInstance().init(this);
     CrashReport.initCrashReport(getApplicationContext(), "0fb8de5348", false);
     registerActivityLifecycleCallbacks(this);
@@ -90,7 +94,6 @@ public class BaseApplication extends Application implements Application.Activity
 
   @Override
   public void onActivityResumed(@NonNull Activity activity) {
-    BASE.setContext(activity);
     ImageLoadUtil.setActivity(activity);
   }
 

@@ -113,7 +113,7 @@ public class CaiErProductBean extends BaseBean {
       List<TransBean> res = new ArrayList<>();
       if (sel != null && sel.size() > 0) {
         for (ValueBean valueBean : sel) {
-          res.add(new TransBean(valueBean, AppInfo.getTechNum(context), AppInfo
+          res.add(new TransBean(valueBean, AppInfo.getTechNum(), AppInfo
               .getTechSex(context)));
         }
       }

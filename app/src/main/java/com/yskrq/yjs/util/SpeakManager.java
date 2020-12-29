@@ -8,14 +8,16 @@ import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 
 import com.yskrq.common.AppInfo;
+import com.yskrq.common.BASE;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.SPUtil;
 import com.yskrq.yjs.Speaker;
 import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.net.HttpManager;
 
 public class SpeakManager {
   private static String getReadBrand(Context context) {
-    String s = AppInfo.getTechNum(context);
+    String s = AppInfo.getTechNum();
     if (TextUtils.isEmpty(s)) return "";
     return s.replaceAll("", " ");
   }
@@ -69,13 +71,16 @@ public class SpeakManager {
       //          }
       //        }
       //      });
-      HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
-          .getFacilityno());
+      //      HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
+      //          .getFacilityno());
       return 1;
     } else if (first.cuizhong(AppInfo.getCuiZHongMinutes(context))) {
       openVoice(context);
       final String brand = getReadBrand(context) + "号技师";
       final String spearOut = brand + "还有 " + AppInfo.getCuiZHongMinutes(context) + " 分钟下钟";
+      if (hasRead(first.getAccount() + "_2")) {
+        return 0;
+      }
       Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
@@ -90,6 +95,9 @@ public class SpeakManager {
       return 2;
     } else if (first.daozhong()) {
       openVoice(context);
+      if (hasRead(first.getAccount() + "_3")) {
+        return 0;
+      }
       String brand = getReadBrand(context) + "号技师";
       final String spearOut = brand + "已到钟";
       Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
@@ -104,11 +112,17 @@ public class SpeakManager {
         }
       });
       return 3;
-    } else if (first.needCloseVoice()) {
-      closeVoice(context);
-    } else {
-      openVoice(context);
     }
     return 0;
   }
+
+  private static boolean hasRead(String s) {
+    String read = SPUtil.getString(BASE.getCxt(), "read.tag");
+    if (TextUtils.equals(read, s)) {
+      return true;
+    }
+    SPUtil.saveString(BASE.getCxt(), "read.tag", s);
+    return false;
+  }
+
 }

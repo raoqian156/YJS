@@ -29,6 +29,7 @@ import com.yskrq.yjs.widget.FragmentSaveTabHost;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import cn.jpush.android.api.JPushInterface;
 
 import static com.yskrq.yjs.ui.ModifyPassActivity.RESULT_LOGIN_OUT;
 
@@ -45,6 +46,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    JPushInterface.setAlias(this, 1, AppInfo.getGroupId());
     KeepManager.startAliveRun(this);
     HttpManager.getWifiName(this);
     if (PhoneUtil.needPermission(getContext())) {
@@ -68,7 +70,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
             }
           });
     } else {
-      if (AppInfo.isDebugUser(this)) {
+      if (AppInfo.isDebugUser()) {
         ToastUtil.show("无需开启");
       }
     }
@@ -76,6 +78,8 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     if (powerManager != null) {
       mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
     }
+    HttpManager.uploadJpushId(this);
+//    JPushInterface.setDefaultPushNotificationBuilder(new JPushBuilder(MainActivity.this));
     HttpManager.sendLoginInfo(this);
     HttpManager.readLog(this);
   }
@@ -158,8 +162,8 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
     tabhost.getTabWidget().setDividerDrawable(null);
     tabhost.setOnTabChangedListener(this);
-    HttpManagerBase.senError(AppInfo.getTechNum(this), "============登录 >> " + AppInfo
-        .getUserid(this) + " ============");
+    HttpManagerBase.senError(AppInfo.getTechNum(), "============登录 >> " + AppInfo
+        .getUserid() + " ============");
   }
 
   public static volatile boolean isShowToUser = false;

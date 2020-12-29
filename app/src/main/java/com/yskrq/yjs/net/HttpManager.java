@@ -21,6 +21,7 @@ import com.yskrq.net_library.BaseView;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
+import com.yskrq.yjs.BaseApplication;
 import com.yskrq.yjs.bean.CaiErListBean;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.DianTypeBean;
@@ -52,6 +53,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_SALE_DATE;
 import static com.yskrq.net_library.HttpProxy.TAG_CHANGE_URL;
 import static com.yskrq.yjs.net.Constants.TransCode.AddBillitem;
@@ -78,6 +81,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.LogExeVersion;
 import static com.yskrq.yjs.net.Constants.TransCode.OpenTheStage;
 import static com.yskrq.yjs.net.Constants.TransCode.RelaxAddClock;
 import static com.yskrq.yjs.net.Constants.TransCode.RelaxTechChangeItem;
+import static com.yskrq.yjs.net.Constants.TransCode.RelaxTechRegistrationID;
 import static com.yskrq.yjs.net.Constants.TransCode.SelectCountNum;
 import static com.yskrq.yjs.net.Constants.TransCode.SelectDataByStatus;
 import static com.yskrq.yjs.net.Constants.TransCode.SelectRelaxInvtType;
@@ -124,19 +128,19 @@ public class HttpManager {
     return SPUtil.getString(context, TAG_CHANGE_URL);
   }
 
-  public static HashMap<String, String> getParam(Context context) {
+  public static HashMap<String, String> getParam() {
     //        <param name="computername"></param>平板自定义名称
     HashMap<String, String> param = new HashMap<>();
-    param.put("groupid", AppInfo.getGroupId(context));
-    param.put("brandno", AppInfo.getTechNum(context));
-    String saveName = AppInfo.getPhoneName(context);
+    param.put("groupid", AppInfo.getGroupId());
+    param.put("brandno", AppInfo.getTechNum());
+    String saveName = AppInfo.getPhoneName();
     try {
-      param.put("computermac", UUID.getDeviceId(context));
+      param.put("computermac", UUID.getDeviceId(BASE.getCxt()));
       if (TextUtils.isEmpty(saveName)) {
-        saveName = UUID.getDeviceId(context);
+        saveName = UUID.getDeviceId(BASE.getCxt());
       }
       param.put("computername", saveName);
-      param.put("sversion", AppUtils.getVersion(context));
+      param.put("sversion", AppUtils.getVersion(BASE.getCxt()));
       param.put("smac", saveName);
       param.put("rmastname", saveName);
     } catch (Exception e) {
@@ -146,26 +150,26 @@ public class HttpManager {
       param.put("sversion", "error.get");
     }
     param.put("rmastname", "云技师");
-    param.put("shopsid", AppInfo.getShopsid(context));
-    param.put("opid", AppInfo.getUserid(context));
-    param.put("profitcenter", AppInfo.getProfitCenter(context));
-    param.put("APPToken", AppInfo.getToken(context));
-    param.put("UserId", AppInfo.getUserid(context));
-    param.put("hoteldate", AppInfo.getWorkDate(context));
+    param.put("shopsid", AppInfo.getShopsid());
+    param.put("opid", AppInfo.getUserid());
+    param.put("profitcenter", AppInfo.getProfitCenter());
+    param.put("APPToken", AppInfo.getToken());
+    param.put("UserId", AppInfo.getUserid());
+    param.put("hoteldate", AppInfo.getWorkDate());
     param.put("computerip", AppUtils.getPhoneType());
     param.put("sip", AppUtils.getPhoneType());
     return param;
   }
 
   public static void justRefuseSaleDate(final Context context) {
-    HashMap<String, String> param = getParam(context);
+    HashMap<String, String> param = getParam();
     HttpProxy.inner(new HttpInnerListener() {
       @Override
       public void onString(String json) {
         BaseBean dateBean = new Gson().fromJson(json, BaseBean.class);
-        HttpManagerBase.senError(AppInfo.getTechNum(context), json);
+        HttpManagerBase.senError(AppInfo.getTechNum(), json);
         if (dateBean != null && "0".equals(dateBean.getRespCode())) {
-          AppInfo.setWorkDate(context, dateBean.getRespMsg());
+          AppInfo.setWorkDate(dateBean.getRespMsg());
         }
       }
 
@@ -176,13 +180,13 @@ public class HttpManager {
   }
 
   public static void refuseSaleDate(final BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     HttpProxy.inner(new HttpInnerListener() {
       @Override
       public void onString(String json) {
         BaseBean dateBean = new Gson().fromJson(json, BaseBean.class);
         if (dateBean != null && "0".equals(dateBean.getRespCode())) {
-          AppInfo.setWorkDate(view.getContext(), dateBean.getRespMsg());
+          AppInfo.setWorkDate(dateBean.getRespMsg());
           view.onResponseSucceed(new RequestType(GET_SALE_DATE), dateBean);
         } else if (dateBean != null) {
           view.onResponseError(new RequestType(GET_SALE_DATE), dateBean);
@@ -199,7 +203,7 @@ public class HttpManager {
   }
 
   public static void getServerStatus(final Context context, final HttpInnerListener listener) {
-    final HashMap<String, String> maps = getParam(context);
+    final HashMap<String, String> maps = getParam();
     final String tag = GetRelaxServerList.substring(GetRelaxServerList.lastIndexOf("/") + 1);
     HttpProxy.inner(listener, context, GetRelaxServerList, maps);
   }
@@ -210,7 +214,7 @@ public class HttpManager {
   public static void sendNewTaskSuccess(Context context, String account, String seqnum,
                                         String facilityno) {
 
-    final HashMap<String, String> map = getParam(context);
+    final HashMap<String, String> map = getParam();
     map.put("account", account);
     map.put("seqnum", seqnum);
     map.put("facilityno", facilityno);
@@ -219,7 +223,7 @@ public class HttpManager {
 
   public static void hasSend(Context context, String account, String seqnum, String facilityno,
                              final int type) {
-    final HashMap<String, String> map = getParam(context);
+    final HashMap<String, String> map = getParam();
     map.put("account", account);
     map.put("seqnum", seqnum);
     map.put("facilityno", facilityno);
@@ -228,14 +232,14 @@ public class HttpManager {
   }
 
   public static void getOpenAll(final BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("section", "RelaxGuest");
     param.put("entry", "bUseCloudTech");
     HttpProxy.bean(view, GetHotelCode, param, ListParamBean.class);
   }
 
   public static void getRush(final BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("section", "RelaxGuest");
     param.put("entry", "Rush");
     HttpProxy.inner(new HttpInnerListener() {
@@ -254,7 +258,7 @@ public class HttpManager {
   }
 
   public static void getYun(final HttpInnerListener view, Context context) {
-    HashMap<String, String> param = getParam(context);
+    HashMap<String, String> param = getParam();
     param.put("section", "RelaxGuest");
     param.put("entry", "bUseCloudTech");
     HttpProxy.inner(new HttpInnerListener() {
@@ -271,16 +275,15 @@ public class HttpManager {
   }
 
   public static void SelectRelaxInvtType(BaseView view) {
-    HttpProxy
-        .bean(view, SelectRelaxInvtType, getParam(view.getContext()), RoomProjectTypeBean.class);
+    HttpProxy.bean(view, SelectRelaxInvtType, getParam(), RoomProjectTypeBean.class);
   }
 
   public static void selectgoods(BaseView view) {
-    HttpProxy.bean(view, selectgoods, getParam(view.getContext()), RoomProjectListBean.class);
+    HttpProxy.bean(view, selectgoods, getParam(), RoomProjectListBean.class);
   }
 
   public static void GetRelaxServerList(BaseView view, String... hote) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     if (hote.length > 0) {
       param.put("hoteldate", hote[0]);
     }
@@ -288,16 +291,16 @@ public class HttpManager {
   }
 
   public static void GetRelaxServerList(Context context, HttpInnerListener innerListener) {
-    HttpProxy.inner(innerListener, context, GetRelaxServerList, getParam(context));
+    HttpProxy.inner(innerListener, context, GetRelaxServerList, getParam());
   }
 
   public static void CancelTec(final BaseView view, final String account) {
     checkPermission("RelaxBrandDel", "退技师", view.getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
-        HashMap<String, String> param = getParam(view.getContext());
+        HashMap<String, String> param = getParam();
         param.put("account", account);
-        param.put("tecid", AppInfo.getTechNum(view.getContext()));
+        param.put("tecid", AppInfo.getTechNum());
         HttpProxy.bean(view, CancelTec, param, BaseBean.class);
       }
 
@@ -315,7 +318,7 @@ public class HttpManager {
         .getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
-        HashMap<String, String> param = getParam(view.getContext());
+        HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("tecid", tecid);
         param.put("indexNum", indexNum);
@@ -332,7 +335,7 @@ public class HttpManager {
 
   public static void UpdateStatueYes(BaseView view, String account, String facilityno,
                                      String seqnum, String sid) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("account", account);
     param.put("facilityno", facilityno);
     param.put("seqnum", seqnum);
@@ -345,7 +348,7 @@ public class HttpManager {
     checkPermission("POSBillItemNoDecrease", "退商品", view.getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
-        HashMap<String, String> param = getParam(view.getContext());
+        HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("icount", icount);
         param.put("seqnum", seqnum);
@@ -364,7 +367,7 @@ public class HttpManager {
     checkPermission("POSBillFacilityNoChange", "设施转台", view, new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
-        HashMap<String, String> param = getParam(view);
+        HashMap<String, String> param = getParam();
         param.put("Type", "空台");
         HttpProxy.inner(listener, view, SelectDataByStatus, param);
       }
@@ -377,7 +380,7 @@ public class HttpManager {
   }
   //
   //  public static void getCommonParam(final BaseView view) {
-  //    HashMap<String, String> param = getParam(view.getContext());
+  //    HashMap<String, String> param = getParam();
   //    //        section	是	string	业态参数
   //    //        entry	是	string	参数
   //    param.put("section", "RelaxGuest");
@@ -388,7 +391,7 @@ public class HttpManager {
 
   public static void ChangeRoom(BaseView view, String oldFacilityNo, String facilityNo,
                                 String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("oldFacilityNo", oldFacilityNo);
     param.put("facilityNo", facilityNo);
     param.put("account", account);
@@ -396,16 +399,16 @@ public class HttpManager {
   }
 
   public static void getIscalctime(final BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("sbrandno", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("sbrandno", AppInfo.getTechNum());
     HttpProxy.bean(view, getIscalctime, param, TechProjectBean.class);
   }
 
   //isCover（1封面图 -1轮播图）
   public static void UploadPic(final BaseView view, final String path, boolean isFen) {
-    final HashMap<String, String> param = getParam(view.getContext());
+    final HashMap<String, String> param = getParam();
     view.showLoading("上传中...");
-    param.put("techNo", AppInfo.getTechNum(view.getContext()));
+    param.put("techNo", AppInfo.getTechNum());
     param.put("isCover", isFen ? "1" : "-1");
     saveBitmap(path, new OnSaveSuccessListener() {
       @Override
@@ -416,24 +419,24 @@ public class HttpManager {
   }
 
   public static void selectddan(BaseView view, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("zhh", account);
     HttpProxy.bean(view, selectddan, param, OrderListBean.class);
   }
 
   public static void getPaidMoney(BaseView view, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("account", account);
     HttpProxy.bean(view, getPaidMoney, param, MoneyListBean.class);
   }
 
   public static void SelectRestaurantType(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     HttpProxy.bean(view, SelectRestaurantType, param, RoomLeftBean.class);
   }
 
   public static void SelectCountNum(final BaseView view) {
-    final HashMap<String, String> param = getParam(view.getContext());
+    final HashMap<String, String> param = getParam();
     HttpProxy.inner(new HttpInnerListener() {
       @Override
       public void onString(String json) {
@@ -507,18 +510,26 @@ public class HttpManager {
   }
 
   public static void SelectRestaurantView(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     HttpProxy.bean(view, SelectRestaurantView, param, RoomBean.class);
   }
 
   public static void sendLoginInfo(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     HttpProxy.inner(null, view, LogExeVersion, param);
   }
 
   public static void readLog(BaseView view) {
-//    HashMap<String, String> param = new HashMap<>();
-//    HttpProxy.bean(view, readlog, param, BaseBean.class);
+    //    HashMap<String, String> param = new HashMap<>();
+    //    HttpProxy.bean(view, readlog, param, BaseBean.class);
+  }
+
+  public static void uploadJpushId(BaseView view) {
+    String rid = JPushInterface.getRegistrationID(BaseApplication.ctx);
+    HashMap<String, String> param = getParam();
+    LOG.e("HttpManager", "uploadJpushId.531:" + rid);
+    param.put("registrationid", rid);
+    HttpProxy.bean(view, RelaxTechRegistrationID, param, BaseBean.class);
   }
 
   public interface OnSaveSuccessListener {
@@ -585,8 +596,8 @@ public class HttpManager {
 
   public static void TechAddPro(BaseView view, String relaxaccount, String itemno, String itemcount,
                                 String indexnumber) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("sbrandno", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("sbrandno", AppInfo.getTechNum());
     param.put("relaxaccount", relaxaccount);
     param.put("itemno", itemno);
     param.put("itemcount", itemcount);
@@ -595,19 +606,19 @@ public class HttpManager {
   }
 
   public static void Techonwork(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("opidname", AppInfo.getName(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("opidname", AppInfo.getName());
     HttpProxy.bean(view, Techonwork, param, BaseBean.class);
   }
 
   public static void Techoffwork(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("opidname", AppInfo.getName(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("opidname", AppInfo.getName());
     HttpProxy.bean(view, Techoffwork, param, BaseBean.class);
   }
 
   public static void RelaxAddClock(BaseView view, boolean isAll, String index, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("iaddclock", isAll ? "1" : "0");
     param.put("iaddclockhalf", !isAll ? "1" : "0");
     param.put("indexnum", index);
@@ -616,11 +627,11 @@ public class HttpManager {
   }
 
   public static void GetData(BaseView view, String type, String start, String end) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("type", type);
     param.put("begingDate", start);
     param.put("endDate", end);
-    param.put("Technician", AppInfo.getTechNum(view.getContext()));
+    param.put("Technician", AppInfo.getTechNum());
 
     //    https://hotel16.yskvip.com:9092/TPC_AddItem/GetData?
     //    computerip=&Technician=YSK226691888&endDate=2020-11-04&
@@ -640,7 +651,7 @@ public class HttpManager {
   }
 
   public static void CardSaled(BaseView view, boolean isToday) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     if (isToday) {
       param.put("HotelDate", sdf.format(System.currentTimeMillis()));
@@ -649,22 +660,22 @@ public class HttpManager {
       calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) - 1);
       param.put("HotelDate", sdf.format(calendar.getTimeInMillis()));
     }
-    param.put("ShopsID", AppInfo.getShopsid(view.getContext()));
-    param.put("Technician", AppInfo.getUserid(view.getContext()));
+    param.put("ShopsID", AppInfo.getShopsid());
+    param.put("Technician", AppInfo.getUserid());
     HttpProxy.bean(view, CardSaled, "9095", param, ShouKaBean.class);
   }
 
   public static void TimeCardSaled(BaseView view, String from, String today) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("BeginDate", from);
-    param.put("ShopsID", AppInfo.getShopsid(view.getContext()));
+    param.put("ShopsID", AppInfo.getShopsid());
     param.put("EndDate", today);
-    param.put("Technician", AppInfo.getUserid(view.getContext()));
+    param.put("Technician", AppInfo.getUserid());
     HttpProxy.bean(view, TimeCardSaled, "9095", param, ShouKaBean.class);
   }
 
   public static void BillingSaled(BaseView view, String... p) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     if (p.length == 1) {
       param.put("HotelDate", p[0]);
     } else {
@@ -673,13 +684,13 @@ public class HttpManager {
       param.put("hoteldate", "");
 
     }
-    param.put("ShopsID", AppInfo.getShopsid(view.getContext()));
-    param.put("Technician", AppInfo.getUserid(view.getContext()));
+    param.put("ShopsID", AppInfo.getShopsid());
+    param.put("Technician", AppInfo.getUserid());
     HttpProxy.bean(view, BillingSaled, "9095", param, KaiDanBean.class);
   }
 
   public static void GetRelaxReservation(BaseView view, boolean isCancel, String key, String... p) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("stype", isCancel ? "1" : "0");
 
     if (!TextUtils.isEmpty(key)) {
@@ -689,23 +700,23 @@ public class HttpManager {
       param.put("begindate", p[0]);
       param.put("enddate", p[1]);
     } else {
-      param.put("begindate", AppInfo.getWorkDate(view.getContext()));
-      param.put("enddate", AppInfo.getWorkDate(view.getContext()));
+      param.put("begindate", AppInfo.getWorkDate());
+      param.put("enddate", AppInfo.getWorkDate());
     }
     HttpProxy.bean(view, GetRelaxReservation, param, OrderBean.class);
   }
 
   public static void GetFixingOnUse(BaseView view) {
-    HttpProxy.bean(view, GetFixingOnUse, getParam(view.getContext()), HavedRoomBean.class);
+    HttpProxy.bean(view, GetFixingOnUse, getParam(), HavedRoomBean.class);
   }
 
   public static void GetServiceItem(BaseView view) {
-    HttpProxy.bean(view, GetServiceItem, getParam(view.getContext()), RoomProjectBean.class);
+    HttpProxy.bean(view, GetServiceItem, getParam(), RoomProjectBean.class);
   }
 
   public static void InsertService(BaseView view, String account, String room,
                                    List<RoomProjectBean.ValueBean> selPro) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("account", account);
     param.put("facilityno", room);
     param.put("xhl", new Gson().toJson(selPro));
@@ -713,30 +724,30 @@ public class HttpManager {
   }
 
   public static void brandnoIn(BaseView view, String seqnum, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("seqnum", seqnum);
     param.put("account", account);
     HttpProxy.bean(view, brandnoIn, param, BaseBean.class);
   }
 
   public static void BrandnoOut(BaseView view, String seqnum, String account) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("seqnum", seqnum);
     param.put("account", account);
     HttpProxy.bean(view, BrandnoOut, param, BaseBean.class);
   }
 
   public static void GetRelaxTechJobStatus(HttpInnerListener listener, Context context) {
-    HttpProxy.inner(listener, context, GetRelaxTechJobStatus, getParam(context));
+    HttpProxy.inner(listener, context, GetRelaxTechJobStatus, getParam());
   }
 
   public static void selectgoodsbigrelax(BaseView view) {
-    HttpProxy.bean(view, selectgoodsbigrelax, getParam(view.getContext()), CaiErProductBean.class);
+    HttpProxy.bean(view, selectgoodsbigrelax, getParam(), CaiErProductBean.class);
   }
 
   public static void RelaxTechChangeItem(BaseView view, OrderListBean.ValueBean project,
                                          TechProjectBean.ValueBean item) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("account", project.getAccount());
     param.put("seqnum", project.getSeqNum() + "");
     param.put("itemprice", item.getPrice() + "");
@@ -750,7 +761,7 @@ public class HttpManager {
 
   public static void RelaxTechChangeItem(BaseView view, RelaxListBean.ValueBean project,
                                          TechProjectBean.ValueBean item) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     LOG.e("HttpManager", "RelaxTechChangeItem.738:");
     param.put("account", project.getAccount());
     param.put("seqnum", project.getSeqnum());
@@ -763,32 +774,32 @@ public class HttpManager {
   }
 
   public static void checkTechNo(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("techNo", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("techNo", AppInfo.getTechNum());
     HttpProxy.bean(view, checkTechNo, param, BaseBean.class);
   }
 
   public static void UpdatePwd2(BaseView view, String pass) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("pwd", pass);
     HttpProxy.bean(view, UpdatePwd2, param, BaseBean.class);
   }
 
   public static void UpdatePwd(BaseView view, String pass) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("pwd", MD5Util.getMD5String(pass + "ym"));
     HttpProxy.bean(view, UpdatePwd, param, BaseBean.class);
   }
 
   public static void getTecCoverPhotos(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("tecid", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("tecid", AppInfo.getTechNum());
     HttpProxy.bean(view, getTecCoverPhotos, param, BaseBean.class);
   }
 
   public static void getTecPhotos(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("tecid", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("tecid", AppInfo.getTechNum());
     param.put("stype", "0");
     HttpProxy.bean(view, getTecPhotos, param, PhotosBean.class);
   }
@@ -797,8 +808,8 @@ public class HttpManager {
    * @param index 照片序号
    */
   public static void deletePic(BaseView view, int index, boolean isFen) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("tecid", AppInfo.getTechNum(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("tecid", AppInfo.getTechNum());
     param.put("index", (index + 1) + "");
     param.put("stype", isFen ? "2" : "0");//罗: stype=1 是咨客屏的轮播图,stype=0 是技师移动端的轮播图 2 封面图
 
@@ -806,7 +817,7 @@ public class HttpManager {
   }
 
   public static void getWifiName(final Context context) {
-    HashMap<String, String> param = getParam(context);
+    HashMap<String, String> param = getParam();
     param.put("section", "RelaxGuest");
     param.put("entry", "clockin_wifi");
     HttpProxy.inner(new HttpInnerListener() {
@@ -822,7 +833,7 @@ public class HttpManager {
 
       }
     }, context, GetHotelCodePos, param);
-    HashMap<String, String> param2 = getParam(context);
+    HashMap<String, String> param2 = getParam();
     param2.put("section", "RelaxGuest");
     param2.put("entry", "clockin_latitude");
     HttpProxy.inner(new HttpInnerListener() {
@@ -839,7 +850,7 @@ public class HttpManager {
 
       }
     }, context, GetHotelCodePos, param2);
-    HashMap<String, String> param3 = getParam(context);
+    HashMap<String, String> param3 = getParam();
     param3.put("section", "RelaxGuest");
     param3.put("entry", "clockin_longitude");
     HttpProxy.inner(new HttpInnerListener() {
@@ -858,7 +869,7 @@ public class HttpManager {
   }
 
   public static void SelectType(BaseView view) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     HttpProxy.bean(view, SelectType, param, DianTypeBean.class);
   }
 
@@ -866,7 +877,7 @@ public class HttpManager {
     checkPermission("RelaxOrderClock", "点钟", view.getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
-        HashMap<String, String> param = getParam(view.getContext());
+        HashMap<String, String> param = getParam();
         param.put("key", key);
         param.put("itemno", itemno);
         HttpProxy.bean(view, getWorkingTech, param, TechListBean.class);
@@ -880,19 +891,19 @@ public class HttpManager {
   }
 
   public static void CheckTechDestineStatus(BaseView view, String brandno) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("brandno", brandno);
     HttpProxy.bean(view, CheckTechDestineStatus, param, BaseBean.class);
   }
 
   public static void GetRelaxCdTechFac(BaseView view, String brandno) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("TechNo", brandno);
     HttpProxy.bean(view, GetRelaxCdTechFac, param, YuYueBean.class);
   }
 
   public static void selectzhtddan(HttpInnerListener view, Context context, String facilityno) {
-    HashMap<String, String> param = getParam(context);
+    HashMap<String, String> param = getParam();
     param.put("facilityno", facilityno);
     HttpProxy.inner(view, context, selectzhtddan, param);
   }
@@ -904,7 +915,7 @@ public class HttpManager {
   //  }
 
   public static void OpenTheStage(BaseView view, String facilityno, String Covers) {
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("facilityno", facilityno);
     param.put("Covers", Covers);
     HttpProxy.bean(view, OpenTheStage, param, BaseBean.class);
@@ -929,7 +940,7 @@ public class HttpManager {
   //    moduleid: '2002', functionname: 'POSBillNew', description: '开新单', accesstype: '0'
   public static void checkPermission(String functionName, String description, Context context,
                                      final OnPermissionCheck check) {
-    HashMap<String, String> param = getParam(context);
+    HashMap<String, String> param = getParam();
     param.put("moduleid", "2002");
     param.put("functionname", functionName);
     param.put("description", description);
@@ -970,7 +981,7 @@ public class HttpManager {
   public static void AddBillitem(final BaseView view, final String account,
                                  final List<RoomProjectListBean.ValueBean> sel,
                                  final String facilityno) {
-    final HashMap<String, String> param = getParam(view.getContext());
+    final HashMap<String, String> param = getParam();
     param.put("account", account);
     param.put("FacilityNo", facilityno);
     List<RoomProjectListBean.ValueBean.TransBean> data = RoomProjectListBean.ValueBean
@@ -994,7 +1005,7 @@ public class HttpManager {
   public static void AddBillitemBigRelax(final BaseView view, final String account,
                                          final List<CaiErProductBean.ValueBean> sel,
                                          final String facilityno) {
-    final HashMap<String, String> param = getParam(view.getContext());
+    final HashMap<String, String> param = getParam();
     param.put("account", account);
     param.put("facilityno", facilityno);
     List<CaiErProductBean.ValueBean.TransBean> data = CaiErProductBean.ValueBean
@@ -1036,7 +1047,7 @@ public class HttpManager {
 
   public static void SelectServerlistView(BaseView view, String... hote) {
     LOG.e("HttpManager", "SelectServerlistView.1019:" + BASE.getUseFrom());
-    HashMap<String, String> param = getParam(view.getContext());
+    HashMap<String, String> param = getParam();
     param.put("stype", "0");
     if (hote.length > 0) {
       param.put("hoteldate", hote[0]);
@@ -1056,8 +1067,8 @@ public class HttpManager {
                                        final String indexnumber, final String facilityno,
                                        final String itemno, final String brandno,
                                        final String remark) {
-    HashMap<String, String> param = getParam(view.getContext());
-    param.put("hoteldate", AppInfo.getSaleDate(view.getContext()));
+    HashMap<String, String> param = getParam();
+    param.put("hoteldate", AppInfo.getSaleDate());
     param.put("sid", sid);//列表序号
     param.put("account", account);
     param.put("indexnumber", indexnumber);

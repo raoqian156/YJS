@@ -88,6 +88,10 @@ public class HttpSender {
     });
   }
 
+  public static void post(final String path, final HashMap<String, String> param) {
+    innerPost(path, param, null);
+  }
+
   public static void post(final String path, final HashMap<String, String> param,
                           final HttpInnerListener listener) {
     innerPost(path, param, new HttpInnerListener() {

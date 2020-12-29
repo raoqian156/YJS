@@ -1,6 +1,8 @@
 package com.yskrq.yjs.bean;
 
+import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.BaseBean;
+import com.yskrq.yjs.util.YJSNotifyManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,6 +41,27 @@ public class RelaxListBean extends BaseBean {
      * uploadstatus : 1
      */
 
+    //      account:L000026282         |    新任务    |   催钟    |  到钟  |
+    //      account:L000026282         |      **     |           |       |
+    //      expendtime:0              |              |           |       |
+    //      groupid:9002              |   9002       |    9001   |  9001 |
+    //      sid:5392                  |              |   0~300   |  <= 0 |
+    //      countdowns:0              |              |    < 1    |       |
+    //      rsuhtimes:0               |              |           |  < 2  |
+    //      uploadstatus:0            |     0        |           |       |
+    //      stime:01:29:52                |
+    //      seqnum:1                       |
+    //      indexnumber:8567               |
+    //      facilityno:8892                |
+    //      facilityname:c1                |
+    //      itemno:100                     |
+    //      itemname:保健足疗12345678       |
+    //      itemprice:100.0000             |
+    //      unit:01                        |
+    //      relaxclocktype:1               |
+    //      relaxclockname:点钟            |
+    //      occurtime:2020/12/28 16:30:47  |
+
     private String account;
     private String seqnum;
     private String indexnumber;
@@ -58,13 +81,6 @@ public class RelaxListBean extends BaseBean {
     private String countdowns;
     private String rsuhtimes;
     private String uploadstatus;
-
-    public String getStatusColor() {
-      //  this ==null    htmlBrandColor3
-      //   relaxclocktype   0 -> htmlBrandColor1   other ->htmlBrandColor2
-      String bgColorStr = "#fff";
-      return bgColorStr;
-    }
 
     public String getAccount() {
       return account;
@@ -175,17 +191,18 @@ public class RelaxListBean extends BaseBean {
     }
 
     public int getShowStatus() {// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
-      int tag = 0;
-      if ("9000".equals(getGroupid())) {//未安排 - 不能打卡
-        tag = 0;
-      } else if ("9001".equals(getGroupid())) {//已打卡
-        tag = 2;
-      } else if ("9002".equals(getGroupid())) {//待打卡
-        tag = 1;
-      } else if ("9003".equals(getGroupid())) {//3-已下钟
-        tag = 3;
-      }
-      return tag;
+      return YJSNotifyManager.getShowStatus(getGroupid());
+      //      int tag = 0;
+      //      if ("9000".equals(getGroupid())) {//未安排 - 不能打卡
+      //        tag = 0;
+      //      } else if ("9001".equals(getGroupid())) {//已打卡
+      //        tag = 2;
+      //      } else if ("9002".equals(getGroupid())) {//待打卡
+      //        tag = 1;
+      //      } else if ("9003".equals(getGroupid())) {//3-已下钟
+      //        tag = 3;
+      //      }
+      //      return tag;
     }
 
     public void setGroupid(String groupid) {
@@ -241,21 +258,25 @@ public class RelaxListBean extends BaseBean {
     }
 
     public boolean cuizhong(int minutes) {
+      boolean isCui = false;
       try {
-        return Integer.parseInt(countdowns) < 1 && Integer.parseInt(sid) > 0 && Integer
+        isCui = Integer.parseInt(countdowns) < 1 && Integer.parseInt(sid) > 0 && Integer
             .parseInt(sid) <= minutes * 60 && getShowStatus() == 2;
       } catch (Exception e) {
-        return false;
       }
+      LOG.e("RelaxListBean", isCui + ".cuizhong.259:" + minutes);
+      return isCui;
     }
 
     public boolean daozhong() {
+      boolean isDao = false;
       try {
-        return Integer.parseInt(rsuhtimes) < 2 && Integer
+        isDao= Integer.parseInt(rsuhtimes) < 2 && Integer
             .parseInt(sid) <= 0 && getShowStatus() == 2;
       } catch (Exception e) {
-        return false;
       }
+      LOG.e("RelaxListBean", isDao + ".cuizhong.277:");
+      return isDao;
     }
 
     public boolean hasNewTask() {

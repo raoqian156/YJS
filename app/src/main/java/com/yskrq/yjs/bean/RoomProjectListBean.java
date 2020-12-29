@@ -445,8 +445,8 @@ public class RoomProjectListBean extends BaseBean {
     public static List<TransBean> getUploadXhl(List<ValueBean> beans, Context context,
                                                String account) {
       List<TransBean> res = new ArrayList<>();
-      String groupId = AppInfo.getGroupId(context);
-      String shopId = AppInfo.getShopsid(context);
+      String groupId = AppInfo.getGroupId();
+      String shopId = AppInfo.getShopsid();
       if (beans != null && beans.size() > 0) {
         for (ValueBean item : beans) {
           res.add(new TransBean(item, groupId, shopId, account));

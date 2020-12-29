@@ -1,7 +1,5 @@
 package com.yskrq.common.okhttp;
 
-import android.content.Context;
-
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
@@ -23,7 +21,6 @@ import com.yskrq.net_library.HttpProxy;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.net_library.url_conn.HttpSender;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import static com.yskrq.common.okhttp.Constants_base.TransCode.GET_TEC_COLOR_STATUS;
@@ -32,6 +29,7 @@ import static com.yskrq.common.okhttp.Constants_base.TransCode.SELECT_FOOT_Liu;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.SELECT_LOGIN_Liu;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.UPDATE_CHECK_Liu;
 import static com.yskrq.common.okhttp.Constants_base.TransCode.getTechNo;
+import static com.yskrq.common.okhttp.Constants_base.TransCode.wirtelog;
 import static com.yskrq.net_library.HttpProxy.TAG_CHANGE_URL;
 
 
@@ -46,7 +44,7 @@ public class HttpManagerBase {
    * @param user 账号
    * @param pass 密码
    *             登录成功 {@link BaseView#onResponseSucceed(RequestType, BaseBean)}
-   *             数据已保存{@link AppInfo#saveLoginInfo(Context, LoginBean)}
+   *             数据已保存{@link AppInfo#saveLoginInfo(LoginBean)}
    *             登录逻辑出错，需用户做对应操作
    *             {@link com.yskrq.net_library.BaseView#onResponseError(RequestType, BaseBean)} )}
    *             {@link RequestType#more(Object obj)}  >>>> String、UpdateBean、List<ProfitCenterValueBean>
@@ -134,7 +132,7 @@ public class HttpManagerBase {
                 LOG.bean("HttpManagerBase", json);
                 BaseBean teach = new Gson().fromJson(json, BaseBean.class);
                 teach.setAll(json);
-                AppInfo.setTechNum(view.getContext(), (String) teach.get(String.class, "Value"));
+                AppInfo.setTechNum((String) teach.get(String.class, "Value"));
                 AppInfo.setTechType(view.getContext(), (String) teach.get(String.class, "Comment"));
                 AppInfo.setTechSex(view.getContext(), (String) teach.get(String.class, "sex"));
                 getFoot(login, bean, new HttpInnerListener() {
@@ -142,7 +140,7 @@ public class HttpManagerBase {
                   public void onString(String json) {
                     ProfitCenterBean bean = new Gson().fromJson(json, ProfitCenterBean.class);
                     if (bean.isOk()) {
-                      AppInfo.saveLoginInfo(view.getContext(), login);
+                      AppInfo.saveLoginInfo(login);
                       if (bean.getProfitCenter_value() != null && bean.getProfitCenter_value()
                                                                       .size() <= 1) {
                         AppInfo
@@ -244,25 +242,20 @@ public class HttpManagerBase {
   }
 
   public static void senError(String tag, String msg) {
-    LOG.e("HttpManager", "sendErrorMsg.msg:" + msg);
-    final String url = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
+    if ("运行记录".equals(tag)) return;
     final HashMap<String, String> map = new HashMap<>();
     String techNum = "nullContext";
     try {
-      techNum = AppInfo.getTechNum(BASE.getCxt());
+      techNum = AppInfo.getUserid();
     } catch (Exception e) {
       techNum = UUID.getDeviceId(BASE.getCxt());
     }
-    map.put("sremark", msg);
-    map.put("shopid", AppInfo.getShopsid(BASE.getCxt()));
+    map.put("sremark", "\r\n-----------------------------------------------\n\n" + msg);
+    map.put("shopid", AppInfo.getShopsid());
     map.put("brandno", techNum);
-    if (tag == null) {
-      map.put("hoteldate", "NEW_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
-          .format(System.currentTimeMillis()));
-    } else {
-      map.put("hoteldate", tag + "_" + techNum + "_" + new SimpleDateFormat(" yyyyMMdd")
-          .format(System.currentTimeMillis()));
-    }
-    HttpSender.post(url, map, null);
+    map.put("hoteldate", BASE.getCxt().getResources()
+                             .getString(R.string.app_name) + "_" + tag + "_V" + AppUtils
+        .getVersionName());
+    HttpSender.post(wirtelog, map);
   }
 }

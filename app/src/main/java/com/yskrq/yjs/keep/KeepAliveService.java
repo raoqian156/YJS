@@ -24,6 +24,7 @@ import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.NoticeUtil;
 import com.yskrq.yjs.util.SpeakManager;
+import com.yskrq.yjs.util.YJSNotifyManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -177,10 +178,10 @@ public class KeepAliveService extends Service {
     }
     final StringBuffer logInfo = new StringBuffer();
     final Map<String, String> param = new HashMap<>();
-    param.put("groupid", AppInfo.getGroupId(context));
-    param.put("brandno", AppInfo.getTechNum(context));
-    param.put("profitcenter", AppInfo.getProfitCenter(context));
-    param.put("hoteldate", AppInfo.getWorkDate(context));
+    param.put("groupid", AppInfo.getGroupId());
+    param.put("brandno", AppInfo.getTechNum());
+    param.put("profitcenter", AppInfo.getProfitCenter());
+    param.put("hoteldate", AppInfo.getWorkDate());
     HttpManager.GetRelaxServerList(context, new HttpInnerListener() {
       @Override
       public void onString(String json) {
@@ -212,22 +213,19 @@ public class KeepAliveService extends Service {
     if (bean != null && bean.getValue() != null && bean.getValue().size() > 0) {
       RelaxListBean.ValueBean first = bean.getValue().get(0);
       int tag = first.getShowStatus();
+      int sId = -1;
+      String expendTime = "";
       AppInfo.setWaitType(context, tag);
       if (tag == 2) {
         try {
-          int secondLeft = Integer.parseInt(first.getSid());
-          LOG.e("KeepAliveService", "notify.first.getSid():" + first.getSid());
-          AppInfo.saveRunningTargetTime(context, secondLeft * 1000);
+          sId = Integer.parseInt(first.getSid());
         } catch (Exception e) {
         }
       } else if (tag == 1) {
-        AppInfo.setWait(context, first.getExpendtime());
-        AppInfo.saveRunningTargetTime(context, 0);
-      } else {
-        AppInfo.setWait(context, "");
+        expendTime = first.getExpendtime();
       }
+      YJSNotifyManager.change(tag, sId, expendTime);
     } else {
-      LOG.e("KeepAliveService", "setWaitType.232:");
       AppInfo.setWaitType(context, 0);
       AppInfo.setWait(context, "");
       AppInfo.saveRunningTargetTime(context, 0);
@@ -247,13 +245,14 @@ public class KeepAliveService extends Service {
   }
 
   private static void notifyUser(Context context) {
+    LOG.e("KeepAliveService", "notifyUser.247:");
     String title, con;
-    int tag = AppInfo.getWaitType(context);
-    if (context == null || TextUtils.isEmpty(AppInfo.getTechNum(context))) {
+    int tag = AppInfo.getWaitType();
+    if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
       title = "登录失效";
       con = "请重新登录";
     } else if (tag == 0) {
-      title = AppInfo.getTechNum(context) + " 号技师";
+      title = AppInfo.getTechNum() + " 号技师";
       SimpleDateFormat simpleDateFormat;
       simpleDateFormat = new SimpleDateFormat("HH:mm");
       con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
@@ -274,7 +273,7 @@ public class KeepAliveService extends Service {
         con = simpleDateFormat.format(time);
       }
     } else {
-      title = AppInfo.getTechNum(context) + " 号技师";
+      title = AppInfo.getTechNum() + " 号技师";
       con = "暂无新任务...";
     }
     NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con);

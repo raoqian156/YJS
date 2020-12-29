@@ -178,7 +178,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
     // TODO: 2020-11-03 数据会累加
     HttpManager.selectddan(this, account);
     HttpManager.getPaidMoney(this, account);
-    setString2View(R.id.tv_user, AppInfo.getUserid(this));
+    setString2View(R.id.tv_user, AppInfo.getUserid());
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
     setString2View(R.id.tv_time, simpleDateFormat.format(System.currentTimeMillis()));
   }

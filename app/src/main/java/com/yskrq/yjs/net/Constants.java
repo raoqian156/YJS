@@ -99,6 +99,7 @@ public class Constants {
     public static final String LogExeVersion = "RM_Others/LogExeVersion";
     public static final String readlog = "https://hotel16.yskvip.com:9092/RM_Others/readlog";
 
+    public static final String RelaxTechRegistrationID = "RM_Others/RelaxTechRegistrationID";
 
     //    查看详情（判断此房间是否已开房）
     public static final String selectzhtddan = "CA_PosBillNew_Proc/selectzhtddan";

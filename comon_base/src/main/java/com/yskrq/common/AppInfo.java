@@ -24,69 +24,62 @@ import static android.content.Context.WIFI_SERVICE;
 public class AppInfo {
   public static LoginBean loginBean;
 
-  public static void saveLoginInfo(Context context, LoginBean bean) {
+  public static void saveLoginInfo(LoginBean bean) {
     loginBean = bean;
 
-    SPUtil.saveString(context, "userid", bean.getUserid());
-    SPUtil.saveString(context, "groupid", bean.getGroupid());
-    SPUtil.saveString(context, "shopsid", bean.getShopsid());
-    SPUtil.saveString(context, "username", bean.getUsername());
-    SPUtil.saveString(context, "apptoken", bean.getApptoken());
+    SPUtil.saveString(BASE.getCxt(), "userid", bean.getUserid());
+    SPUtil.saveString(BASE.getCxt(), "groupid", bean.getGroupid());
+    SPUtil.saveString(BASE.getCxt(), "shopsid", bean.getShopsid());
+    SPUtil.saveString(BASE.getCxt(), "username", bean.getUsername());
+    SPUtil.saveString(BASE.getCxt(), "apptoken", bean.getApptoken());
   }
 
-  public static String getGroupId(Context context) {
-    if (context == null) return "getGroupId";
-    return SPUtil.getString(context, "groupid");
+  public static String getGroupId() {
+    return SPUtil.getString(BASE.getCxt(), "groupid");
   }
 
-  public static boolean isDebugUser(Context context) {
-    String url = SPUtil.getString(context, "HttpParamUtil.change.url");
+  public static boolean isDebugUser() {
+    String url = SPUtil.getString(BASE.getCxt(), "HttpParamUtil.change.url");
     if (!TextUtils.isEmpty(url)) {
       return url.startsWith("hotel16");
     }
     return false;
   }
 
-  public static String getShopsid(Context context) {
-    if (context == null) return "getShopsid";
-    return SPUtil.getString(context, "shopsid");
+  public static String getShopsid() {
+    return SPUtil.getString(BASE.getCxt(), "shopsid");
   }
 
-  public static String getUserid(Context context) {
-    if (context == null) return "getUserid";
-    return SPUtil.getString(context, "userid");
+  public static String getUserid() {
+    return SPUtil.getString(BASE.getCxt(), "userid");
   }
 
-  public static String getToken(Context context) {
-    if (context == null) return "getToken";
-    return SPUtil.getString(context, "apptoken");
+  public static String getToken() {
+    return SPUtil.getString(BASE.getCxt(), "apptoken");
   }
 
-  public static String getName(Context context) {
+  public static String getName() {
     if (loginBean != null) {
       return loginBean.getUsername();
     }
-    if (context == null) return "getName";
-    return SPUtil.getString(context, "username");
+    return SPUtil.getString(BASE.getCxt(), "username");
   }
 
-  public static String getProfitCenter(Context context) {
-    if (context == null) return "getProfitCenter";
-    return SPUtil.getString(context, "profitCenter");
+  public static String getProfitCenter() {
+    return SPUtil.getString(BASE.getCxt(), "profitCenter");
   }
 
-  public static String getWorkDate(Context context) {
-    if (context == null) return "getWorkDate";
-    return SPUtil.getString(context, "mWorkDate");
+  public static String getWorkDate() {
+    return SPUtil.getString(BASE.getCxt(), "mWorkDate");
   }
 
-  public static void setWorkDate(Context context, String comment) {
-    SPUtil.saveString(context, "mWorkDate", comment);
+  public static void setWorkDate(String comment) {
+    SPUtil.saveString(BASE.getCxt(), "mWorkDate", comment);
   }
 
   public static void setProfitCenter(Context context, String code) {
     LOG.e("AppInfo", "setProfitCenter<" + code + ">");
-    SPUtil.saveString(context, "profitCenter", code);
+    SPUtil.saveString(BASE.getCxt(), "profitCenter", code);
   }
 
   private final static String TAG_COMPUTER_NAME = "computerName";
@@ -98,19 +91,17 @@ public class AppInfo {
   private final static String TAG_RUNNING = "home.running.target";
 
 
-  public static String getPhoneName(Context context) {
-    if (context == null) return "getPhoneName";
-    return SPUtil.getString(context, TAG_COMPUTER_NAME);
+  public static String getPhoneName() {
+    return SPUtil.getString(BASE.getCxt(), TAG_COMPUTER_NAME);
   }
 
-  public static String getSaleDate(Context context) {
-    if (context == null) return "getSaleDate";
-    return SPUtil.getString(context, TAG_SALE_DATE);
+  public static String getSaleDate() {
+    return SPUtil.getString(BASE.getCxt(), TAG_SALE_DATE);
   }
 
   public static void setAutoLogin(Context context, boolean isChecked) {
     LOG.e("AppInfo", "setAutoLogin.85:" + isChecked);
-    SPUtil.saveInt(context, TAG_AUTO_LOGIN, isChecked ? 1 : 0);
+    SPUtil.saveInt(BASE.getCxt(), TAG_AUTO_LOGIN, isChecked ? 1 : 0);
   }
 
 
@@ -118,55 +109,54 @@ public class AppInfo {
 
   //  1-自动控制 0-未打开
   public static void setVoiceType(Context context, int type) {
-    SPUtil.saveInt(context, VOICE_TYPE, type);
+    SPUtil.saveInt(BASE.getCxt(), VOICE_TYPE, type);
   }
 
   public static boolean isAutoLogin(Context context) {
     if (context == null) return false;
-    LOG.e("AppInfo", "setAutoLogin.86:" + (SPUtil.getInt(context, TAG_AUTO_LOGIN) == 1));
-    return SPUtil.getInt(context, TAG_AUTO_LOGIN) == 1;
+    LOG.e("AppInfo", "setAutoLogin.86:" + (SPUtil.getInt(BASE.getCxt(), TAG_AUTO_LOGIN) == 1));
+    return SPUtil.getInt(BASE.getCxt(), TAG_AUTO_LOGIN) == 1;
   }
 
-  public static void setTechNum(Context context, String date) {
-    SPUtil.saveString(context, TAG_SAVE_TECH, date);
+  public static void setTechNum( String date) {
+    SPUtil.saveString(BASE.getCxt(), TAG_SAVE_TECH, date);
   }
 
-  public static String getTechNum(Context context) {
-    if (context == null) return "getTechNum";
-    return SPUtil.getString(context, TAG_SAVE_TECH);
+  public static String getTechNum() {
+    return SPUtil.getString(BASE.getCxt(), TAG_SAVE_TECH);
   }
 
   public static void setTechType(Context context, String date) {
-    SPUtil.saveString(context, TAG_SAVE_TYPE, date);
+    SPUtil.saveString(BASE.getCxt(), TAG_SAVE_TYPE, date);
   }
 
   public static String getTechType(Context context) {
     if (context == null) return "getTechType";
-    return SPUtil.getString(context, TAG_SAVE_TYPE);
+    return SPUtil.getString(BASE.getCxt(), TAG_SAVE_TYPE);
   }
 
   public static void setTechSex(Context context, String date) {
-    SPUtil.saveString(context, TAG_SAVE_SEX, date);
+    SPUtil.saveString(BASE.getCxt(), TAG_SAVE_SEX, date);
   }
 
 
   public static String getTechSex(Context context) {
     if (context == null) return "getTechSex";
-    return SPUtil.getString(context, TAG_SAVE_SEX);
+    return SPUtil.getString(BASE.getCxt(), TAG_SAVE_SEX);
   }
 
   public static void saveRunningTargetTime(Context context, long l) {
     LOG.e("AppInfo", "saveRunningTargetTime.114:" + l);
-    SPUtil.saveLong(context, TAG_RUNNING, l + System.currentTimeMillis());
+    SPUtil.saveLong(BASE.getCxt(), TAG_RUNNING, l + System.currentTimeMillis());
   }
 
   public static long getRunningLeftTime(Context context) {
-    return SPUtil.getLong(context, TAG_RUNNING) - System.currentTimeMillis();
+    return SPUtil.getLong(BASE.getCxt(), TAG_RUNNING) - System.currentTimeMillis();
   }
 
   public static void setCuiZHongMinutes(Context context, String data) {
     try {
-      SPUtil.saveInt(context, "RUSH.TIME", Integer.parseInt(data));
+      SPUtil.saveInt(BASE.getCxt(), "RUSH.TIME", Integer.parseInt(data));
     } catch (Exception e) {
 
     }
@@ -177,7 +167,7 @@ public class AppInfo {
   }
 
   public static void setWait(Context context, String expendtime) {//通知需要展示的时间
-    SPUtil.saveString(context, "Wait.TIME", expendtime);
+    SPUtil.saveString(BASE.getCxt(), "Wait.TIME", expendtime);
   }
 
   public static String getWait(Context context) {
@@ -196,34 +186,34 @@ public class AppInfo {
   public static void saveColor(Context context, List<? extends Serializable> colors) {//通知需要展示的状态
     String save = new Gson().toJson(colors);
     LOG.e("AppInfo", "saveColor.164:" + save);
-    SPUtil.saveString(context, "tech.colors", save);
+    SPUtil.saveString(BASE.getCxt(), "tech.colors", save);
   }
 
   public static void setWaitType(Context context, int tag) {//通知需要展示的状态
     LOG.showUserWhere("setWaitType -> " + tag);
-    SPUtil.saveInt(context, "Wait.TYPE", tag);
+    SPUtil.saveInt(BASE.getCxt(), "Wait.TYPE", tag);
   }
 
-  public static int getWaitType(Context context) {
-    return SPUtil.init(context).getInt("Wait.TYPE", 0);
+  public static int getWaitType() {
+    return SPUtil.init(BASE.getCxt()).getInt("Wait.TYPE", 0);
   }
 
   public static void clearNotify(Context context) {
-    SPUtil.saveString(context, "Wait.TIME", "");
-    SPUtil.saveLong(context, TAG_RUNNING, 0L);
+    SPUtil.saveString(BASE.getCxt(), "Wait.TIME", "");
+    SPUtil.saveLong(BASE.getCxt(), TAG_RUNNING, 0L);
   }
 
   public static void setClockWifi(Context context, String data) {
-    SPUtil.saveString(context, "Sign.wifi", data);
+    SPUtil.saveString(BASE.getCxt(), "Sign.wifi", data);
   }
 
   public static void setSignLat(Context context, String data) {
     LOG.e("AppInfo", "setSignLat.221:" + data);
-    SPUtil.saveString(context, "Sign.lat", data);
+    SPUtil.saveString(BASE.getCxt(), "Sign.lat", data);
   }
 
   public static void setSignLon(Context context, String data) {
-    SPUtil.saveString(context, "Sign.lon", data);
+    SPUtil.saveString(BASE.getCxt(), "Sign.lon", data);
   }
 
   public static String getWifiName(Context context) {
@@ -245,7 +235,7 @@ public class AppInfo {
    */
   public static int canSign(Context context, double latitude, double longitude) {
     if (context == null) return -1;
-    String wifiName = SPUtil.getString(context, "Sign.wifi");
+    String wifiName = SPUtil.getString(BASE.getCxt(), "Sign.wifi");
     boolean isWifiOk = false;
     if (TextUtils.isEmpty(wifiName)) {
       isWifiOk = true;
@@ -265,8 +255,8 @@ public class AppInfo {
     if (!isWifiOk) {
       return 1;
     }
-    String lat = SPUtil.getString(context, "Sign.lat");
-    String lon = SPUtil.getString(context, "Sign.lon");
+    String lat = SPUtil.getString(BASE.getCxt(), "Sign.lat");
+    String lon = SPUtil.getString(BASE.getCxt(), "Sign.lon");
     boolean locationOK = false;
     if ("0".equals(lat) || "0".equals(lon)) {
       locationOK = true;
@@ -284,8 +274,8 @@ public class AppInfo {
 
   public static boolean needLocation(Context context) {
     if (context == null) return false;
-    String lat = SPUtil.getString(context, "Sign.lat");
-    String lon = SPUtil.getString(context, "Sign.lon");
+    String lat = SPUtil.getString(BASE.getCxt(), "Sign.lat");
+    String lon = SPUtil.getString(BASE.getCxt(), "Sign.lon");
     LOG.e("AppInfo", "needLocation.lat:" + lat + "  lon=" + lon);
     if ("0".equals(lat) || "0".equals(lon)) {
       return false;
@@ -318,15 +308,15 @@ public class AppInfo {
 
   public static void loginOut(Context context) {
     loginBean = null;
-    SPUtil.saveString(context, "groupid", "");
-    SPUtil.saveString(context, "shopsid", "");
-    SPUtil.saveString(context, "username", "");
-    SPUtil.saveString(context, "apptoken", "");
-    SPUtil.saveString(context, "userid", "");
-    setTechNum(context, "");
-    setProfitCenter(context, "");
-    setWorkDate(context, "");
-    setAutoLogin(context, false);
+    SPUtil.saveString(BASE.getCxt(), "groupid", "");
+    SPUtil.saveString(BASE.getCxt(), "shopsid", "");
+    SPUtil.saveString(BASE.getCxt(), "username", "");
+    SPUtil.saveString(BASE.getCxt(), "apptoken", "");
+    SPUtil.saveString(BASE.getCxt(), "userid", "");
+    setTechNum(  "");
+    setProfitCenter(BASE.getCxt(), "");
+    setWorkDate("");
+    setAutoLogin(BASE.getCxt(), false);
   }
 
 }

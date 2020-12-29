@@ -13,6 +13,7 @@ public class Constants_base {
         public static final String UPDATE_CHECK_Liu = "User/getLatestVersion";
         public static final String SELECT_LOGIN_Liu = "User/SelectLogin";
         public static final String SELECT_FOOT_Liu = "CA_Restaurant/selectFootBath";
+        public static final String wirtelog = "https://hotel16.yskvip.com:9092/RM_Others/wirtelog";
         public static final String getTechNo = "TPC_AddItem/getTechNo";
 
         public static final String GET_SALE_DATE = "CA_Restaurant/SelectHotelDate";

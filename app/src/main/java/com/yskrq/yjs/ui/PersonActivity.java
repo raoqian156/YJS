@@ -27,16 +27,16 @@ public class PersonActivity extends BaseActivity {
   @Override
   protected void initView() {
     initTitle("个人信息");
-    setString2View( R.id.tv_no,AppInfo.getUserid(this));
-    setString2View( R.id.tv_name,AppInfo.getTechNum(this));
-    setString2View( R.id.tv_group,AppInfo.getGroupId(this));
-    setString2View( R.id.tv_shop,AppInfo.getShopsid(this));
+    setString2View(R.id.tv_no, AppInfo.getUserid());
+    setString2View(R.id.tv_name, AppInfo.getTechNum());
+    setString2View(R.id.tv_group, AppInfo.getGroupId());
+    setString2View(R.id.tv_shop, AppInfo.getShopsid());
     HttpManager.checkTechNo(this);
   }
 
   @Override
   public <T extends BaseBean> void onResponseSucceed(@NonNull RequestType type, @NonNull T data) {
     super.onResponseSucceed(type, data);
-    setString2View( R.id.tv_name,data.getStrInList("Description"));
+    setString2View(R.id.tv_name, data.getStrInList("Description"));
   }
 }

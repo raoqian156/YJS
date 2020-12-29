@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.yskrq.common.BASE;
 import com.yskrq.net_library.BuildConfig;
 
 import static android.content.Context.UI_MODE_SERVICE;
@@ -120,6 +121,10 @@ public class AppUtils {
 
   public static String getPhoneType() {
     return Build.MANUFACTURER + "-" + Build.MODEL;
+  }
+
+  public static String getVersionName() {
+    return getVersion(BASE.getCxt());
   }
 
   //

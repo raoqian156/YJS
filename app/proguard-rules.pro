@@ -235,3 +235,19 @@ public  *;
 
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.* {*;}
+-dontoptimize
+-dontpreverify
+
+-dontwarn cn.jpush.**
+-keep class cn.jpush.** { *; }
+#==================gson==========================
+-dontwarn com.google.**
+-keep class com.google.gson.** {*;}
+
+#==================protobuf======================
+-dontwarn com.google.**
+-keep class com.google.protobuf.** {*;}
+#-keep class cn.jiguang.** { *; }
+#-keep class android.support.** { *; }
+#-keep class androidx.** { *; }
+#-keep class com.google.android.** { *; }

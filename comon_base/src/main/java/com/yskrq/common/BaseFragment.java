@@ -143,8 +143,8 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
     StringBuffer sb = new StringBuffer();
     sb.append("\nwhere:BaseFragment -> onViewEmpty");
     sb.append("\nwhere:getContext()==null -> " + (getContext() == null));
-    sb.append("\nAppInfo.getTechNum:" + AppInfo.getTechNum(BASE.getCxt()));
-    sb.append("\nAppInfo.getWorkDate:" + AppInfo.getWorkDate(BASE.getCxt()));
+    sb.append("\nAppInfo.getTechNum:" + AppInfo.getTechNum());
+    sb.append("\nAppInfo.getWorkDate:" + AppInfo.getWorkDate());
     HttpManagerBase.senError("VIEW_ERROR", sb.toString());
   }
 
