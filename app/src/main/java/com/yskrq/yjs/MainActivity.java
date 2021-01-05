@@ -20,6 +20,8 @@ import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
+import com.yskrq.net_library.BaseBean;
+import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.ui.HomeFragment;
@@ -27,10 +29,12 @@ import com.yskrq.yjs.ui.MineFragment;
 import com.yskrq.yjs.util.PhoneUtil;
 import com.yskrq.yjs.widget.FragmentSaveTabHost;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cn.jpush.android.api.JPushInterface;
 
+import static com.yskrq.yjs.net.Constants.TransCode.RelaxTechRegistrationID;
 import static com.yskrq.yjs.ui.ModifyPassActivity.RESULT_LOGIN_OUT;
 
 
@@ -47,7 +51,6 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     JPushInterface.setAlias(this, 1, AppInfo.getGroupId());
-    KeepManager.startAliveRun(this);
     HttpManager.getWifiName(this);
     if (PhoneUtil.needPermission(getContext())) {
       AppInfo.setVoiceType(this, 1);
@@ -55,10 +58,10 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     delete();
     BaseApplication.isLogin = true;
     LOG.e("MainActivity", "onCreate.49:");
-
-    if (!AppUtils.isIgnoringBatteryOptimizations(this)) {
+    ToastUtil.show("推测尺寸：" + AppUtils.showInches() + "英寸");
+    if (!AppInfo.skipBattery() && !AppUtils.isIgnoringBatteryOptimizations(this)) {
       DialogHelper
-          .showRemind(this, "为了保持数据的实时性，需要忽略电池优化，是否前去开启？", new DialogHelper.DialogConfirmListener() {
+          .showRemind(this, "为了增强数据的实时性，需要忽略电池优化，是否前去开启？", new DialogHelper.DialogConfirmListener() {
             @Override
             public void onSure() {
               AppUtils.requestIgnoreBatteryOptimizations(MainActivity.this);
@@ -66,7 +69,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
 
             @Override
             public void onCancel() {
-
+              AppInfo.needSkipBattery();
             }
           });
     } else {
@@ -78,8 +81,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     if (powerManager != null) {
       mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
     }
-    HttpManager.uploadJpushId(this);
-//    JPushInterface.setDefaultPushNotificationBuilder(new JPushBuilder(MainActivity.this));
+    HttpManager.RelaxTechRegistrationID(this);
     HttpManager.sendLoginInfo(this);
     HttpManager.readLog(this);
   }
@@ -198,7 +200,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (resultCode == RESULT_LOGIN_OUT) {
-      KeepManager.stopAliveRun(getContext());
+      KeepManager.stopAliveRun();
       AppInfo.loginOut(getContext());
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
@@ -220,6 +222,20 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
       LOG.e("MainActivity", "onKeyDown.160:");
     }
     return super.onKeyDown(keyCode, event);
+  }
+
+  private static boolean jiguanFai = true;
+
+  public static boolean isJiguanFai() {
+    return jiguanFai;
+  }
+
+  @Override
+  public <T extends BaseBean> void onResponseSucceed(@NonNull RequestType type, @NonNull T data) {
+    super.onResponseSucceed(type, data);
+    if (type.is(RelaxTechRegistrationID)) {
+      jiguanFai = false;
+    }
   }
 
   @Override

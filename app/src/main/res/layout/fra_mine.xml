@@ -35,6 +35,13 @@
         style="@style/MineClickText"
         android:drawableLeft="@mipmap/ic_mine_about"
         android:text="忽略电池优化" />
+
+    <TextView
+        android:id="@+id/btn_jiguang"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_about"
+        android:text="极光推送更新" />
+
     <TextView
         android:id="@+id/btn_voice"
         style="@style/MineClickText"

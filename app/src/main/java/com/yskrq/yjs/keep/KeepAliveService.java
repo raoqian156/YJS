@@ -108,12 +108,21 @@ public class KeepAliveService extends Service {
 
   private void quitSelf() {
     Log.e("KeepAliveService", "quitSelf.131:");
+
     if (connection != null) {
-      unbindService(connection);
+      try {
+        unbindService(connection);
+      } catch (Exception e) {
+
+      }
     }
     if (screenStateReceiver != null) {
       Log.e("KeepAliveService", "quitSelf.136:");
-      unregisterReceiver(screenStateReceiver);
+      try {
+        unregisterReceiver(screenStateReceiver);
+      } catch (Exception e) {
+
+      }
     }
     stopSelf();
   }
@@ -182,6 +191,7 @@ public class KeepAliveService extends Service {
     param.put("brandno", AppInfo.getTechNum());
     param.put("profitcenter", AppInfo.getProfitCenter());
     param.put("hoteldate", AppInfo.getWorkDate());
+    LOG.e("KeepAliveService", "onRunning.GetRelaxServerList:");
     HttpManager.GetRelaxServerList(context, new HttpInnerListener() {
       @Override
       public void onString(String json) {
@@ -191,6 +201,7 @@ public class KeepAliveService extends Service {
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
           logInfo.append("first : " + first.toString());
+          LOG.e("KeepAliveService", "onString.播报:");
           SpeakManager.isRead(context, first);
         } else {
           logInfo.append("noTask");
@@ -248,6 +259,7 @@ public class KeepAliveService extends Service {
     LOG.e("KeepAliveService", "notifyUser.247:");
     String title, con;
     int tag = AppInfo.getWaitType();
+    int priorityLevel = 0;
     if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
       title = "登录失效";
       con = "请重新登录";
@@ -257,9 +269,11 @@ public class KeepAliveService extends Service {
       simpleDateFormat = new SimpleDateFormat("HH:mm");
       con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
     } else if (tag == 1) {
+      priorityLevel = 2;
       title = "您有新任务";
       con = "已等待" + AppInfo.getWait(context) + "分钟";
     } else if (tag == 2) {
+      priorityLevel = 1;
       title = "下钟剩余";
       long time = AppInfo.getRunningLeftTime(context);
       if (time < 0) {
@@ -276,7 +290,7 @@ public class KeepAliveService extends Service {
       title = AppInfo.getTechNum() + " 号技师";
       con = "暂无新任务...";
     }
-    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con);
+    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel);
   }
 
   //将keepAliveBinder交给RemoteService

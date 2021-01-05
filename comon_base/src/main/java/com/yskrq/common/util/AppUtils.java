@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
@@ -20,6 +21,7 @@ import com.yskrq.common.BASE;
 import com.yskrq.net_library.BuildConfig;
 
 import static android.content.Context.UI_MODE_SERVICE;
+import static android.content.Context.WINDOW_SERVICE;
 
 
 public class AppUtils {
@@ -39,6 +41,18 @@ public class AppUtils {
         e.printStackTrace();
       }
     }
+  }
+
+  public static double showInches() {
+    Point point = new Point();
+    WindowManager windowManager = (WindowManager) BASE.getCxt().getSystemService(WINDOW_SERVICE);
+    windowManager.getDefaultDisplay().getRealSize(point);
+    DisplayMetrics dm = BASE.getCxt().getResources().getDisplayMetrics();
+    double x = Math.pow(point.x / dm.xdpi, 2);
+    double y = Math.pow(point.y / dm.ydpi, 2);
+    double screenInches = Math.sqrt(x + y);
+    LOG.e("AppUtils", "getScreenSizeOfDevice2:" + screenInches);
+    return screenInches;
   }
 
   public static boolean isIgnoringBatteryOptimizations(Context context) {
@@ -69,7 +83,7 @@ public class AppUtils {
   public static int getScreenWidth(Context context) {
     //屏幕信息
     DisplayMetrics dm = new DisplayMetrics();
-    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
     windowManager.getDefaultDisplay().getMetrics(dm);
     //        screenWidth = dm.widthPixels;
     //        screenHeight = dm.heightPixels;

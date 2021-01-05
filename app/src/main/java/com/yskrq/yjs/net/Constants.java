@@ -107,7 +107,6 @@ public class Constants {
     public static final String SelectDataTai = "CA_Restaurant/SelectDataTai";
     //    开单
     public static final String OpenTheStage = "CA_Restaurant/OpenTheStage";
-
     //    取消技师
     //    退技师
     public static final String CancelTec = "RM_Others/CancelTec";

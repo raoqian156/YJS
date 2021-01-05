@@ -18,7 +18,8 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.yskrq.yjs.keep.KeepAliveService.NOTIFICATION_ID;
 
 public class NoticeUtil {
-  public static void sentNotice(Context context, int id, String title, String con) {
+  public static void sentNotice(Context context, int id, String title, String con,
+                                int priorityLevel) {
     LOG.e("NoticeUtil", "sentNotice.clearAllNotifications:");
     JPushInterface.clearAllNotifications(context);
     Intent intentTarget = new Intent(context, MainActivity.class);
@@ -29,6 +30,11 @@ public class NoticeUtil {
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     Notification notification = NotificationUtils
         .createNotification(context, title, con, R.mipmap.ic_launcher, intent);
+    if (priorityLevel > 0) {
+      notification.priority = Notification.PRIORITY_MAX;
+    } else {
+      notification.priority = Notification.PRIORITY_LOW;
+    }
     notification.contentIntent = contentIntent;
     NotificationManager mNManager = (NotificationManager) context
         .getSystemService(NOTIFICATION_SERVICE);

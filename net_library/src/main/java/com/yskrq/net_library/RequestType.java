@@ -1,7 +1,6 @@
 package com.yskrq.net_library;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.Map;
 
@@ -46,16 +45,16 @@ public class RequestType {
   }
 
   public boolean is(String tag) {
-    Log.e("RequestType", tag + ".is.48:" + type);
+//    Log.e("RequestType", tag + ".is.48:" + type);
 
     if (TextUtils.equals(tag, type)) {
-      Log.e("RequestType", "is.52:");
+//      Log.e("RequestType", "is.52:");
       return true;
     }
     if (tag != null) {
       tag = tag.substring(1 + tag.lastIndexOf("/"));
     }
-    Log.e("RequestType", "<"+tag+".is.58:"+type+">");
+//    Log.e("RequestType", "<"+tag+".is.58:"+type+">");
     return TextUtils.equals(tag, type);
   }
 

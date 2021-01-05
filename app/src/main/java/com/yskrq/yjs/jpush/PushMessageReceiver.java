@@ -3,6 +3,8 @@ package com.yskrq.yjs.jpush;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -17,6 +19,8 @@ import com.yskrq.yjs.util.SpeakManager;
 import com.yskrq.yjs.util.YJSNotifyManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 import cn.jpush.android.api.CmdMessage;
@@ -26,12 +30,13 @@ import cn.jpush.android.api.JPushMessage;
 import cn.jpush.android.api.NotificationMessage;
 import cn.jpush.android.service.JPushMessageReceiver;
 
+import static com.yskrq.yjs.keep.KeepAliveService.NOTIFICATION_ID;
+
 public class PushMessageReceiver extends JPushMessageReceiver {
-  private static final String TAG = "PushMessageReceiver";
 
   @Override
   public void onMessage(Context context, CustomMessage customMessage) {
-    Log.e(TAG, "[onMessage] " + customMessage);
+    Log.e("PushMessageReceiver", "[onMessage] " + customMessage);
     processCustomMessage(context, customMessage);
   }
 
@@ -40,7 +45,7 @@ public class PushMessageReceiver extends JPushMessageReceiver {
    */
   @Override
   public void onNotifyMessageOpened(Context context, NotificationMessage message) {
-    Log.e(TAG, "[onNotifyMessageOpened] " + message);
+    Log.e("PushMessageReceiver", "[onNotifyMessageOpened] " + message);
     try {
       //打开自定义的Activity
       ToastUtil.show("打开页面");
@@ -59,23 +64,23 @@ public class PushMessageReceiver extends JPushMessageReceiver {
 
   @Override
   public void onMultiActionClicked(Context context, Intent intent) {
-    Log.e(TAG, "[onMultiActionClicked] 用户点击了通知栏按钮");
+    Log.e("PushMessageReceiver", "[onMultiActionClicked] 用户点击了通知栏按钮");
     String nActionExtra = intent.getExtras()
                                 .getString(JPushInterface.EXTRA_NOTIFICATION_ACTION_EXTRA);
 
     //开发者根据不同 Action 携带的 extra 字段来分配不同的动作。
     if (nActionExtra == null) {
-      Log.d(TAG, "ACTION_NOTIFICATION_CLICK_ACTION nActionExtra is null");
+      Log.d("PushMessageReceiver", "ACTION_NOTIFICATION_CLICK_ACTION nActionExtra is null");
       return;
     }
     if (nActionExtra.equals("my_extra1")) {
-      Log.e(TAG, "[onMultiActionClicked] 用户点击通知栏按钮一");
+      Log.e("PushMessageReceiver", "[onMultiActionClicked] 用户点击通知栏按钮一");
     } else if (nActionExtra.equals("my_extra2")) {
-      Log.e(TAG, "[onMultiActionClicked] 用户点击通知栏按钮二");
+      Log.e("PushMessageReceiver", "[onMultiActionClicked] 用户点击通知栏按钮二");
     } else if (nActionExtra.equals("my_extra3")) {
-      Log.e(TAG, "[onMultiActionClicked] 用户点击通知栏按钮三");
+      Log.e("PushMessageReceiver", "[onMultiActionClicked] 用户点击通知栏按钮三");
     } else {
-      Log.e(TAG, "[onMultiActionClicked] 用户点击通知栏按钮未定义");
+      Log.e("PushMessageReceiver", "[onMultiActionClicked] 用户点击通知栏按钮未定义");
     }
   }
 
@@ -91,27 +96,109 @@ public class PushMessageReceiver extends JPushMessageReceiver {
    */
   @Override
   public Notification getNotification(Context context, NotificationMessage notificationMessage) {
-    LOG.e(TAG, "getNotification.19:" + notificationMessage.toString());
+    LOG.e("PushMessageReceiver", "getNotification.19:" + notificationMessage.toString());
     RelaxListBean.ValueBean bean = GsonUtil
         .getBean(notificationMessage.notificationExtras, RelaxListBean.ValueBean.class);
-    if (bean == null) {
-      return null;
-    }
-    NoticeUtil.clearNotify(context);
-//    JPushInterface.clearAllNotifications(context);
-    YJSNotifyManager.change(bean.getGroupid(), bean.getSid(), bean.getExpendtime());
-    int tag = YJSNotifyManager.getShowStatus(bean.getGroupid());
-    if (tag == -1) {
-      YJSNotifyManager.resetPushInfo();
-      return null;
-    }
-    SpeakManager.isRead(context, bean);
     String title, con;
-    int leftTime = 0;
-    try {
-      leftTime = Integer.parseInt(bean.getExpendtime());
-    } catch (Exception e) {
+    if (bean == null) {
+      LOG.e("PushMessageReceiver", "getNotification.101:");
+      title = AppInfo.getTechNum() + " 号技师";
+      con = "暂无新任务...";
+    } else {
+      for (OnPushListener push : mOnPushListeners) {
+        push.onPush(bean);
+      }
+      NoticeUtil.clearNotify(context);
+      JPushInterface.clearAllNotifications(context);
+      YJSNotifyManager.change(bean.getGroupid(), bean.getSid(), bean.getExpendtime());
+      int tag = YJSNotifyManager.getShowStatus(bean.getGroupid());
+      if (tag == -1) {
+        YJSNotifyManager.resetPushInfo();
+        title = AppInfo.getTechNum() + " 号技师";
+        con = "暂无新任务...";
+      } else {
+        LOG.e("PushMessageReceiver", "getNotification.播报:");
+        SpeakManager.isRead(context, bean);
+        int leftTime = 0;
+        try {
+          leftTime = Integer.parseInt(bean.getExpendtime());
+        } catch (Exception e) {
+        }
+        if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
+          title = "登录失效";
+          con = "请重新登录";
+        } else if (tag == 0) {
+          title = AppInfo.getTechNum() + " 号技师";
+          SimpleDateFormat simpleDateFormat;
+          simpleDateFormat = new SimpleDateFormat("HH:mm");
+          con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
+        } else if (tag == 1) {
+          title = "您有新任务";
+          con = "已等待" + leftTime + "分钟";
+        } else if (tag == 2) {
+          title = "下钟剩余";
+          long time = leftTime * 1000 + System.currentTimeMillis();
+          if (time < 0) {
+            title = "下钟时间到";
+            con = "00:00";
+          } else {
+            time += 1000;
+            SimpleDateFormat simpleDateFormat;
+            simpleDateFormat = new SimpleDateFormat("HH:mm");
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            con = simpleDateFormat.format(time);
+          }
+        } else {
+          title = AppInfo.getTechNum() + " 号技师";
+          con = "暂无新任务...";
+        }
+      }
     }
+    LOG.bean("PushMessageReceiver", bean);
+    LOG.e("PushMessageReceiver", "getNotification.142:" + con + ">>" + title);
+    return NoticeUtil.getNotification(context, title, con);
+  }
+
+  static Handler mainHandler = new Handler(Looper.getMainLooper());
+
+  /**
+   * 调用时间 新推送到达   -->  6
+   */
+  @Override
+  public void onNotifyMessageArrived(Context context, NotificationMessage message) {
+    Log.e("PushMessageReceiver", "[onNotifyMessageArrived] " + message);
+    if (message.notificationBuilderId == 1) {
+      Speaker.speakOut(context, message.notificationContent);
+    } else if (message.notificationBuilderId == 2 || message.notificationBuilderId == 3) {
+      SpeakManager.removeReadHistory();
+    }
+    final RelaxListBean.ValueBean bean = GsonUtil
+        .getBean(message.notificationExtras, RelaxListBean.ValueBean.class);
+    if (bean == null) {
+      LOG.e("PushMessageReceiver", "onNotifyMessageArrived.101:");
+    } else {
+      YJSNotifyManager.change(bean.getGroupid(), bean.getSid(), bean.getExpendtime());
+      int tag = YJSNotifyManager.getShowStatus(bean.getGroupid());
+      if (tag == -1) {
+        YJSNotifyManager.resetPushInfo();
+      }
+      mainHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          for (OnPushListener push : mOnPushListeners) {
+            push.onPush(bean);
+          }
+        }
+      });
+      notifyUser(context);
+    }
+  }
+
+  private static void notifyUser(Context context) {
+    LOG.e("KeepAliveService", "notifyUser.247:");
+    String title, con;
+    int tag = AppInfo.getWaitType();
+    int priorityLevel = 0;
     if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
       title = "登录失效";
       con = "请重新登录";
@@ -121,11 +208,13 @@ public class PushMessageReceiver extends JPushMessageReceiver {
       simpleDateFormat = new SimpleDateFormat("HH:mm");
       con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
     } else if (tag == 1) {
+      priorityLevel = 2;
       title = "您有新任务";
-      con = "已等待" + leftTime + "分钟";
+      con = "已等待" + AppInfo.getWait(context) + "分钟";
     } else if (tag == 2) {
+      priorityLevel = 1;
       title = "下钟剩余";
-      long time = leftTime * 1000 + System.currentTimeMillis();
+      long time = AppInfo.getRunningLeftTime(context);
       if (time < 0) {
         title = "下钟时间到";
         con = "00:00";
@@ -140,29 +229,17 @@ public class PushMessageReceiver extends JPushMessageReceiver {
       title = AppInfo.getTechNum() + " 号技师";
       con = "暂无新任务...";
     }
-    LOG.e("PushMessageReceiver", "getNotification.142:" + con + ">>" + title);
-    return NoticeUtil.getNotification(context, title, con);
-  }
-
-  /**
-   * 调用时间 新推送到达   -->  6
-   */
-  @Override
-  public void onNotifyMessageArrived(Context context, NotificationMessage message) {
-    Log.e(TAG, "[onNotifyMessageArrived] " + message);
-    if (message.notificationBuilderId == 1) {
-      Speaker.speakOut(context, message.notificationContent);
-    }
+    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel);
   }
 
   @Override
   public void onNotifyMessageDismiss(Context context, NotificationMessage message) {
-    Log.e(TAG, "[onNotifyMessageDismiss] " + message);
+    Log.e("PushMessageReceiver", "[onNotifyMessageDismiss] " + message);
   }
 
   @Override
   public void onRegister(Context context, String registrationId) {
-    Log.e(TAG, "[onRegister] " + registrationId);
+    Log.e("PushMessageReceiver", "[onRegister] " + registrationId);
   }
 
   /**
@@ -170,7 +247,7 @@ public class PushMessageReceiver extends JPushMessageReceiver {
    */
   @Override
   public void onConnected(Context context, boolean isConnected) {
-    Log.e(TAG, "[onConnected] " + isConnected);
+    Log.e("PushMessageReceiver", "[onConnected] " + isConnected);
   }
 
   /**
@@ -178,7 +255,7 @@ public class PushMessageReceiver extends JPushMessageReceiver {
    */
   @Override
   public void onCommandResult(Context context, CmdMessage cmdMessage) {
-    Log.e(TAG, "[onCommandResult] " + cmdMessage);
+    Log.e("PushMessageReceiver", "[onCommandResult] " + cmdMessage);
   }
 
   @Override
@@ -243,4 +320,24 @@ public class PushMessageReceiver extends JPushMessageReceiver {
     super.onNotificationSettingsCheck(context, isOn, source);
     LOG.e("PushMessageReceiver", "onNotificationSettingsCheck.203:" + isOn);
   }
+
+
+  public interface OnPushListener {
+
+    void onPush(RelaxListBean.ValueBean bean);
+  }
+
+  static List<OnPushListener> mOnPushListeners = new ArrayList<>();
+
+  public static void addOnPushListener(OnPushListener listener) {
+    if (listener != null && mOnPushListeners != null && !mOnPushListeners
+        .contains(mOnPushListeners)) {
+      mOnPushListeners.add(listener);
+    }
+  }
+
+  public static void removeOnPushListener(OnPushListener listener) {
+    if (mOnPushListeners != null) mOnPushListeners.remove(listener);
+  }
+
 }

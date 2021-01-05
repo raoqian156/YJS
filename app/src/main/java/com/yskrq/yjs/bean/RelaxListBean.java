@@ -42,7 +42,7 @@ public class RelaxListBean extends BaseBean {
      */
 
     //      account:L000026282         |    新任务    |   催钟    |  到钟  |
-    //      account:L000026282         |      **     |           |       |
+    //      account:L000026282         |     ***     |    ***    |  ***  |
     //      expendtime:0              |              |           |       |
     //      groupid:9002              |   9002       |    9001   |  9001 |
     //      sid:5392                  |              |   0~300   |  <= 0 |

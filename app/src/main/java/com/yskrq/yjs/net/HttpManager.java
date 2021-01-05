@@ -524,11 +524,12 @@ public class HttpManager {
     //    HttpProxy.bean(view, readlog, param, BaseBean.class);
   }
 
-  public static void uploadJpushId(BaseView view) {
+  public static void RelaxTechRegistrationID(BaseView view) {
     String rid = JPushInterface.getRegistrationID(BaseApplication.ctx);
     HashMap<String, String> param = getParam();
     LOG.e("HttpManager", "uploadJpushId.531:" + rid);
     param.put("registrationid", rid);
+    param.put("registertype", "Android");
     HttpProxy.bean(view, RelaxTechRegistrationID, param, BaseBean.class);
   }
 

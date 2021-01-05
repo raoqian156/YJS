@@ -1,9 +1,11 @@
 package com.yskrq.common;
 
 import android.os.Bundle;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.rq.rvlibrary.BaseAdapter;
@@ -58,20 +60,34 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   protected void initTitle(String title) {
-    if (findViewById(R.id.base_btn_back) != null) {
-      findViewById(R.id.base_btn_back).setVisibility(View.INVISIBLE);
+    if (findViewFromId(R.id.base_btn_back) != null) {
+      findViewFromId(R.id.base_btn_back).setVisibility(View.INVISIBLE);
     }
-    if (findViewById(R.id.base_title) instanceof TextView) {
-      ((TextView) findViewById(R.id.base_title)).setText(title);
+    if (findViewFromId(R.id.base_title) instanceof TextView) {
+      ((TextView) findViewFromId(R.id.base_title)).setText(title);
     }
   }
 
-  private <T extends View> T findViewById(int vId) {
+  public  <T extends View> T findViewById(int vId) {
+    try {
+      return view.findViewById(vId);
+    }catch (Exception e){
+      throw new NullPointerException();
+    }
+  }
+
+  private <T extends View> T findViewFromId(int vId) {
     if (view == null) {
       onViewEmpty();
       return null;
     }
     return view.findViewById(vId);
+  }
+
+  protected void addTextListener(int tv_center, TextWatcher watcher) {
+    if (findViewFromId(tv_center) instanceof EditText) {
+      ((EditText) findViewFromId(tv_center)).addTextChangedListener(watcher);
+    }
   }
 
   @Nullable
@@ -114,8 +130,8 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
             int[] value = inject.value();
             if (value.length > 0) {
               for (int id : value) {
-                if (findViewById(id) != null) {
-                  findViewById(id).setOnClickListener((View.OnClickListener) this);
+                if (findViewFromId(id) != null) {
+                  findViewFromId(id).setOnClickListener((View.OnClickListener) this);
                 }
               }
             }
@@ -131,7 +147,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   protected abstract void initView();
 
   protected void setViewTag(int vId, Object tag) {
-    View view = findViewById(vId);
+    View view = findViewFromId(vId);
     if (view == null) {
       return;
     }
@@ -149,7 +165,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   protected void setViewBackResource(int vId, int res) {
-    View view = findViewById(vId);
+    View view = findViewFromId(vId);
     if (view == null) {
       return;
     }
@@ -157,7 +173,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   protected void setVisibility(int vid, int visible) {
-    View view = findViewById(vid);
+    View view = findViewFromId(vid);
     if (view == null) {
       return;
     }
@@ -165,8 +181,8 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   protected void setTextView2View(int vId, String con) {
-    if (findViewById(vId) instanceof TextView) {
-      ((TextView) findViewById(vId)).setText(con);
+    if (findViewFromId(vId) instanceof TextView) {
+      ((TextView) findViewFromId(vId)).setText(con);
     }
   }
 

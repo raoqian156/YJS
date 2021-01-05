@@ -10,6 +10,7 @@ public class GsonUtil {
     try {
       return (T) new Gson().fromJson(json, clazz);
     } catch (Exception e) {
+      LOG.e("GsonUtil", "getBean.13:");
       return null;
     }
   }

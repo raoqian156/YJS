@@ -247,7 +247,7 @@ public  *;
 #==================protobuf======================
 -dontwarn com.google.**
 -keep class com.google.protobuf.** {*;}
-#-keep class cn.jiguang.** { *; }
-#-keep class android.support.** { *; }
-#-keep class androidx.** { *; }
-#-keep class com.google.android.** { *; }
+-keep class cn.jiguang.** { *; }
+-keep class android.support.** { *; }
+-keep class androidx.** { *; }
+-keep class com.google.android.** { *; }

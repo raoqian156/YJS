@@ -118,7 +118,15 @@ public class AppInfo {
     return SPUtil.getInt(BASE.getCxt(), TAG_AUTO_LOGIN) == 1;
   }
 
-  public static void setTechNum( String date) {
+  public static boolean skipBattery() {
+    return SPUtil.getBoolean(BASE.getCxt(), "skip.check.battery");
+  }
+
+  public static void needSkipBattery() {
+    SPUtil.setBoolean(BASE.getCxt(), "skip.check.battery", true);
+  }
+
+  public static void setTechNum(String date) {
     SPUtil.saveString(BASE.getCxt(), TAG_SAVE_TECH, date);
   }
 
@@ -272,6 +280,7 @@ public class AppInfo {
     return 0;
   }
 
+
   public static boolean needLocation(Context context) {
     if (context == null) return false;
     String lat = SPUtil.getString(BASE.getCxt(), "Sign.lat");
@@ -313,7 +322,7 @@ public class AppInfo {
     SPUtil.saveString(BASE.getCxt(), "username", "");
     SPUtil.saveString(BASE.getCxt(), "apptoken", "");
     SPUtil.saveString(BASE.getCxt(), "userid", "");
-    setTechNum(  "");
+    setTechNum("");
     setProfitCenter(BASE.getCxt(), "");
     setWorkDate("");
     setAutoLogin(BASE.getCxt(), false);
