@@ -81,8 +81,13 @@ public class SpeakManager {
         @Override
         public void onFinish(int status) {
           if (TextToSpeech.SUCCESS == status) {
-            HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
-                .getFacilityno());
+            new Thread(new Runnable() {
+              @Override
+              public void run() {
+                HttpManager.sendNewTaskSuccess(context, first.getAccount(), first.getSeqnum(), first
+                    .getFacilityno());
+              }
+            }).start();
           }
         }
       });

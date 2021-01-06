@@ -172,7 +172,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       caierAdapter.addOnItemClickListener(this, R.id.btn_commit);
       setRecyclerView(R.id.recycler_caier, caierAdapter);
     }
-
   }
 
   boolean openRunning = false;
@@ -271,7 +270,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       return;
     }
     refuseByFirst(bean.getValue().get(0), context);
-    LOG.e("HomeFragment", "refuseList.播报:");
+    LOG.e("HomeFragment", "refuseList.:");
     int show = SpeakManager.isRead(getContext(), bean.getValue().get(0));
     LOG.e("HomeFragment", "refuseList.272:" + show);
     //GroupId：9000未安排 9001 已打卡  9002待打卡 9003已下钟
@@ -679,7 +678,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
   @Override
   public void onPush(RelaxListBean.ValueBean bean) {
-    refuseByFirst(bean, BASE.getCxt());
+    loadData();
   }
 
   private void checkShowStr(String s) {
