@@ -8,10 +8,12 @@ import com.yskrq.common.BaseFragment;
 import com.yskrq.common.LoginActivity;
 import com.yskrq.common.OnClick;
 import com.yskrq.common.util.AppUtils;
+import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.MainActivity;
 import com.yskrq.yjs.R;
+import com.yskrq.yjs.keep.KeepAliveService;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.PhoneUtil;
@@ -41,7 +43,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     if (v.getId() == R.id.btn_jiguang) {
       HttpManager.RelaxTechRegistrationID(this);
     } else if (v.getId() == R.id.btn_battery_setting) {
-      AppUtils.requestIgnoreBatteryOptimizations(getContext());
+            AppUtils.requestIgnoreBatteryOptimizations(getContext());
     } else if (v.getId() == R.id.btn_voice) {
       PhoneUtil.toOpen(getContext());
     } else if (v.getId() == R.id.tv_name) {
@@ -53,9 +55,19 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_photo) {
       PhotoActivity.start(getContext());
     } else if (v.getId() == R.id.btn_bg_setting) {
-      toStartInterface(getContext());
+      DialogHelper.showBatteryRemind(getContext(), new DialogHelper.DialogConfirmListener() {
+        @Override
+        public void onSure() {
+          toStartInterface(getContext());
+        }
+
+        @Override
+        public void onCancel() {
+
+        }
+      });
     } else if (v.getId() == R.id.btn_login_out) {
-      KeepManager.stopAliveRun();
+      if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
       AppInfo.loginOut(getContext());
       Intent intent = new Intent(getActivity(), LoginActivity.class);
       startActivity(intent);

@@ -17,5 +17,6 @@
     <color name="room_text_blue">#00AAFF</color>
     <color name="room_red">#E91E63</color>
     <color name="room_red_cut">#F44336</color>
+    <color name="text_red">#FB3838</color>
 
 </resources>

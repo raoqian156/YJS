@@ -21,7 +21,7 @@ package com.yskrq.yjs.util;
 //import com.yskrq.common.util.LOG;
 //import com.yskrq.net_library.HttpInnerListener;
 //import com.yskrq.yjs.R;
-//import com.yskrq.yjs.bean.RelaxListBean;
+//import com.yskrq.common.bean.RelaxListBean;
 //import com.yskrq.yjs.net.HttpManager;
 //
 //import java.text.SimpleDateFormat;

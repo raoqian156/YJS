@@ -117,9 +117,9 @@ public class StatisticsActivity extends BaseActivity implements View.OnClickList
             StaticsListBean.ValueBean bean = (StaticsListBean.ValueBean) datum;
             for (StaticsListBean.ValueBean.ChildrenBean child : bean.getChildren()) {
               if ("轮钟".equals(child.getItem_name())) {
-                lun++;
+                lun += child.getItem_count_qty();
               } else if ("点钟".equals(child.getItem_name())) {
-                dian++;
+                dian += child.getItem_count_qty();
               }
               sun += child.getItem_count_qty();
               ticheng += child.getItem_price_sum();

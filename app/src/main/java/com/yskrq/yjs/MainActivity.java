@@ -22,6 +22,7 @@ import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
+import com.yskrq.yjs.keep.KeepAliveService;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.ui.HomeFragment;
@@ -50,6 +51,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (KeepAliveService.READ_WAY == 0) KeepManager.startAliveRun();
     JPushInterface.setAlias(this, 1, AppInfo.getGroupId());
     HttpManager.getWifiName(this);
     if (PhoneUtil.needPermission(getContext())) {
@@ -57,8 +59,6 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
     delete();
     BaseApplication.isLogin = true;
-    LOG.e("MainActivity", "onCreate.49:");
-    ToastUtil.show("推测尺寸：" + AppUtils.showInches() + "英寸");
     if (!AppInfo.skipBattery() && !AppUtils.isIgnoringBatteryOptimizations(this)) {
       DialogHelper
           .showRemind(this, "为了增强数据的实时性，需要忽略电池优化，是否前去开启？", new DialogHelper.DialogConfirmListener() {
@@ -112,6 +112,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     if (mWakeLock != null) {
       mWakeLock.release();
     }
+    if (KeepAliveService.READ_WAY == 0) KeepManager.stopAliveRun();
   }
 
   private boolean isInstallApp(String packageName) {
@@ -156,14 +157,14 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
 
   @Override
   protected void initView() {
-    FragmentSaveTabHost tabhost = findViewById(android.R.id.tabhost);
-    tabhost.setup(this, getSupportFragmentManager(), R.id.main_content);
+    FragmentSaveTabHost tabHost = findViewById(android.R.id.tabhost);
+    tabHost.setup(this, getSupportFragmentManager(), R.id.main_content);
     for (int i = 0; i < texts.length; i++) {
-      TabHost.TabSpec spec = tabhost.newTabSpec(texts[i]).setIndicator(getItemView(i));
-      tabhost.addTab(spec, fragmentArray[i], null);//R.layout.con_tab_content
+      TabHost.TabSpec spec = tabHost.newTabSpec(texts[i]).setIndicator(getItemView(i));
+      tabHost.addTab(spec, fragmentArray[i], null);//R.layout.con_tab_content
     }
-    tabhost.getTabWidget().setDividerDrawable(null);
-    tabhost.setOnTabChangedListener(this);
+    tabHost.getTabWidget().setDividerDrawable(null);
+    tabHost.setOnTabChangedListener(this);
     HttpManagerBase.senError(AppInfo.getTechNum(), "============登录 >> " + AppInfo
         .getUserid() + " ============");
   }

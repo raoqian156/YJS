@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.rq.rvlibrary.BaseViewHolder;
 import com.yskrq.yjs.R;
-import com.yskrq.yjs.bean.RelaxListBean;
+import com.yskrq.common.bean.RelaxListBean;
 
 public class HomeZuItemViewHolder extends BaseViewHolder {
 

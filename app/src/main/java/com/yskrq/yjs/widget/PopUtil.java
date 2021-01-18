@@ -25,7 +25,7 @@ import com.yskrq.common.util.ToastUtil;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
-import com.yskrq.yjs.bean.RelaxListBean;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.yjs.bean.RoomBean;
 import com.yskrq.yjs.bean.RoomProjectListBean;
 

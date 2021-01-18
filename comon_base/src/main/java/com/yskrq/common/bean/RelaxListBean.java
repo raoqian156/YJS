@@ -1,8 +1,7 @@
-package com.yskrq.yjs.bean;
+package com.yskrq.common.bean;
 
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.BaseBean;
-import com.yskrq.yjs.util.YJSNotifyManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -191,19 +190,19 @@ public class RelaxListBean extends BaseBean {
     }
 
     public int getShowStatus() {// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
-      return YJSNotifyManager.getShowStatus(getGroupid());
-      //      int tag = 0;
-      //      if ("9000".equals(getGroupid())) {//未安排 - 不能打卡
-      //        tag = 0;
-      //      } else if ("9001".equals(getGroupid())) {//已打卡
-      //        tag = 2;
-      //      } else if ("9002".equals(getGroupid())) {//待打卡
-      //        tag = 1;
-      //      } else if ("9003".equals(getGroupid())) {//3-已下钟
-      //        tag = 3;
-      //      }
-      //      return tag;
+      int tag = 0;
+      if ("9000".equals(getGroupid())) {//未安排 - 不能打卡
+        tag = 0;
+      } else if ("9001".equals(getGroupid())) {//已打卡
+        tag = 2;
+      } else if ("9002".equals(getGroupid())) {//待打卡
+        tag = 1;
+      } else if ("9003".equals(getGroupid())) {//3-已下钟
+        tag = 3;
+      }
+      return tag;
     }
+
 
     public void setGroupid(String groupid) {
       this.groupid = groupid;
@@ -271,7 +270,7 @@ public class RelaxListBean extends BaseBean {
     public boolean daozhong() {
       boolean isDao = false;
       try {
-        isDao= Integer.parseInt(rsuhtimes) < 2 && Integer
+        isDao = Integer.parseInt(rsuhtimes) < 2 && Integer
             .parseInt(sid) <= 0 && getShowStatus() == 2;
       } catch (Exception e) {
       }

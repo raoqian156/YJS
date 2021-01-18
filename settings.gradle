@@ -1,3 +1,4 @@
+include ':jpush'
 include ':test'
 include ':comon_base'
 include ':permmission'

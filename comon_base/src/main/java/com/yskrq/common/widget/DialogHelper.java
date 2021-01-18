@@ -10,14 +10,17 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.yskrq.common.R;
+import com.yskrq.common.util.ToastUtil;
 
 import java.util.Calendar;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
 
 public class DialogHelper {
   public interface OnDateSetListener {
@@ -93,7 +96,75 @@ public class DialogHelper {
                                                                 listener.onSure();
                                                             }
                                                           }).create();
-    dialog.show();
+    try {
+      dialog.show();
+    } catch (Exception e) {
+
+    }
+  }
+
+  static class CanShow {
+    boolean canDisMiss = false;
+
+    public CanShow() {
+    }
+
+    public void setCanShow(boolean b) {
+      this.canDisMiss = b;
+    }
+
+    public boolean canDis() {
+      return canDisMiss;
+    }
+  }
+
+  public static void showBatteryRemind(Context context, final DialogConfirmListener listener) {
+
+    final LayoutInflater inflater = LayoutInflater.from(context);
+    View customView = inflater.inflate(R.layout.dialog_battery, null, false);
+    NestedScrollView sv = customView.findViewById(R.id.sv_pan);
+    final LinearLayout ll = customView.findViewById(R.id.ll_pan);
+    final CanShow needSc = new CanShow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      needSc.setCanShow(false);
+      sv.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        @Override
+        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX,
+                                   int oldScrollY) {
+          boolean isOk = v.getHeight() + scrollY >= ll.getHeight() * .95F;
+          if (!needSc.canDis()) needSc.setCanShow(isOk);
+        }
+      });
+    } else {
+      needSc.setCanShow(true);
+    }
+    final Dialog dialog = new AlertDialog.Builder(context).setView(customView)
+                                                          .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(
+                                                                DialogInterface dialog, int which) {
+                                                              if (listener != null)
+                                                                listener.onCancel();
+                                                            }
+                                                          })
+                                                          .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(
+                                                                DialogInterface dialog, int which) {
+                                                              if (!needSc.canDis()) {
+                                                                ToastUtil.show("请滑动阅读，阅读完毕后再操作");
+                                                                return;
+                                                              }
+                                                              if (listener != null) {
+                                                                listener.onSure();
+                                                              }
+                                                            }
+                                                          }).create();
+    try {
+      dialog.show();
+    } catch (Exception e) {
+
+    }
   }
 
   public interface DialogCheckListener {

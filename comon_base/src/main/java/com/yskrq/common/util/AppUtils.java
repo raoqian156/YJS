@@ -31,6 +31,10 @@ public class AppUtils {
     return BuildConfig.SHOW_LOG;
   }
 
+  /**
+   * 忽略电池优化  -->  OPPO无法完成
+   * @param context
+   */
   public static void requestIgnoreBatteryOptimizations(Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       try {
@@ -38,7 +42,7 @@ public class AppUtils {
         intent.setData(Uri.parse("package:" + context.getPackageName()));
         context.startActivity(intent);
       } catch (Exception e) {
-        e.printStackTrace();
+        ToastUtil.show("当前手机无此功能");
       }
     }
   }

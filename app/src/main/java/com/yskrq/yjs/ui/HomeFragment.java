@@ -16,7 +16,9 @@ import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
 import com.yskrq.common.BaseFragment;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.common.bean.TecColorBean;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
 import com.yskrq.common.widget.DialogHelper;
@@ -29,9 +31,8 @@ import com.yskrq.yjs.RunningHelper;
 import com.yskrq.yjs.Speaker;
 import com.yskrq.yjs.bean.CaiErListBean;
 import com.yskrq.yjs.bean.ListParamBean;
-import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.bean.RoomListBean;
-import com.yskrq.yjs.jpush.PushMessageReceiver;
+import com.yskrq.yjs.jpush.JpushHelper;
 import com.yskrq.yjs.keep.KeepAliveService;
 import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
@@ -69,7 +70,7 @@ import static com.yskrq.yjs.net.Constants.TransCode.brandnoIn;
 public class HomeFragment extends BaseFragment implements OnItemClickListener, View.OnClickListener,
                                                           RunningHelper.OnSecondTickListener,
                                                           KeepAliveService.RefuseListener,
-                                                          PushMessageReceiver.OnPushListener {
+                                                          JpushHelper.OnPushListener {
   @Override
   protected int layoutId() {
     return R.layout.fra_home;
@@ -95,14 +96,14 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     LOG.e("HomeFragment", "onCreate.canCaiEr:" + canCaiEr);
     HttpManager.refuseSaleDate(this);
     AppInfo.getColors(getContext());
-    PushMessageReceiver.addOnPushListener(this);
+    JpushHelper.addOnPushListener(this);
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
     KeepAliveService.removeRefuseListener(this);
-    PushMessageReceiver.removeOnPushListener(this);
+    JpushHelper.removeOnPushListener(this);
     RunningHelper.getInstance().remove(this);
     NetWorkMonitorManager.getInstance().unregister(this);
   }
@@ -213,7 +214,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       RelaxListBean bean = (RelaxListBean) data;
       refuseList(bean);
       if (bean == null || bean.getValue() == null || bean.getValue().size() == 0) {
-        KeepManager.startAliveRun();
+        if (KeepAliveService.READ_WAY == 1) KeepManager.startAliveRun();
       }
     } else if (type.is(CancelTec)) {
       loadData();
@@ -271,6 +272,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
     refuseByFirst(bean.getValue().get(0), context);
     LOG.e("HomeFragment", "refuseList.:");
+    HttpManagerBase
+        .senError("极光" + AppInfo.getTechNum(), "HomeFragment.SpeakManager.SpeakManager.isRead");
     int show = SpeakManager.isRead(getContext(), bean.getValue().get(0));
     LOG.e("HomeFragment", "refuseList.272:" + show);
     //GroupId：9000未安排 9001 已打卡  9002待打卡 9003已下钟
@@ -359,7 +362,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     PhoneUtil.openVoice(HomeFragment.this.getContext());
     setViewTag(R.id.tv_center, 0);
     setViewBackResource(R.id.tv_center, R.drawable.circle_bg_blue);
-    KeepManager.stopAliveRun();
+    if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
   }
 
   @Override
@@ -511,9 +514,9 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
 
   private void checkRunning(boolean show) {
     if (!show) {
-      KeepManager.startAliveRun();
+      if (KeepAliveService.READ_WAY == 1) KeepManager.startAliveRun();
     } else if (!openRunning) {
-      KeepManager.stopAliveRun();
+      if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
     }
   }
 
@@ -628,7 +631,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       setViewBackResource(R.id.tv_center, R.drawable.circle_bg_blue);
       setTextView2View(R.id.tv_center, "上钟\n" + "00:00:00");
     } else if (tag == 2) {
-      KeepManager.stopAliveRun();
+      if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
       long timeLeft = AppInfo.getRunningLeftTime(getContext());
       SimpleDateFormat simpleDateFormat;
       simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
@@ -674,6 +677,12 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       if (canCaiEr) HttpManager.SelectServerlistView(this);
       refuseList(bean);
     }
+  }
+
+  @Override
+  public void onConnected(boolean connected) {
+    HttpManagerBase
+        .senError("极光" + AppInfo.getTechNum(), AppInfo.getTechNum() + ".连接状态：" + connected);
   }
 
   @Override

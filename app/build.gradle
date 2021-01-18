@@ -12,7 +12,7 @@ static def releaseTime() {
 }
 
 static def versionStr() {
-    DateFormat df = new SimpleDateFormat(".20.HHmm.MMdd")
+    DateFormat df = new SimpleDateFormat(".21.HHmm.MMdd")
     int versionKey = versionKey();
     return versionKey + df.format(Calendar.getInstance(Locale.CHINA).getTime())
 }
@@ -48,8 +48,12 @@ android {
         }
         manifestPlaceholders = [
                 JPUSH_PKGNAME : applicationId,
-                JPUSH_APPKEY : "447f2da0d311500893b0445d", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_APPKEY  : "447f2da0d311500893b0445d", //JPush 上注册的包名对应的 Appkey.
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+
+                OPPO_APPKEY   : "OP-729b176c9dd44fbc89ac7c279d16f3e0",
+                OPPO_APPID    : "OP-30457615",
+                OPPO_APPSECRET: "OP-acde0baf4d0c4a559f0a5a45fc29caf6",
         ]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -83,6 +87,11 @@ android {
             }
         }
     }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
@@ -94,9 +103,5 @@ dependencies {
 //    implementation project(path: ':keeplive')
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.tencent.bugly:crashreport:3.0.0'
-
-    implementation 'cn.jiguang.sdk:jpush:3.8.6'  // 此处以JPush 3.8.6 版本为例。
-    implementation 'cn.jiguang.sdk:jcore:2.6.0'  // 此处以JCore 2.6.0 版本为例。
-
-//    implementation 'com.aliyun.ams:alicloud-android-push:3.2.3'
+    implementation project(path: ':jpush')
 }

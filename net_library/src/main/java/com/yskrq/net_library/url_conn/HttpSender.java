@@ -133,7 +133,8 @@ public class HttpSender {
                                 final HttpInnerListener listener) {
     final String path = url;
     if (waitRequest.contains(path) && !"https://hotel16.yskvip.com:9092/RM_Others/wirtelog"
-        .equals(path)) {
+        .equals(path) && !url.endsWith("GetRelaxServerList") && !url
+        .endsWith("UpdateRelaxStatus") && !url.endsWith("UpdateRelaxCountDown")) {
       if (HttpSender.mNetErrorListeners != null) {
         HttpSender.mNetErrorListeners.onError("拦截：" + path, params);
       }

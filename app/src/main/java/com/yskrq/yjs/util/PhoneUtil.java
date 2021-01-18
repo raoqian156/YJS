@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.ToastUtil;
 
 public class PhoneUtil {
   /**
@@ -62,11 +63,11 @@ public class PhoneUtil {
 
 
   public static boolean openVoice(Context context) {//打开声音   result >> false-打开声音失败 true-打开声音成功
-//    if (SPUtil.getInt(context, "voice.status") == 2) {
-//      LOG.e("PhoneUtil", "openVoice.66:");
-//      return true;
-//    }
-    if(context==null) {
+    //    if (SPUtil.getInt(context, "voice.status") == 2) {
+    //      LOG.e("PhoneUtil", "openVoice.66:");
+    //      return true;
+    //    }
+    if (context == null) {
       return false;
     }
     LOG.e("PhoneUtil", "openVoice.69:");
@@ -135,8 +136,41 @@ public class PhoneUtil {
       intent.setComponent(componentName);
       context.startActivity(intent);
     } catch (Exception e) {//抛出异常就直接打开设置页面
-      intent = new Intent(Settings.ACTION_SETTINGS);
-      context.startActivity(intent);
+      String mtype = android.os.Build.MODEL.toLowerCase(); // 手机型号
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      ComponentName componentName = null;
+      if (mtype.startsWith("redmi") || mtype.startsWith("mi")) {
+        componentName = new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity");
+      } else if (mtype.startsWith("huawei")) {
+        componentName = new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity");
+      } else if (mtype.startsWith("vivo")) {
+        Log.e("PhoneUtil", "selfStartManagerSettingIntent: vivo");
+        componentName = new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity");
+      } else if (mtype.startsWith("zte")) {
+        //            /.autorun.AppAutoRunManager
+        componentName = new ComponentName("com.zte.heartyservice", "com.zte.heartyservice.autorun.AppAutoRunManager");
+      } else if (mtype.startsWith("f")) {
+        Log.e("PhoneUtil", "selfStartManagerSettingIntent: F");
+        componentName = new ComponentName("com.gionee.softmanager", "com.gionee.softmanager.oneclean.AutoStartMrgActivity");
+      } else if (mtype.startsWith("oppo")) {
+        componentName = new ComponentName("oppo com.coloros.oppoguardelf", "com.coloros.powermanager.fuelgaue.PowerUsageModelActivity");
+      }
+      intent.setComponent(componentName);
+      try {
+        context.startActivity(intent);
+      } catch (Exception e2) {//抛出异常就直接打开设置页面
+        try {
+          Intent intentApp = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+          intentApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+          intentApp.setData(uri);
+          context.startActivity(intentApp);
+        } catch (Exception e3) {
+          ToastUtil.show(e3.getMessage());
+          intent = new Intent(Settings.ACTION_SETTINGS);
+          context.startActivity(intent);
+        }
+      }
     }
   }
 

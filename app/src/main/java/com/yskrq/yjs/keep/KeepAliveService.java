@@ -16,11 +16,10 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
-import com.yskrq.common.okhttp.HttpManagerBase;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.yjs.R;
-import com.yskrq.yjs.bean.RelaxListBean;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.NoticeUtil;
 import com.yskrq.yjs.util.SpeakManager;
@@ -42,8 +41,9 @@ import static com.yskrq.yjs.util.SpeakManager.openVoice;
 //播放无声音乐，来保持进程保活
 public class KeepAliveService extends Service {
 
+  public static final int READ_WAY = 0;//0-直接打开  1-锁屏才打开
   public static final int NOTIFICATION_ID = 12345;
-  public volatile static boolean stop = false;
+  public volatile static boolean stop = true;
   public static int REFUSE_TIME_DURATION = 10;//秒
 
   private boolean isScreenON = true;//控制暂停
@@ -185,7 +185,6 @@ public class KeepAliveService extends Service {
       workDateCheckTime = System.currentTimeMillis();
       HttpManager.justRefuseSaleDate(context);
     }
-    final StringBuffer logInfo = new StringBuffer();
     final Map<String, String> param = new HashMap<>();
     param.put("groupid", AppInfo.getGroupId());
     param.put("brandno", AppInfo.getTechNum());
@@ -195,20 +194,15 @@ public class KeepAliveService extends Service {
     HttpManager.GetRelaxServerList(context, new HttpInnerListener() {
       @Override
       public void onString(String json) {
-        logInfo.append("POST>>" + new Gson().toJson(param));
         final RelaxListBean bean = new Gson().fromJson(json, RelaxListBean.class);
         KeepAliveService.notify(context, bean);
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
-          logInfo.append("first : " + first.toString());
-          LOG.e("KeepAliveService", "onString.播报:");
           SpeakManager.isRead(context, first);
         } else {
-          logInfo.append("noTask");
           openVoice(context);
           AppInfo.clearNotify(context);
         }
-        HttpManagerBase.senError("Keep", logInfo.toString());
         notifyUser(context);
       }
 
@@ -290,7 +284,7 @@ public class KeepAliveService extends Service {
       title = AppInfo.getTechNum() + " 号技师";
       con = "暂无新任务...";
     }
-    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel);
+    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel, tag > 0);
   }
 
   //将keepAliveBinder交给RemoteService

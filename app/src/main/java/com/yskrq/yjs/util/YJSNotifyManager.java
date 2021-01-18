@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
 import com.yskrq.common.util.SPUtil;
-import com.yskrq.yjs.BaseApplication;
 
 public class YJSNotifyManager {
 
@@ -19,15 +18,15 @@ public class YJSNotifyManager {
 
   public static void change(String groupid, String sIdStr, String expendTime) {
     int tag = getShowStatus(groupid);
-    AppInfo.setWaitType(BaseApplication.ctx, tag);
+    AppInfo.setWaitType(BASE.getCxt(), tag);
     if (tag == 2) {
       int sId = Integer.parseInt(sIdStr);
-      AppInfo.saveRunningTargetTime(BaseApplication.ctx, sId * 1000);
+      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
     } else if (tag == 1) {
-      AppInfo.setWait(BaseApplication.ctx, expendTime);
-      AppInfo.saveRunningTargetTime(BaseApplication.ctx, 0);
+      AppInfo.setWait(BASE.getCxt(), expendTime);
+      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
     } else {
-      AppInfo.setWait(BaseApplication.ctx, "");
+      AppInfo.setWait(BASE.getCxt(), "");
     }
   }
 
@@ -46,14 +45,14 @@ public class YJSNotifyManager {
   }
 
   public static void change(int tag, int sId, String expendTime) {
-    AppInfo.setWaitType(BaseApplication.ctx, tag);
+    AppInfo.setWaitType(BASE.getCxt(), tag);
     if (tag == 2) {
-      AppInfo.saveRunningTargetTime(BaseApplication.ctx, sId * 1000);
+      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
     } else if (tag == 1) {
-      AppInfo.setWait(BaseApplication.ctx, expendTime);
-      AppInfo.saveRunningTargetTime(BaseApplication.ctx, 0);
+      AppInfo.setWait(BASE.getCxt(), expendTime);
+      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
     } else {
-      AppInfo.setWait(BaseApplication.ctx, "");
+      AppInfo.setWait(BASE.getCxt(), "");
     }
   }
 

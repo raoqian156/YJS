@@ -9,10 +9,11 @@ import android.text.TextUtils;
 
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
 import com.yskrq.yjs.Speaker;
-import com.yskrq.yjs.bean.RelaxListBean;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.yjs.net.HttpManager;
 
 import java.util.HashMap;
@@ -61,6 +62,7 @@ public class SpeakManager {
   public static int isRead(final Context context, final RelaxListBean.ValueBean first) {
     if (first == null) {
       openVoice(context);
+      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.61");
       LOG.e("SpeakManager", "isRead.播报.61:");
       return 0;
     }
@@ -71,12 +73,14 @@ public class SpeakManager {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
           LOG.e("SpeakManager", "isRead.播报.72:");
+          HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.72");
           return 0;
         }
         readTimeTag.put(key, System.currentTimeMillis());
       }
       openVoice(context);
       LOG.e("SpeakManager", "isRead.播报.78:您有新的任务");
+      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.78:您有新的任务");
       Speaker.speakOut(context, "您有新的任务", new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
@@ -98,6 +102,7 @@ public class SpeakManager {
       if (readTimeTag.containsKey(key)) {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
+          HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.96");
           LOG.e("SpeakManager", "isRead.播报.96:");
           return 0;
         }
@@ -107,6 +112,7 @@ public class SpeakManager {
       final String brand = getReadBrand(context) + "号技师";
       final String spearOut = brand + "还有 " + AppInfo.getCuiZHongMinutes(context) + " 分钟下钟";
       LOG.e("SpeakManager", "isRead.播报.100:" + spearOut);
+      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.100:" + spearOut);
       Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
@@ -125,8 +131,9 @@ public class SpeakManager {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
           LOG.e("SpeakManager", "isRead.播报.127:");
-//          14:42:45.230 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=516817775, msgId='20266313553991304', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"252","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
-//          14:42:30.315 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=464847687, msgId='2251914957360196', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"267","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
+          HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.127");
+          //          14:42:45.230 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=516817775, msgId='20266313553991304', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"252","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
+          //          14:42:30.315 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=464847687, msgId='2251914957360196', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"267","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
           return 0;
         }
         readTimeTag.put(key, System.currentTimeMillis());
@@ -135,6 +142,7 @@ public class SpeakManager {
       String brand = getReadBrand(context) + "号技师";
       final String spearOut = brand + "已到钟";
       LOG.e("SpeakManager", "isRead.播报.99:" + spearOut);
+      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.99:" + spearOut);
       Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
@@ -149,7 +157,7 @@ public class SpeakManager {
       LOG.e("SpeakManager", "isRead.播报.122:");
       return 3;
     }
-    LOG.e("SpeakManager", "isRead.播报.127:");
+    HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.160" );
     return 0;
   }
 

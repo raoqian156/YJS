@@ -8,7 +8,9 @@ import android.os.Bundle;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.BASE;
 import com.yskrq.common.okhttp.HttpManagerBase;
+import com.yskrq.jpush.JPushUtil;
 import com.yskrq.net_library.url_conn.HttpSender;
+import com.yskrq.yjs.jpush.JpushHelper;
 import com.yskrq.yjs.util.ImageLoadUtil;
 import com.yskrq.yjs.util.status.NetWorkMonitorManager;
 
@@ -16,7 +18,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import cn.jpush.android.api.JPushInterface;
 
 public class BaseApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
@@ -29,8 +30,8 @@ public class BaseApplication extends Application implements Application.Activity
     BaseApplication.ctx = this;
     BASE.setContext(this);
     BASE.setMainClass(MainActivity.class, true);
-    JPushInterface.setDebugMode(true);
-    JPushInterface.init(this);
+    JPushUtil.init(this, true);
+    JPushUtil.setNotificationGetter(new JpushHelper());
     //    CrashHandler.getInstance().init(this);
     CrashReport.initCrashReport(getApplicationContext(), "0fb8de5348", false);
     registerActivityLifecycleCallbacks(this);

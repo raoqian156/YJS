@@ -251,3 +251,12 @@ public  *;
 -keep class android.support.** { *; }
 -keep class androidx.** { *; }
 -keep class com.google.android.** { *; }
+
+#  OPPO 推送混淆 |||||VVVVVVVVV
+-dontwarn com.coloros.mcsdk.**
+-keep class com.coloros.mcsdk.** { *; }
+-dontwarn com.heytap.**
+-keep class com.heytap.** { *; }
+-dontwarn com.mcs.**
+-keep class com.mcs.** { *; }
+#  OPPO 推送混淆 |||||^^^^^^^^^

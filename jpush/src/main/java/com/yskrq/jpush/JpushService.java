@@ -1,4 +1,4 @@
-package com.yskrq.yjs.jpush;
+package com.yskrq.jpush;
 
 import cn.jpush.android.service.JCommonService;
 

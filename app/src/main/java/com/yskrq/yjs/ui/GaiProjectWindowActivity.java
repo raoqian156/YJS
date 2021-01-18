@@ -10,7 +10,7 @@ import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.R;
-import com.yskrq.yjs.bean.RelaxListBean;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.yjs.bean.TechProjectBean;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.widget.PopUtil;
