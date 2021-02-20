@@ -120,7 +120,7 @@ public class SpeakManager {
           if (TextToSpeech.SUCCESS == status) {
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 0);
-            Speaker.speakOut(context, spearOut, null);
+            Speaker.speakOut(context, spearOut);
           }
         }
       });

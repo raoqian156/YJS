@@ -129,8 +129,6 @@ public class Constants {
     public static final String GetRelaxTechJobStatus = "CA_SetV2_RelaxTech/GetRelaxTechJobStatus";
     //     获取采耳商品
     public static final String selectgoodsbigrelax = "CA_SetV2_Web_InvtItem/selectgoodsbigrelax";
-
-
     //    更新播报状态
     public static final String UpdateRelaxStatus = "CA_SetV2_RelaxTech/UpdateRelaxStatus";
     //    更新播报状态2

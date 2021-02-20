@@ -17,6 +17,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.bean.RelaxListBean;
+import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.yjs.R;
@@ -198,6 +199,7 @@ public class KeepAliveService extends Service {
         KeepAliveService.notify(context, bean);
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
+          HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "播报来源:KeepAliveService");
           SpeakManager.isRead(context, first);
         } else {
           openVoice(context);

@@ -132,6 +132,7 @@ public class JpushHelper implements NotificationGetter {
     if (bean == null) {
       LOG.e("JpushHelper", "onNotifyMessageArrived.101:");
     } else {
+      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "播报来源:JpushHelper");
       SpeakManager.isRead(context, bean);
       YJSNotifyManager.change(bean.getGroupid(), bean.getSid(), bean.getExpendtime());
       int tag = YJSNotifyManager.getShowStatus(bean.getGroupid());

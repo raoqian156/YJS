@@ -95,6 +95,7 @@ public class BaseApplication extends Application implements Application.Activity
 
   @Override
   public void onActivityResumed(@NonNull Activity activity) {
+    BASE.setContext(activity);
     ImageLoadUtil.setActivity(activity);
   }
 
