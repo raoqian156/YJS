@@ -312,7 +312,7 @@ public class HttpManager {
   }
 
   public static void CancelTec(final BaseView view, final String account) {
-    checkPermission("RelaxBrandDelSelf", "技师自己退自己", view.getContext(), new OnPermissionCheck() {
+    checkPermission("RelaxBrandDelSelf", "技师退自己", view.getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
         HashMap<String, String> param = getParam();

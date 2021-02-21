@@ -34,6 +34,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static com.yskrq.yjs.net.Constants.TransCode.CancelTec;
 import static com.yskrq.yjs.net.Constants.TransCode.DelItem;
 import static com.yskrq.yjs.net.Constants.TransCode.getPaidMoney;
 import static com.yskrq.yjs.net.Constants.TransCode.selectddan;
@@ -196,7 +197,10 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
       refusePayed((MoneyListBean) data);
     } else if (type.is(DelItem)) {
       toast(data.getRespMsg());
-      finish();
+      onRefuse();
+    } else if (type.is(CancelTec)) {
+      toast(data.getRespMsg());
+      onRefuse();
     }
   }
 
@@ -241,8 +245,9 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
     try {
       LOG.e("OrderDetailActivity", "setDanInfo.174:");
       for (OrderListBean.ValueBean item : value) {
-        allMoney = StringUtil.doubleAdd(allMoney,StringUtil.getDouble(item.getItemCount()) * StringUtil
-            .getDouble(item.getPrice()));
+        allMoney = StringUtil
+            .doubleAdd(allMoney, StringUtil.getDouble(item.getItemCount()) * StringUtil
+                .getDouble(item.getPrice()));
       }
     } catch (Exception e) {
       LOG.e("OrderDetailActivity", "setDanInfo.179:");
@@ -313,7 +318,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
       }
     } else if (position == 1) {
       if ("9001".equals(bean.getGroupId()) || "9002".equals(bean.getGroupId())) {
-        DialogHelper.showRemind(this, "确定推掉该项目吗?", new DialogHelper.DialogConfirmListener() {
+        DialogHelper.showRemind(this, "确定退掉该项目吗?", new DialogHelper.DialogConfirmListener() {
           @Override
           public void onSure() {
             HttpManager.DelItem(OrderDetailActivity.this, bean.getAccount(), bean
