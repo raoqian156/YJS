@@ -75,9 +75,9 @@ android {
                     def fileName
                     if (variant.buildType.name == "release") {
                         // 输出apk名称为
-                        fileName = "R-yunjishi-v${defaultConfig.versionName}.apk"
+                        fileName = "R-云技师-v${defaultConfig.versionName}.apk"
                     } else {
-                        fileName = "D-yunjishi-v${defaultConfig.versionName}.apk"
+                        fileName = "D-云技师-v${defaultConfig.versionName}.apk"
                     }
                     def outFile = output.outputFile
                     if (outFile != null && outFile.name.endsWith('.apk')) {
