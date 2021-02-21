@@ -25,6 +25,7 @@ import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.MoneyListBean;
 import com.yskrq.yjs.bean.OrderListBean;
 import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.util.StringUtil;
 import com.yskrq.yjs.widget.PopUtil;
 
 import java.text.SimpleDateFormat;
@@ -36,8 +37,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import static com.yskrq.yjs.net.Constants.TransCode.DelItem;
 import static com.yskrq.yjs.net.Constants.TransCode.getPaidMoney;
 import static com.yskrq.yjs.net.Constants.TransCode.selectddan;
-
-;
 
 public class OrderDetailActivity extends BaseActivity implements View.OnClickListener,
                                                                  OnItemClickListener,
@@ -105,7 +104,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
         boolean isTui = false;
         if ("5".equals(bean.getStatus())) {
           try {
-            if (Double.parseDouble(bean.getItemCount()) < 0) {
+            if (StringUtil.getDouble(bean.getItemCount()) < 0) {
               isTui = true;
             }
           } catch (Exception e) {
@@ -218,7 +217,7 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
     if (bean.getValues() != null && bean.getValues().size() > 0) {
       try {
         for (MoneyListBean.ValueBean item : bean.getValues()) {
-          allPayed += Double.parseDouble(item.getPaidAmount());
+          allPayed = StringUtil.doubleAdd(allPayed, item.getPaidAmount());
         }
       } catch (Exception e) {
       }
@@ -242,7 +241,8 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
     try {
       LOG.e("OrderDetailActivity", "setDanInfo.174:");
       for (OrderListBean.ValueBean item : value) {
-        allMoney += Double.parseDouble(item.getItemCount()) * Double.parseDouble(item.getPrice());
+        allMoney = StringUtil.doubleAdd(allMoney,StringUtil.getDouble(item.getItemCount()) * StringUtil
+            .getDouble(item.getPrice()));
       }
     } catch (Exception e) {
       LOG.e("OrderDetailActivity", "setDanInfo.179:");
@@ -302,7 +302,8 @@ public class OrderDetailActivity extends BaseActivity implements View.OnClickLis
         DialogHelper.showRemind(this, "确定退掉该技师吗?", new DialogHelper.DialogConfirmListener() {
           @Override
           public void onSure() {
-            HttpManager.CancelTec(OrderDetailActivity.this, bean.getAccount());
+            HttpManager
+                .CancelTec(OrderDetailActivity.this, bean.getAccount(), bean.getTechnician());
           }
 
           @Override

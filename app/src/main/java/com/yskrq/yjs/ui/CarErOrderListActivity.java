@@ -18,6 +18,7 @@ import com.yskrq.yjs.R;
 import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
 import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +107,7 @@ public class CarErOrderListActivity extends BaseActivity implements View.OnClick
     for (int i = 0; i < copy.size(); i++) {
       CaiErProductBean.ValueBean item = copy.get(i);
       if (item.getNum() > 0) {
-        all += item.getAllPrice();
+        all = StringUtil.doubleAdd(all, item.getAllPrice());
         num += item.getNum();
       } else {
         remove = i;

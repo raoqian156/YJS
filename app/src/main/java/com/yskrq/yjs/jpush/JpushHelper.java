@@ -118,7 +118,7 @@ public class JpushHelper implements NotificationGetter {
   }
 
   @Override
-  public void onNotifyMessageArrived(Context context, NotificationMessage message) {
+  public void onNotifyMessageArrived(final Context context, NotificationMessage message) {
     HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "onNotifyMessageArrived:" + message);
     if (message.notificationBuilderId == 1) {
       HttpManagerBase.senError("极光" + AppInfo
@@ -132,7 +132,8 @@ public class JpushHelper implements NotificationGetter {
     if (bean == null) {
       LOG.e("JpushHelper", "onNotifyMessageArrived.101:");
     } else {
-      HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "播报来源:JpushHelper");
+      HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:JpushHelper");
+      LOG.e("JpushHelper", "onNotifyMessageArrived.播报来源.isRead");
       SpeakManager.isRead(context, bean);
       YJSNotifyManager.change(bean.getGroupid(), bean.getSid(), bean.getExpendtime());
       int tag = YJSNotifyManager.getShowStatus(bean.getGroupid());

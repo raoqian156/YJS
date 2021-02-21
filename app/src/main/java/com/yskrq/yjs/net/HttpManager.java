@@ -294,8 +294,25 @@ public class HttpManager {
     HttpProxy.inner(innerListener, context, GetRelaxServerList, getParam());
   }
 
-  public static void CancelTec(final BaseView view, final String account) {
+  public static void CancelTec(final BaseView view, final String account, final String techNum) {
     checkPermission("RelaxBrandDel", "退技师", view.getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk() {
+        HashMap<String, String> param = getParam();
+        param.put("account", account);
+        param.put("tecid", techNum);
+        HttpProxy.bean(view, CancelTec, param, BaseBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(CancelTec), new BaseBean(CancelTec, rea));
+      }
+    });
+  }
+
+  public static void CancelTec(final BaseView view, final String account) {
+    checkPermission("RelaxBrandDelSelf", "技师自己退自己", view.getContext(), new OnPermissionCheck() {
       @Override
       public void onPermissionOk() {
         HashMap<String, String> param = getParam();

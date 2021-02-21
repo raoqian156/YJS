@@ -9,6 +9,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.yskrq.common.util.LOG;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public class ScreenStateReceiver extends BroadcastReceiver {
         if(mHandler==null){
             mHandler = new Handler(Looper.myLooper());
         }
+        LOG.e("ScreenStateReceiver", "run.85:before.kill");
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -82,6 +85,7 @@ public class ScreenStateReceiver extends BroadcastReceiver {
                 if(pendingIntent!=null){
                     pendingIntent.cancel();
                 }
+                LOG.e("ScreenStateReceiver", "run.85:when.kill");
                 Intent startOnePixelActivity = new Intent(context, OnePixelActivity.class);
                 startOnePixelActivity.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -93,6 +97,7 @@ public class ScreenStateReceiver extends BroadcastReceiver {
                     e.printStackTrace();
                 }
                 notifyScreenOff();
+                LOG.e("ScreenStateReceiver", "run.85:after.kill");
             }
         },1000);
     }

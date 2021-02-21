@@ -20,6 +20,7 @@ import com.yskrq.yjs.bean.CaiErProductBean;
 import com.yskrq.yjs.bean.OrderListBean;
 import com.yskrq.yjs.bean.RoomProjectListBean;
 import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +150,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     for (int i = 0; i < copy.size(); i++) {
       RoomProjectListBean.ValueBean item = copy.get(i);
       if (item.getShowNum() > 0) {
-        all += item.getAllPrice();
+        all = StringUtil.doubleAdd(all, item.getAllPrice());
         num += item.getShowNum();
       } else {
         remove = i;

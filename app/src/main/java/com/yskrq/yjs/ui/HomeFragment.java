@@ -272,8 +272,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
     refuseByFirst(bean.getValue().get(0), context);
     LOG.e("HomeFragment", "refuseList.:");
-    HttpManagerBase
-        .senError("极光" + AppInfo.getTechNum(), "HomeFragment.SpeakManager.SpeakManager.isRead");
+    HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "播报来源:HomeFragment");
+    LOG.e("HomeFragment", "播报来源.refuseList" );
     int show = SpeakManager.isRead(getContext(), bean.getValue().get(0));
     LOG.e("HomeFragment", "refuseList.272:" + show);
     //GroupId：9000未安排 9001 已打卡  9002待打卡 9003已下钟
@@ -693,7 +693,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   private void checkShowStr(String s) {
     try {
       int tag = (int) findViewById(R.id.tv_center).getTag();
-      LOG.e("HomeFragment", tag + ".afterTextChanged:" + s);
+      LOG.d("HomeFragment", tag + ".afterTextChanged:" + s);
       boolean refuse = s.endsWith("30") || s.endsWith("00");
       if (refuse && tag > 0) {
         loadData();

@@ -113,14 +113,13 @@ public class SpeakManager {
       final String spearOut = brand + "还有 " + AppInfo.getCuiZHongMinutes(context) + " 分钟下钟";
       LOG.e("SpeakManager", "isRead.播报.100:" + spearOut);
       HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.100:" + spearOut);
-      Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
+      Speaker.speakOutTwice(context, spearOut,true, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
           LOG.e("SpeakManager", "onFinish.83:" + status);
           if (TextToSpeech.SUCCESS == status) {
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 0);
-            Speaker.speakOut(context, spearOut);
           }
         }
       });
@@ -143,14 +142,13 @@ public class SpeakManager {
       final String spearOut = brand + "已到钟";
       LOG.e("SpeakManager", "isRead.播报.99:" + spearOut);
       HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "isRead.99:" + spearOut);
-      Speaker.speakOut(context, spearOut, new Speaker.OnSpeakListener() {
+      Speaker.speakOutTwice(context, spearOut,true, new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
           LOG.e("SpeakManager", "onFinish.98:" + status);
           if (TextToSpeech.SUCCESS == status) {
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 1);
-            Speaker.speakOut(context, spearOut, null);
           }
         }
       });

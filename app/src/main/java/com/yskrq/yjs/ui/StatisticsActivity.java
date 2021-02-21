@@ -20,6 +20,7 @@ import com.yskrq.yjs.bean.KaiDanBean;
 import com.yskrq.yjs.bean.ShouKaBean;
 import com.yskrq.yjs.bean.StaticsListBean;
 import com.yskrq.yjs.net.HttpManager;
+import com.yskrq.yjs.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -142,7 +143,7 @@ public class StatisticsActivity extends BaseActivity implements View.OnClickList
           double sun = 0;
           for (Object datum : mAdapter.getData()) {
             ShouKaBean.ValueBean bean = (ShouKaBean.ValueBean) datum;
-            sun += bean.getNum();
+            sun = StringUtil.doubleAdd(sun, bean.getNum());
           }
           setString2View(R.id.tv_right, "" + sun);
         } else if (type == 3) {
@@ -150,8 +151,8 @@ public class StatisticsActivity extends BaseActivity implements View.OnClickList
           double sun = 0;
           for (Object datum : mAdapter.getData()) {
             KaiDanBean.ValueBean bean = (KaiDanBean.ValueBean) datum;
-            cen += bean.getNum();
-            sun += bean.getMoney();
+            cen = StringUtil.doubleAdd(cen, bean.getNum());
+            sun = StringUtil.doubleAdd(sun, bean.getMoney());
           }
           setString2View(R.id.tv_center, "" + cen);
           setString2View(R.id.tv_right, "" + sun);
