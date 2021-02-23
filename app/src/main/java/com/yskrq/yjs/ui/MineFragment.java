@@ -55,7 +55,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_photo) {
       PhotoActivity.start(getContext());
     } else if (v.getId() == R.id.btn_bg_setting) {
-      DialogHelper.showBatteryRemind(getContext(), new DialogHelper.DialogConfirmListener() {
+      DialogHelper.showWebRemind(getContext(), new DialogHelper.DialogConfirmListener() {
         @Override
         public void onSure() {
           toStartInterface(getContext());

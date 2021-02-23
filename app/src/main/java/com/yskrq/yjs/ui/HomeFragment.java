@@ -272,8 +272,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
     refuseByFirst(bean.getValue().get(0), context);
     LOG.e("HomeFragment", "refuseList.:");
-    HttpManagerBase.senError("极光"+AppInfo.getTechNum(), "播报来源:HomeFragment");
-    LOG.e("HomeFragment", "播报来源.refuseList" );
+    HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:HomeFragment");
+    LOG.e("HomeFragment", "播报来源.refuseList");
     int show = SpeakManager.isRead(getContext(), bean.getValue().get(0));
     LOG.e("HomeFragment", "refuseList.272:" + show);
     //GroupId：9000未安排 9001 已打卡  9002待打卡 9003已下钟
