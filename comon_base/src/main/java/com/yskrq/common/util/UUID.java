@@ -33,7 +33,11 @@ public class UUID {
    */
   public static String getDeviceId(Context context) {
     String save = SPUtil.getString(context, TAG_COMPUTER_UUID);
-    if (!TextUtils.isEmpty(save)) return save;
+    if (!TextUtils.isEmpty(save) && !save.equals("D41D8CD98F00B204E9800998ECF8427E")) {
+      LOG.e("UUID", "getDeviceId.38:" + save);
+      return save;
+    }
+// 9X   2BEF9E9915156EF91C105857AD2F2DB3
     //获得设备默认IMEI（>=6.0 需要ReadPhoneState权限）
     String imei;
     try {
@@ -82,7 +86,8 @@ public class UUID {
       sbDeviceId.append("uuid");
     }
     sbDeviceId.append("|" + mac);
-    String res = "";
+    String res = sbDeviceId.toString();
+    LOG.e("UUID", "getDeviceId.86:" + res);
     res = MD5Util.getMD5String(res);
     SPUtil.saveString(context, TAG_COMPUTER_UUID, res);
     return res;
