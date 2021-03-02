@@ -19,8 +19,10 @@ import com.yskrq.common.OnClick;
 import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.common.bean.TecColorBean;
 import com.yskrq.common.okhttp.HttpManagerBase;
+import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.HttpInnerListener;
@@ -520,20 +522,36 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
   }
 
+  //打卡检查
   private void toSign() {
+    if (AppInfo.needLocation(getContext()) || AppInfo.needWifi()) {
+      PermissionUtil.openLocate(getActivity(), new PermissionUtil.OnPermissionListener() {
+        @Override
+        public void onPermissionOk() {
+          LOG.e("HomeFragment", "onPermissionOk.529:");
+          if (AppUtils.isLocServiceEnable(getContext())) {
+            showSignDialog();
+          } else {
+            ToastUtil.show("请打开定位后签到");
+          }
+        }
+      });
+    } else {
+      LOG.e("HomeFragment", "toSign.534:");
+      showSignDialog();
+    }
+  }
+
+  //展示打卡弹窗
+  private void showSignDialog() {
     DialogHelper.showCheckBoxPan(getContext(), new DialogHelper.DialogCheckListener() {
       @Override
       public void onSure(final String s) {
         if (!AppInfo.needLocation(getContext())) {
-          showBanDialog(0, 0, s);
-          return;
+          uploadSignInfo(0, 0, s);
+        } else {
+          signWhitLocation(s);
         }
-        PermissionUtil.openLocate(getActivity(), new PermissionUtil.OnPermissionListener() {
-          @Override
-          public void onPermissionOk() {
-            signNet(s);
-          }
-        });
       }
 
       @Override
@@ -542,13 +560,13 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }, "打卡", "上班", "下班");
   }
 
-  private void signNet(final String btnStr) {
+  private void signWhitLocation(final String btnStr) {
     showLoading();
     LocationUtil
         .requestLocation(getContext(), LocationUtil.Mode.AUTO, new LocationUtil.OnResponseListener() {
           @Override
           public void onSuccessResponse(double latitude, double longitude) {
-            showBanDialog(latitude, longitude, btnStr);
+            uploadSignInfo(latitude, longitude, btnStr);
             LocationUtil.stopLocation();
           }
 
@@ -580,7 +598,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }, "加钟", "全钟", "半钟");
   }
 
-  private void showBanDialog(double latitude, double longitude, String btnStr) {//上下班
+  private void uploadSignInfo(double latitude, double longitude, String btnStr) {//上下班
     if (!MainActivity.isShowToUser) {
       return;
     }

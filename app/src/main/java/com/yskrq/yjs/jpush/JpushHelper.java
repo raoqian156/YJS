@@ -11,7 +11,6 @@ import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.GsonUtil;
 import com.yskrq.common.util.LOG;
-import com.yskrq.jpush.NotificationGetter;
 import com.yskrq.yjs.Speaker;
 import com.yskrq.yjs.util.NoticeUtil;
 import com.yskrq.yjs.util.SpeakManager;
@@ -27,7 +26,7 @@ import cn.jpush.android.api.NotificationMessage;
 
 import static com.yskrq.yjs.keep.KeepAliveService.NOTIFICATION_ID;
 
-//import com.yskrq.jpush.NotificationGetter;
+//import com.yskrq.yjs.jpush.NotificationGetter;
 
 public class JpushHelper implements NotificationGetter {
   static Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -119,6 +118,7 @@ public class JpushHelper implements NotificationGetter {
 
   @Override
   public void onNotifyMessageArrived(final Context context, NotificationMessage message) {
+    LOG.bean("JpushHelper", message);
     HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "onNotifyMessageArrived:" + message);
     if (message.notificationBuilderId == 1) {
       HttpManagerBase.senError("极光" + AppInfo

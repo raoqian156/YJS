@@ -1,15 +1,13 @@
 package com.yskrq.common;
 
 import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yskrq.common.bean.LoginBean;
 import com.yskrq.common.bean.TecColorBean;
+import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
 
@@ -17,8 +15,6 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.Context.WIFI_SERVICE;
 
 
 public class AppInfo {
@@ -224,15 +220,6 @@ public class AppInfo {
     SPUtil.saveString(BASE.getCxt(), "Sign.lon", data);
   }
 
-  public static String getWifiName(Context context) {
-    if (context == null) return "getWifiName";
-    WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
-    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-    Log.d("wifiInfo", wifiInfo.toString());
-    Log.d("SSID", wifiInfo.getSSID());
-    if (wifiInfo.getSSID() == null) return "";
-    return wifiInfo.getSSID().replaceAll("\"", "");
-  }
 
   /**
    * @param context
@@ -244,12 +231,12 @@ public class AppInfo {
   public static int canSign(Context context, double latitude, double longitude) {
     if (context == null) return -1;
     String wifiName = SPUtil.getString(BASE.getCxt(), "Sign.wifi");
+    String curWifi = AppUtils.getWifiName(context);
     boolean isWifiOk = false;
     if (TextUtils.isEmpty(wifiName)) {
       isWifiOk = true;
     } else {
       String[] wifis = wifiName.split(",");
-      String curWifi = getWifiName(context);
       LOG.e("AppInfo", "canSign.250:" + wifis.length);
       for (String wifi : wifis) {
         LOG.e("AppInfo", "canSign.item:" + "-" + wifi + "--" + curWifi + "-> " + TextUtils
@@ -275,18 +262,22 @@ public class AppInfo {
       return 2;
     }
     LOG.e("AppInfo", "canSign.wifiName:" + wifiName + ",lat:" + lat + ",lon:" + lon);
-    LOG.e("AppInfo", "canSign.get.wifiName:" + getWifiName(context) + ",lat:" + latitude + ",lon:" + longitude);
+    LOG.e("AppInfo", "canSign.user.wifiName:" + curWifi + ",lat:" + latitude + ",lon:" + longitude);
     LOG.e("AppInfo", "canSign.isWifiOk:" + isWifiOk + ",locationOK:" + locationOK);
     return 0;
   }
 
+  public static boolean needWifi() {
+    String wifiName = SPUtil.getString(BASE.getCxt(), "Sign.wifi");
+    return !TextUtils.isEmpty(wifiName);
+  }
 
   public static boolean needLocation(Context context) {
     if (context == null) return false;
     String lat = SPUtil.getString(BASE.getCxt(), "Sign.lat");
     String lon = SPUtil.getString(BASE.getCxt(), "Sign.lon");
     LOG.e("AppInfo", "needLocation.lat:" + lat + "  lon=" + lon);
-    if ("0".equals(lat) || "0".equals(lon)) {
+    if ("0".equals(lat) || "0".equals(lon) || "".equals(lat) || "".equals(lon)) {
       return false;
     }
     return true;

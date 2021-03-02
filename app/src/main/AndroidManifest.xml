@@ -135,7 +135,7 @@
             android:name=".ui.AddProjectWindowActivity"
             android:theme="@style/WindowActivity" />
         <service
-            android:name="com.yskrq.jpush.JpushService"
+            android:name=".jpush.JpushService"
             android:enabled="true"
             android:exported="false"
             android:process=":pushcore">
@@ -144,7 +144,7 @@
             </intent-filter>
         </service>
         <receiver
-            android:name="com.yskrq.jpush.PushMessageReceiver"
+            android:name=".jpush.PushMessageReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -152,32 +152,39 @@
                 <category android:name="com.yskrq.yjs" />
             </intent-filter>
         </receiver>
-        <!-- since JPushv3.6.8 ，oppov2.1.0 oppo 核心功能-->
-<!--        <service android:name="cn.jpush.android.service.PluginOppoPushService"-->
-<!--            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
-<!--        <service-->
-<!--            android:name="com.heytap.msp.push.service.CompatibleDataMessageCallbackService"-->
 
-<!--            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE"/>-->
-<!--            </intent-filter>-->
-<!--        </service> &lt;!&ndash;兼容Q以下版本&ndash;&gt;-->
-<!--        &lt;!&ndash; since JPushv3.6.8 ，oppov2.1.0 oppo 核心功能&ndash;&gt;-->
-<!--        <service-->
-<!--            android:name="com.heytap.msp.push.service.DataMessageCallbackService"-->
-<!--            android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">-->
 
-<!--            <intent-filter>-->
-<!--                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>-->
+        <!--        &lt;!&ndash; since JPushv3.6.8 ，oppov2.1.0 oppo 核心功能&ndash;&gt;-->
+        <!--        <service android:name="cn.jpush.android.service.PluginOppoPushService"-->
+        <!--            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE" />-->
+        <!--            </intent-filter>-->
+        <!--        </service>-->
 
-<!--                <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE"/>-->
-<!--            </intent-filter>-->
-<!--        </service> &lt;!&ndash;兼容Q版本&ndash;&gt;-->
+        <!--        &lt;!&ndash; since JPushv3.6.8 ，oppov2.1.0 oppo 核心功能&ndash;&gt;-->
+        <!--        <service-->
+        <!--            android:name="com.heytap.msp.push.service.DataMessageCallbackService"-->
+        <!--            android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">-->
+
+        <!--            <intent-filter>-->
+        <!--                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>-->
+
+        <!--                <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE"/>-->
+        <!--            </intent-filter>-->
+        <!--        </service> &lt;!&ndash;兼容Q版本&ndash;&gt;-->
+
+        <!--        &lt;!&ndash; since JPushv3.6.8 ，oppov2.1.0 oppo 核心功能&ndash;&gt;-->
+        <!--        <service-->
+        <!--            android:name="com.heytap.msp.push.service.DataMessageCallbackService"-->
+        <!--            android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">-->
+
+        <!--            <intent-filter>-->
+        <!--                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>-->
+
+        <!--                <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE"/>-->
+        <!--            </intent-filter>-->
+        <!--        </service> &lt;!&ndash;兼容Q版本&ndash;&gt;-->
         <!--        <receiver android:name="com.fanjun.keeplive.receiver.NotificationClickReceiver" />-->
         <!--        <activity-->
         <!--            android:name="com.fanjun.keeplive.activity.OnePixelActivity"-->

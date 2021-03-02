@@ -1,4 +1,4 @@
-package com.yskrq.jpush;
+package com.yskrq.yjs.jpush;
 
 import android.content.Context;
 

@@ -40,7 +40,7 @@ import static com.yskrq.yjs.util.SpeakManager.openVoice;
  * 播放无声音乐，来保持进程包活
  */
 //播放无声音乐，来保持进程保活
-public class KeepAliveService extends Service  {
+public class KeepAliveService extends Service {
 
   public static final int READ_WAY = 0;//0-直接打开  1-锁屏才打开
   public static final int NOTIFICATION_ID = 12345;
@@ -141,11 +141,11 @@ public class KeepAliveService extends Service  {
                 .getRunningLeftTime(KeepAliveService.this) / 1000 % REFUSE_TIME_DURATION);
             if (delayTime > 0) {
               if (delayTime * 2 > REFUSE_TIME_DURATION) {
-                 onRead();
+                onRead();
               }
               Thread.sleep(delayTime * 1000L);
             }
-             onRead();
+            onRead();
             Thread.sleep(REFUSE_TIME_DURATION * 1000L);
           } catch (InterruptedException e) {
             e.printStackTrace();
@@ -200,7 +200,7 @@ public class KeepAliveService extends Service  {
         if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
           RelaxListBean.ValueBean first = bean.getValue().get(0);
           HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:KeepAliveService");
-          LOG.e("KeepAliveService", "GetRelaxServerList.播报来源.onString" );
+          LOG.e("KeepAliveService", "GetRelaxServerList.播报来源.onString");
           SpeakManager.isRead(context, first);
         } else {
           openVoice(context);
@@ -265,6 +265,9 @@ public class KeepAliveService extends Service  {
       SimpleDateFormat simpleDateFormat;
       simpleDateFormat = new SimpleDateFormat("HH:mm");
       con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
+      LOG.e("KeepAliveService", "notifyUser.title:" + title + " con=" + con);
+      NoticeUtil.clearNotify(context);
+      return;
     } else if (tag == 1) {
       priorityLevel = 2;
       title = "您有新任务";

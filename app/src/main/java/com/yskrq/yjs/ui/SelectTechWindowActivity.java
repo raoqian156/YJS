@@ -43,7 +43,7 @@ public class SelectTechWindowActivity extends BaseActivity implements View.OnCli
     HttpManager
         .checkPermission("RelaxOrderClock", "点钟", context, new HttpManager.OnPermissionCheck() {
           @Override
-          public void onPermissionOk() {
+          public void onPermissionOk(int... le) {
 
             Intent intent = new Intent(context, SelectTechWindowActivity.class);
             intent.putExtra("itemno", itemno);

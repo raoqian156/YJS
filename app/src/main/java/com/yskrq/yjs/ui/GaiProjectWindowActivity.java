@@ -6,11 +6,11 @@ import android.view.View;
 
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.OnClick;
+import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.common.util.ToastUtil;
 import com.yskrq.net_library.BaseBean;
 import com.yskrq.net_library.RequestType;
 import com.yskrq.yjs.R;
-import com.yskrq.common.bean.RelaxListBean;
 import com.yskrq.yjs.bean.TechProjectBean;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.widget.PopUtil;
@@ -35,7 +35,7 @@ public class GaiProjectWindowActivity extends BaseActivity implements View.OnCli
     HttpManager
         .checkPermission("POSBillItemUpBrandNo", "项目修改", activity, new HttpManager.OnPermissionCheck() {
           @Override
-          public void onPermissionOk() {
+          public void onPermissionOk(int... le) {
             Intent intent = new Intent(activity, GaiProjectWindowActivity.class);
             intent.putExtra("project", first);
             activity.startActivity(intent);
@@ -62,6 +62,7 @@ public class GaiProjectWindowActivity extends BaseActivity implements View.OnCli
     setString2View(R.id.btn_name, project.getItemname());
     setString2View(R.id.tv_type, project.getRelaxclockname());
     HttpManager.getIscalctime(this);
+    HttpManager.getCanChangItemValue(this);
   }
 
   List<TechProjectBean.ValueBean> selects;

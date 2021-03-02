@@ -132,7 +132,7 @@ public class DialogHelper {
   }
 
   public static void showWebRemind(Context context, final DialogConfirmListener listener) {
-    String url = "https://192.168.1.107:8080/h5/#/";
+    String url = "http://hotel16.yskvip.com:8180/h5";
     final LayoutInflater inflater = LayoutInflater.from(context);
     View customView = inflater.inflate(R.layout.dialog_web, null, false);
     NestedScrollView sv = customView.findViewById(R.id.sv_pan);
@@ -208,7 +208,6 @@ public class DialogHelper {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         float value = (float) animation.getAnimatedValue();
-        LOG.e("LoadingDialog", "onAnimationUpdate.79:" + value);
         iv_route.setRotationX(.5F);
         iv_route.setRotationY(.5F);
         iv_route.setRotation(value);

@@ -117,7 +117,7 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
       HttpManager
           .checkPermission("POSBillItemUpBrandNo", "项目修改", this, new HttpManager.OnPermissionCheck() {
             @Override
-            public void onPermissionOk() {
+            public void onPermissionOk(int... le) {
 
               LOG.e("ModifyInOrderWindowActivity", "checkPermission.selects:"+selects.size());
               if (selects == null || selects.size() ==0) {
@@ -150,7 +150,7 @@ public class ModifyInOrderWindowActivity extends BaseActivity implements View.On
       HttpManager
           .checkPermission("RelaxClockEditTime", "修改技师上钟时间", this, new HttpManager.OnPermissionCheck() {
             @Override
-            public void onPermissionOk() {
+            public void onPermissionOk(int... le) {
               DialogHelper
                   .showHourTimeDialog(ModifyInOrderWindowActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override

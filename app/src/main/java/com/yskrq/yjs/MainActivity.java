@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.heytap.msp.push.HeytapPushManager;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.BaseActivity;
 import com.yskrq.common.LoginActivity;
@@ -53,6 +54,9 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     super.onCreate(savedInstanceState);
     if (KeepAliveService.READ_WAY == 0) KeepManager.startAliveRun();
     JPushInterface.setAlias(this, 1, AppInfo.getGroupId());
+    LOG.e("MainActivity", "JPush.JpushHelper.getRegistrationID:"+JPushInterface.getRegistrationID(this));
+    LOG.e("MainActivity", "JPush.OPPO.getRegistrationID:"+HeytapPushManager.getRegisterID());
+
     HttpManager.getWifiName(this);
     if (PhoneUtil.needPermission(getContext())) {
       AppInfo.setVoiceType(this, 1);

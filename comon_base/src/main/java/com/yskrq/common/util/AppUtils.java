@@ -7,12 +7,16 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -33,6 +37,7 @@ public class AppUtils {
 
   /**
    * 忽略电池优化  -->  OPPO无法完成
+   *
    * @param context
    */
   public static void requestIgnoreBatteryOptimizations(Context context) {
@@ -46,6 +51,35 @@ public class AppUtils {
       }
     }
   }
+
+
+  public static String getWifiName(Context context) {
+    if (context == null) return "getWifiName";
+    WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+    Log.d("wifiInfo", wifiInfo.toString());
+    String wifiName = wifiInfo.getSSID();
+    Log.d("SSID", wifiName);
+    if (wifiName == null) return "";
+    if (WifiManager.UNKNOWN_SSID.equals(wifiName)) {
+      if (!isLocServiceEnable(context)) {
+        Log.e("AppUtils", ">>>>>>>>>>getWifiName.error : due to the locate switch is close");
+      }
+    }
+    return wifiName.replaceAll("\"", "");
+  }
+
+  public static boolean isLocServiceEnable(Context context) {
+    LocationManager locationManager = (LocationManager) context
+        .getSystemService(Context.LOCATION_SERVICE);
+    boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    boolean network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    if (gps || network) {
+      return true;
+    }
+    return false;
+  }
+
 
   public static double showInches() {
     Point point = new Point();

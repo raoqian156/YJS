@@ -141,6 +141,16 @@ public class RelaxListBean extends BaseBean {
       return itemprice;
     }
 
+    public double getItempriceInt() {
+      try {
+
+        return Double.parseDouble(itemprice);
+      } catch (Exception e) {
+        LOG.e("RelaxListBean", "getItempriceInt.149:" + itemprice);
+        return 0;
+      }
+    }
+
     public void setItemprice(String itemprice) {
       this.itemprice = itemprice;
     }

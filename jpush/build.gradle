@@ -28,4 +28,5 @@ dependencies {
     api 'cn.jiguang.sdk:jpush:3.8.6'  // 此处以JPush 3.8.6 版本为例。
     implementation 'cn.jiguang.sdk:jcore:2.6.0'
     implementation project(path: ':comon_base')
+    api files('libs\\jpush-android-plugin-oppo-v3.9.1.jar')
 }

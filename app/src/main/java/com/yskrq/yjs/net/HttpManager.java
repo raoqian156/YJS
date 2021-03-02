@@ -257,6 +257,30 @@ public class HttpManager {
     }, view.getContext(), GetHotelCodePos, param);
   }
 
+  private static String bCanChangItemValue = "";
+
+  public static void getCanChangItemValue(final BaseView view) {
+    if (!TextUtils.isEmpty(bCanChangItemValue)) {
+      return;
+    }
+    HashMap<String, String> param = getParam();
+    param.put("section", "RelaxGuest");
+    param.put("entry", "bCanChangItem");
+    HttpProxy.inner(new HttpInnerListener() {
+      @Override
+      public void onString(String json) {
+        ListParamBean bean = new Gson().fromJson(json, ListParamBean.class);
+        if (bean == null || bean.getValue() == null || bean.getValue().size() == 0) return;
+        bCanChangItemValue = bean.getValue().get(0).getData();
+      }
+
+      @Override
+      public void onEmptyResponse() {
+
+      }
+    }, view.getContext(), GetHotelCodePos, param);
+  }
+
   public static void getYun(final HttpInnerListener view, Context context) {
     HashMap<String, String> param = getParam();
     param.put("section", "RelaxGuest");
@@ -297,7 +321,7 @@ public class HttpManager {
   public static void CancelTec(final BaseView view, final String account, final String techNum) {
     checkPermission("RelaxBrandDel", "退技师", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("tecid", techNum);
@@ -314,7 +338,7 @@ public class HttpManager {
   public static void CancelTec(final BaseView view, final String account) {
     checkPermission("RelaxBrandDelSelf", "技师退自己", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("tecid", AppInfo.getTechNum());
@@ -334,7 +358,7 @@ public class HttpManager {
     checkPermission("POSBillItemNoDecreaseBrandNo", "退项目", view
         .getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("tecid", tecid);
@@ -364,7 +388,7 @@ public class HttpManager {
                                   final String seqnum) {
     checkPermission("POSBillItemNoDecrease", "退商品", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("account", account);
         param.put("icount", icount);
@@ -383,7 +407,7 @@ public class HttpManager {
   public static void SelectDataByStatus(final Context view, final HttpInnerListener listener) {
     checkPermission("POSBillFacilityNoChange", "设施转台", view, new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("Type", "空台");
         HttpProxy.inner(listener, view, SelectDataByStatus, param);
@@ -533,7 +557,17 @@ public class HttpManager {
 
   public static void sendLoginInfo(BaseView view) {
     HashMap<String, String> param = getParam();
-    HttpProxy.inner(null, view, LogExeVersion, param);
+    HttpProxy.inner(new HttpInnerListener() {
+      @Override
+      public void onString(String json) {
+        LOG.bean("LogExeVersion", json);
+      }
+
+      @Override
+      public void onEmptyResponse() {
+
+      }
+    }, view, LogExeVersion, param);
   }
 
   public static void readLog(BaseView view) {
@@ -777,18 +811,35 @@ public class HttpManager {
   }
 
 
-  public static void RelaxTechChangeItem(BaseView view, RelaxListBean.ValueBean project,
-                                         TechProjectBean.ValueBean item) {
-    HashMap<String, String> param = getParam();
-    LOG.e("HttpManager", "RelaxTechChangeItem.738:");
-    param.put("account", project.getAccount());
-    param.put("seqnum", project.getSeqnum());
-    param.put("itemprice", item.getPrice() + "");
-    param.put("indexnum", project.getIndexnumber());
-    param.put("itemno", item.getItemNo());
-    param.put("itemname", item.getName());
-    param.put("unit", item.getUnit());
-    HttpProxy.bean(view, RelaxTechChangeItem, param, BaseBean.class);
+  public static void RelaxTechChangeItem(final BaseView view, final RelaxListBean.ValueBean old,
+                                         final TechProjectBean.ValueBean item) {
+    checkPermission("bCanChangItem", "是否启用更换项目单价控制", view.getContext(), new OnPermissionCheck() {
+      @Override
+      public void onPermissionOk(int... le) {
+        if (old.getItempriceInt() > item.getPrice()) {
+          if (bCanChangItemValue.equals("1")) {
+            view.onResponseError(new RequestType(RelaxTechChangeItem), new BaseBean(RelaxTechChangeItem, "不允许高价项目更换低价项目"));
+            return;
+          }
+        }
+        HashMap<String, String> param = getParam();
+        LOG.e("HttpManager", "RelaxTechChangeItem.738:");
+        param.put("account", old.getAccount());
+        param.put("seqnum", old.getSeqnum());
+        param.put("itemprice", item.getPrice() + "");
+        param.put("indexnum", old.getIndexnumber());
+        param.put("itemno", item.getItemNo());
+        param.put("itemname", item.getName());
+        param.put("unit", item.getUnit());
+        HttpProxy.bean(view, RelaxTechChangeItem, param, BaseBean.class);
+      }
+
+      @Override
+      public void onPermissionError(String rea) {
+        view.onResponseError(new RequestType(RelaxTechChangeItem), new BaseBean(RelaxTechChangeItem, rea));
+      }
+    });
+
   }
 
   public static void checkTechNo(BaseView view) {
@@ -894,7 +945,7 @@ public class HttpManager {
   public static void getWorkingTech(final BaseView view, final String key, final String itemno) {
     checkPermission("RelaxOrderClock", "点钟", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HashMap<String, String> param = getParam();
         param.put("key", key);
         param.put("itemno", itemno);
@@ -970,7 +1021,7 @@ public class HttpManager {
         try {
           int level = Integer.parseInt(bean.getRespMsg());
           if (level >= 2) {
-            if (check != null) check.onPermissionOk();
+            if (check != null) check.onPermissionOk(level);
           } else {
             if (check != null) check.onPermissionError("当前用户无操作权限");
             ToastUtil.show("当前用户无操作权限");
@@ -991,7 +1042,7 @@ public class HttpManager {
 
   public interface OnPermissionCheck {
 
-    void onPermissionOk();
+    void onPermissionOk(int... check);
 
     void onPermissionError(String rea);
   }
@@ -1009,7 +1060,7 @@ public class HttpManager {
     param.put("RoundKind", "");
     checkPermission("POSBillItemNoAdd", "输商品", view.getContext(), new OnPermissionCheck() {
       @Override
-      public void onPermissionOk() {
+      public void onPermissionOk(int... le) {
         HttpProxy.bean(view, AddBillitem, param, BaseBean.class);
       }
 
@@ -1038,7 +1089,7 @@ public class HttpManager {
         if (bean != null && bean.isOk()) {
           checkPermission("POSBillSend", "下单", view.getContext(), new OnPermissionCheck() {
             @Override
-            public void onPermissionOk() {
+            public void onPermissionOk(int... le) {
               LOG.e("HttpManager", "checkrights.745:");
               HttpProxy.bean(view, AddBillitemBigRelax, param, BaseBean.class);
             }

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.BASE;
 import com.yskrq.common.okhttp.HttpManagerBase;
-import com.yskrq.jpush.JPushUtil;
+import com.yskrq.yjs.jpush.JPushUtil;
 import com.yskrq.net_library.url_conn.HttpSender;
 import com.yskrq.yjs.jpush.JpushHelper;
 import com.yskrq.yjs.util.ImageLoadUtil;

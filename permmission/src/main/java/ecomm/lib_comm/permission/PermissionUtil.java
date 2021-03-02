@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 public class PermissionUtil {
 
     public interface OnPermissionListener {
-
         void onPermissionOk();
     }
 
@@ -81,7 +80,6 @@ public class PermissionUtil {
             }
         };
     }
-
 
     public static void updateApk(Activity activity, final OnPermissionListener listener) {
         ArrayList<String> permissions = new ArrayList<>();
