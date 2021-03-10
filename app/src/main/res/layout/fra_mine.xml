@@ -34,7 +34,8 @@
         android:id="@+id/btn_battery_setting"
         style="@style/MineClickText"
         android:drawableLeft="@mipmap/ic_mine_about"
-        android:text="忽略电池优化" />
+        android:text="忽略电池优化"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/btn_jiguang"
@@ -46,7 +47,14 @@
         android:id="@+id/btn_voice"
         style="@style/MineClickText"
         android:drawableLeft="@mipmap/ic_mine_about"
-        android:text="声音开关" />
+        android:text="声音开关"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/btn_keep"
+        style="@style/MineClickText"
+        android:drawableLeft="@mipmap/ic_mine_about"
+        android:text="锁屏模式" />
 
     <TextView
         android:id="@+id/btn_about"

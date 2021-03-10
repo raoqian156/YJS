@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.yskrq.common.util.LOG;
-import com.yskrq.common.util.SPUtil;
 import com.yskrq.common.util.ToastUtil;
 
 public class PhoneUtil {
@@ -41,9 +40,6 @@ public class PhoneUtil {
   }
 
   public static boolean closeVoice(Context context) {//关闭声音   result >> false-静音失败 true-静音成功
-    if (SPUtil.getInt(context, "voice.status") == 1) {
-      return true;
-    }
     NotificationManager notificationManager = (NotificationManager) context
         .getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationManager
@@ -54,8 +50,7 @@ public class PhoneUtil {
     if (audioManager != null) {
       audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
       audioManager.getStreamVolume(AudioManager.STREAM_RING);
-      SPUtil.saveInt(context, "voice.status", 1);
-      LOG.e("SpeakManager", "closeVoice.29:+静音成功");
+      LOG.e("PhoneUtil", "closeVoice.29:+静音成功");
       return true;
     }
     return false;
@@ -63,10 +58,6 @@ public class PhoneUtil {
 
 
   public static boolean openVoice(Context context) {//打开声音   result >> false-打开声音失败 true-打开声音成功
-    //    if (SPUtil.getInt(context, "voice.status") == 2) {
-    //      LOG.e("PhoneUtil", "openVoice.66:");
-    //      return true;
-    //    }
     if (context == null) {
       return false;
     }
@@ -80,11 +71,9 @@ public class PhoneUtil {
     }
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager != null) {
-      LOG.e("PhoneUtil", "openVoice.79:");
       audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
       audioManager.getStreamVolume(AudioManager.STREAM_RING);
-      LOG.e("SpeakManager", "openVoice.48:取消静音");
-      SPUtil.saveInt(context, "voice.status", 2);
+      LOG.e("PhoneUtil", "openVoice.48:取消静音");
       return true;
     }
     LOG.e("PhoneUtil", "openVoice.86:");

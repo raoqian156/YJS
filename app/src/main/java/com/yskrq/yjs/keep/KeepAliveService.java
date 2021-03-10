@@ -11,29 +11,22 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yskrq.common.AppInfo;
 import com.yskrq.common.bean.RelaxListBean;
-import com.yskrq.common.okhttp.HttpManagerBase;
 import com.yskrq.common.util.LOG;
 import com.yskrq.net_library.HttpInnerListener;
 import com.yskrq.yjs.R;
 import com.yskrq.yjs.net.HttpManager;
-import com.yskrq.yjs.util.NoticeUtil;
-import com.yskrq.yjs.util.SpeakManager;
-import com.yskrq.yjs.util.YJSNotifyManager;
+import com.yskrq.yjs.ui.KeepOnActivity;
+import com.yskrq.yjs.util.TechStatusManager;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
-import static com.yskrq.yjs.util.SpeakManager.openVoice;
 
 
 /**
@@ -128,6 +121,14 @@ public class KeepAliveService extends Service {
     stopSelf();
   }
 
+  private int getDuration() {
+    if (KeepOnActivity.isShowToUser()) {
+      return 30;
+    } else {
+      return REFUSE_TIME_DURATION;
+    }
+  }
+
   private void start() {
     new Thread(new Runnable() {
       @Override
@@ -137,16 +138,16 @@ public class KeepAliveService extends Service {
             if (stop) {
               return;
             }
-            int delayTime = (int) (AppInfo
-                .getRunningLeftTime(KeepAliveService.this) / 1000 % REFUSE_TIME_DURATION);
+            int delayTime = (int) (TechStatusManager.getInstance()
+                                                    .getRunningLeftTime() / 1000 % getDuration());
             if (delayTime > 0) {
-              if (delayTime * 2 > REFUSE_TIME_DURATION) {
+              if (delayTime > 10) {
                 onRead();
               }
               Thread.sleep(delayTime * 1000L);
             }
             onRead();
-            Thread.sleep(REFUSE_TIME_DURATION * 1000L);
+            Thread.sleep(getDuration() * 1000L);
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
@@ -196,101 +197,68 @@ public class KeepAliveService extends Service {
       @Override
       public void onString(String json) {
         final RelaxListBean bean = new Gson().fromJson(json, RelaxListBean.class);
-        KeepAliveService.notify(context, bean);
-        if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
-          RelaxListBean.ValueBean first = bean.getValue().get(0);
-          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:KeepAliveService");
-          LOG.e("KeepAliveService", "GetRelaxServerList.播报来源.onString");
-          SpeakManager.isRead(context, first);
-        } else {
-          openVoice(context);
-          AppInfo.clearNotify(context);
-        }
-        notifyUser(context);
+        TechStatusManager.getInstance().refuseFromService(bean);
+        //        KeepAliveService.notify(context, bean);
+        //        if (bean != null && bean.isOk() && bean.getValue() != null && bean.getValue().size() > 0) {
+        //          RelaxListBean.ValueBean first = bean.getValue().get(0);
+        //          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:KeepAliveService");
+        //          LOG.e("KeepAliveService", "GetRelaxServerList.播报来源.onString");
+        //          SpeakManager.isRead(context, first);
+        //        } else {
+        //          openVoice(context);
+        //          AppInfo.clearNotify(context);
+        //        }
+        //        notifyUser(context);
       }
 
       @Override
       public void onEmptyResponse() {
-        notifyUser(context);
+        TechStatusManager.getInstance().refuseFromService(null);
       }
 
     });
   }
 
-  private static void notify(Context context, final RelaxListBean bean) {
-    if (bean != null && bean.getValue() != null && bean.getValue().size() > 0) {
-      RelaxListBean.ValueBean first = bean.getValue().get(0);
-      int tag = first.getShowStatus();
-      int sId = -1;
-      String expendTime = "";
-      AppInfo.setWaitType(context, tag);
-      if (tag == 2) {
-        try {
-          sId = Integer.parseInt(first.getSid());
-        } catch (Exception e) {
-        }
-      } else if (tag == 1) {
-        expendTime = first.getExpendtime();
-      }
-      YJSNotifyManager.change(tag, sId, expendTime);
-    } else {
-      AppInfo.setWaitType(context, 0);
-      AppInfo.setWait(context, "");
-      AppInfo.saveRunningTargetTime(context, 0);
-    }
-    mainHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        if (mRefuseListeners.size() > 0) {
-          for (RefuseListener listener : mRefuseListeners) {
-            listener.onRefuse(bean);
-          }
-        } else {
-
-        }
-      }
-    });
-  }
 
   private static void notifyUser(Context context) {
     LOG.e("KeepAliveService", "notifyUser.247:");
     String title, con;
-    int tag = AppInfo.getWaitType();
-    int priorityLevel = 0;
-    if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
-      title = "登录失效";
-      con = "请重新登录";
-    } else if (tag == 0) {
-      title = AppInfo.getTechNum() + " 号技师";
-      SimpleDateFormat simpleDateFormat;
-      simpleDateFormat = new SimpleDateFormat("HH:mm");
-      con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
-      LOG.e("KeepAliveService", "notifyUser.title:" + title + " con=" + con);
-      NoticeUtil.clearNotify(context);
-      return;
-    } else if (tag == 1) {
-      priorityLevel = 2;
-      title = "您有新任务";
-      con = "已等待" + AppInfo.getWait(context) + "分钟";
-    } else if (tag == 2) {
-      priorityLevel = 1;
-      title = "下钟剩余";
-      long time = AppInfo.getRunningLeftTime(context);
-      if (time < 0) {
-        title = "下钟时间到";
-        con = "00:00";
-      } else {
-        time += 1000;
-        SimpleDateFormat simpleDateFormat;
-        simpleDateFormat = new SimpleDateFormat("HH:mm");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        con = simpleDateFormat.format(time);
-      }
-    } else {
-      title = AppInfo.getTechNum() + " 号技师";
-      con = "暂无新任务...";
-    }
-    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel, tag > 0);
+    //    int tag = AppInfo.getWaitType();
+    //    int priorityLevel = 0;
+    //    if (context == null || TextUtils.isEmpty(AppInfo.getTechNum())) {
+    //      title = "登录失效";
+    //      con = "请重新登录";
+    //    } else if (tag == 0) {
+    //      title = AppInfo.getTechNum() + " 号技师";
+    //      SimpleDateFormat simpleDateFormat;
+    //      simpleDateFormat = new SimpleDateFormat("HH:mm");
+    //      con = simpleDateFormat.format(System.currentTimeMillis()) + " 暂无新任务...";
+    //      LOG.e("KeepAliveService", "notifyUser.title:" + title + " con=" + con);
+    //      NoticeUtil.clearNotify(context);
+    //      return;
+    //    } else if (tag == 1) {
+    //      priorityLevel = 2;
+    //      title = "您有新任务";
+    //      con = "已等待" + AppInfo.getWait(context) + "分钟";
+    //    } else if (tag == 2) {
+    //      priorityLevel = 1;
+    //      title = "下钟剩余";
+    //      long time = AppInfo.getRunningLeftTime(context);
+    //      if (time < 0) {
+    //        title = "下钟时间到";
+    //        con = "00:00";
+    //      } else {
+    //        time += 1000;
+    //        SimpleDateFormat simpleDateFormat;
+    //        simpleDateFormat = new SimpleDateFormat("HH:mm");
+    //        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    //        con = simpleDateFormat.format(time);
+    //      }
+    //    } else {
+    //      title = AppInfo.getTechNum() + " 号技师";
+    //      con = "暂无新任务...";
+    //    }
+    //    NoticeUtil.sentNotice(context, NOTIFICATION_ID, title, con, priorityLevel, tag > 0);
   }
 
   //将keepAliveBinder交给RemoteService
@@ -333,7 +301,7 @@ public class KeepAliveService extends Service {
   };
 
   public static void startForeground(Service service) {
-    notifyUser(service);
+    //    notifyUser(service);
   }
 
   private void registerScreenStateReceiver() {

@@ -119,7 +119,7 @@ public class AppInfo {
   }
 
   public static void needSkipBattery() {
-    SPUtil.setBoolean(BASE.getCxt(), "skip.check.battery", true);
+    SPUtil.setBoolean(BASE.getCxt(), "skip.check.battery", false);
   }
 
   public static void setTechNum(String date) {
@@ -149,15 +149,6 @@ public class AppInfo {
     return SPUtil.getString(BASE.getCxt(), TAG_SAVE_SEX);
   }
 
-  public static void saveRunningTargetTime(Context context, long l) {
-    LOG.e("AppInfo", "saveRunningTargetTime.114:" + l);
-    SPUtil.saveLong(BASE.getCxt(), TAG_RUNNING, l + System.currentTimeMillis());
-  }
-
-  public static long getRunningLeftTime(Context context) {
-    return SPUtil.getLong(BASE.getCxt(), TAG_RUNNING) - System.currentTimeMillis();
-  }
-
   public static void setCuiZHongMinutes(Context context, String data) {
     try {
       SPUtil.saveInt(BASE.getCxt(), "RUSH.TIME", Integer.parseInt(data));
@@ -170,13 +161,14 @@ public class AppInfo {
     return SPUtil.init(context).getInt("RUSH.TIME", 5);
   }
 
-  public static void setWait(Context context, String expendtime) {//通知需要展示的时间
-    SPUtil.saveString(BASE.getCxt(), "Wait.TIME", expendtime);
+  public static void setScreenKeep(boolean isOpen) {
+    SPUtil.setBoolean(BASE.getCxt(), "needScreenKeep", isOpen);
   }
 
-  public static String getWait(Context context) {
-    if (context == null) return "getWait";
-    return SPUtil.init(context).getString("Wait.TIME", "");
+  public static boolean needScreenKeep() {
+    boolean res = SPUtil.init(BASE.getCxt()).getBoolean("needScreenKeep", AppUtils.isOV());
+    LOG.e("AppInfo", "needScreenKeep.170:" + res);
+    return res;
   }
 
   public static List<TecColorBean.ValueBean> getColors(Context context) {
@@ -191,15 +183,6 @@ public class AppInfo {
     String save = new Gson().toJson(colors);
     LOG.e("AppInfo", "saveColor.164:" + save);
     SPUtil.saveString(BASE.getCxt(), "tech.colors", save);
-  }
-
-  public static void setWaitType(Context context, int tag) {//通知需要展示的状态
-    LOG.showUserWhere("setWaitType -> " + tag);
-    SPUtil.saveInt(BASE.getCxt(), "Wait.TYPE", tag);
-  }
-
-  public static int getWaitType() {
-    return SPUtil.init(BASE.getCxt()).getInt("Wait.TYPE", 0);
   }
 
   public static void clearNotify(Context context) {

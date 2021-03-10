@@ -8,10 +8,11 @@ import android.os.Bundle;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.yskrq.common.BASE;
 import com.yskrq.common.okhttp.HttpManagerBase;
-import com.yskrq.yjs.jpush.JPushUtil;
 import com.yskrq.net_library.url_conn.HttpSender;
+import com.yskrq.yjs.jpush.JPushUtil;
 import com.yskrq.yjs.jpush.JpushHelper;
 import com.yskrq.yjs.util.ImageLoadUtil;
+import com.yskrq.yjs.util.TechStatusManager;
 import com.yskrq.yjs.util.status.NetWorkMonitorManager;
 
 import java.util.Map;
@@ -28,6 +29,7 @@ public class BaseApplication extends Application implements Application.Activity
   public void onCreate() {
     super.onCreate();
     BaseApplication.ctx = this;
+    TechStatusManager.getInstance().setContext(this);
     BASE.setContext(this);
     BASE.setMainClass(MainActivity.class, true);
     JPushUtil.init(this, true);

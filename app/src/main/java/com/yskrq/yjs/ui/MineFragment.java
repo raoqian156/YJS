@@ -36,14 +36,36 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     if (MainActivity.isJiguanFai()) {
       setVisibility(R.id.btn_jiguang, View.VISIBLE);
     }
+    if (!AppInfo.skipBattery() && !AppUtils.isIgnoringBatteryOptimizations(getContext())) {
+      setVisibility(R.id.btn_battery_setting, View.VISIBLE);
+    }
+    if (PhoneUtil.needPermission(getContext())) {
+      setVisibility(R.id.btn_voice, View.VISIBLE);
+    }
+    setTextView2View(R.id.btn_keep, "锁屏模式（" + (AppInfo.needScreenKeep() ? "开" : "关") + "）");
   }
 
-  @OnClick({R.id.btn_jiguang, R.id.btn_battery_setting, R.id.btn_voice, R.id.tv_name, R.id.btn_pass, R.id.btn_about, R.id.btn_photo, R.id.btn_bg_setting, R.id.btn_login_out})
+  @OnClick({R.id.btn_keep, R.id.btn_jiguang, R.id.btn_battery_setting, R.id.btn_voice, R.id.tv_name, R.id.btn_pass, R.id.btn_about, R.id.btn_photo, R.id.btn_bg_setting, R.id.btn_login_out})
   public void onClick(View v) {
-    if (v.getId() == R.id.btn_jiguang) {
+    if (v.getId() == R.id.btn_keep) {
+      DialogHelper
+          .showRemind(getContext(), "是否开启锁屏模式（锁屏模式将会增加耗电，提高提醒到达概率）", new DialogHelper.DialogConfirmListener() {
+            @Override
+            public void onSure() {
+              AppInfo.setScreenKeep(true);
+              setTextView2View(R.id.btn_keep, "锁屏模式（开）");
+            }
+
+            @Override
+            public void onCancel() {
+              AppInfo.setScreenKeep(false);
+              setTextView2View(R.id.btn_keep, "锁屏模式（关）");
+            }
+          });
+    } else if (v.getId() == R.id.btn_jiguang) {
       HttpManager.RelaxTechRegistrationID(this);
     } else if (v.getId() == R.id.btn_battery_setting) {
-            AppUtils.requestIgnoreBatteryOptimizations(getContext());
+      AppUtils.requestIgnoreBatteryOptimizations(getContext());
     } else if (v.getId() == R.id.btn_voice) {
       PhoneUtil.toOpen(getContext());
     } else if (v.getId() == R.id.tv_name) {

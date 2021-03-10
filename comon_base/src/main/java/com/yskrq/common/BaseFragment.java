@@ -68,10 +68,10 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
     }
   }
 
-  public  <T extends View> T findViewById(int vId) {
+  public <T extends View> T findViewById(int vId) {
     try {
       return view.findViewById(vId);
-    }catch (Exception e){
+    } catch (Exception e) {
       throw new NullPointerException();
     }
   }
@@ -155,6 +155,7 @@ public abstract class BaseFragment extends Fragment implements //LifecycleProvid
   }
 
   private void onViewEmpty() {
+    LOG.showUserWhere("程序异常");
     toast("程序异常，请重新登陆");
     StringBuffer sb = new StringBuffer();
     sb.append("\nwhere:BaseFragment -> onViewEmpty");

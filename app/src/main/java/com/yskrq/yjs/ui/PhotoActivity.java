@@ -244,7 +244,8 @@ public class PhotoActivity extends BaseActivity implements View.OnClickListener,
   public void onItemClick(BaseViewHolder holder, Object o, View view, int position) {
     if (view.getId() == R.id.btn_delete) {
       LOG.e("PhotoActivity", "onItemClick.249:" + position);
-      HttpManager.deletePic(this, position, false);
+      PhotosBean.ValueBean bean= (PhotosBean.ValueBean) o;
+      HttpManager.deletePic(this, bean.getOrderId(), false);
     } else if (view.getId() == R.id.btn_add) {
       isFen = false;
       if (mpop == null) {

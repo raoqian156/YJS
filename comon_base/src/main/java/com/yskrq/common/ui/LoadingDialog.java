@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yskrq.common.R;
-import com.yskrq.common.util.LOG;
 
 public class LoadingDialog extends Dialog {
   private static final int CHANGE_TITLE_WHAT = 1;
@@ -78,7 +77,6 @@ public class LoadingDialog extends Dialog {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         float value = (float) animation.getAnimatedValue();
-        LOG.e("LoadingDialog", "onAnimationUpdate.79:" + value);
         iv_route.setRotationX(.5F);
         iv_route.setRotationY(.5F);
         iv_route.setRotation(value);

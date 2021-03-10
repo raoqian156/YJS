@@ -54,8 +54,9 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     super.onCreate(savedInstanceState);
     if (KeepAliveService.READ_WAY == 0) KeepManager.startAliveRun();
     JPushInterface.setAlias(this, 1, AppInfo.getGroupId());
-    LOG.e("MainActivity", "JPush.JpushHelper.getRegistrationID:"+JPushInterface.getRegistrationID(this));
-    LOG.e("MainActivity", "JPush.OPPO.getRegistrationID:"+HeytapPushManager.getRegisterID());
+    LOG.e("MainActivity", "JPush.JpushHelper.getRegistrationID:" + JPushInterface
+        .getRegistrationID(this));
+    LOG.e("MainActivity", "JPush.OPPO.getRegistrationID:" + HeytapPushManager.getRegisterID());
 
     HttpManager.getWifiName(this);
     if (PhoneUtil.needPermission(getContext())) {
@@ -104,6 +105,19 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
     if (mWakeLock != null) {
       mWakeLock.acquire();
+    }
+    if (PhoneUtil.needPermission(this)&&!(!AppInfo.skipBattery() && !AppUtils.isIgnoringBatteryOptimizations(this))) {
+      DialogHelper
+          .showRemind(this, "为了更好的播报效果，需要开启云技师免打扰权限，是否前去开启？", new DialogHelper.DialogConfirmListener() {
+            @Override
+            public void onSure() {
+              PhoneUtil.toOpen(getContext());
+            }
+
+            @Override
+            public void onCancel() {
+            }
+          });
     }
   }
 

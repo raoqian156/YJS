@@ -175,6 +175,14 @@ public class AppUtils {
     return Build.MANUFACTURER + "-" + Build.MODEL;
   }
 
+  public static boolean isOV() {//是否为OPPO、VIVO
+    String type = Build.MANUFACTURER + "-" + Build.MODEL;
+    LOG.e("AppUtils", "isOV.type:" + type);
+    return type != null && (type.toLowerCase().contains("oppo") || type.toLowerCase()
+                                                                       .contains("vivo"));
+  }
+
+
   public static String getVersionName() {
     return getVersion(BASE.getCxt());
   }

@@ -1,6 +1,8 @@
 package com.yskrq.yjs;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 
 import com.yskrq.common.util.LOG;
@@ -28,6 +30,8 @@ public class Speaker {
     speakOutTwice(context, con, false, listener);
   }
 
+  static Handler mainHandler = new Handler(Looper.getMainLooper());
+
   public static void speakOutTwice(Context context, final String con, final boolean isTwice,
                                    final OnSpeakListener listener) {
     textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
@@ -35,33 +39,40 @@ public class Speaker {
       public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
           if (readTime.containsKey(con)) {
-            long lastReadTime = readTime.get(con);
-            if (System.currentTimeMillis() - lastReadTime < 30 * 1000) {
-              return;
-            } else {
-              readTime.put(con, System.currentTimeMillis());
+            try {
+
+              long lastReadTime = readTime.get(con);
+              if (System.currentTimeMillis() - lastReadTime < 30 * 1000) {
+                LOG.e("Speaker", lastReadTime + ".stop:" + con);
+                return;
+              }
+            } catch (Exception e) {
+
             }
-          } else {
-            readTime.put(con, System.currentTimeMillis());
           }
           LOG.e("Speaker", "播报:" + con);
           textToSpeech.setLanguage(Locale.CHINESE);
-          int s = textToSpeech.speak(con, TextToSpeech.QUEUE_FLUSH, null, "1");
-          if (listener != null) {
-            listener.onFinish(s);
-          }
+          mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+              int s = textToSpeech.speak(con, TextToSpeech.QUEUE_FLUSH, null, "1");
+              LOG.e("Speaker", "run.53:" + s);
+              if (s == TextToSpeech.SUCCESS) {
+                readTime.put(con, System.currentTimeMillis());
+              }
+              if (listener != null) {
+                listener.onFinish(s);
+              }
+            }
+          });
           if (isTwice) {
-            new Thread(new Runnable() {
+            mainHandler.postDelayed(new Runnable() {
               @Override
               public void run() {
-                try {
-                  Thread.sleep(10_000);
-                } catch (Exception e) {
-                  textToSpeech.speak(con, TextToSpeech.QUEUE_FLUSH, null, "2");
-                }
-
+                LOG.e("Speaker", "播报2:" + con);
+                textToSpeech.speak(con, TextToSpeech.QUEUE_FLUSH, null, "2");
               }
-            }).start();
+            }, 10_000);
           }
         }
       }

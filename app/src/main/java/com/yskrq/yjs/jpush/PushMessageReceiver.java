@@ -14,7 +14,6 @@ import cn.jpush.android.api.JPushMessage;
 import cn.jpush.android.api.NotificationMessage;
 import cn.jpush.android.service.JPushMessageReceiver;
 
-
 public class PushMessageReceiver extends JPushMessageReceiver {
 
   static NotificationGetter mNotificationGetter;

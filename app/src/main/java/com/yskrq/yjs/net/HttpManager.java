@@ -873,13 +873,10 @@ public class HttpManager {
     HttpProxy.bean(view, getTecPhotos, param, PhotosBean.class);
   }
 
-  /**
-   * @param index 照片序号
-   */
-  public static void deletePic(BaseView view, int index, boolean isFen) {
+  public static void deletePic(BaseView view, int OrderId, boolean isFen) {
     HashMap<String, String> param = getParam();
     param.put("tecid", AppInfo.getTechNum());
-    param.put("index", (index + 1) + "");
+    param.put("index", OrderId + "");
     param.put("stype", isFen ? "2" : "0");//罗: stype=1 是咨客屏的轮播图,stype=0 是技师移动端的轮播图 2 封面图
 
     HttpProxy.bean(view, deletePic, param, BaseBean.class);

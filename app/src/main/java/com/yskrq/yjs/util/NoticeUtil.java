@@ -12,13 +12,12 @@ import com.yskrq.yjs.R;
 import com.yskrq.yjs.keep.NotificationClickReceiver;
 import com.yskrq.yjs.keep.NotificationUtils;
 
-
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.yskrq.yjs.keep.KeepAliveService.NOTIFICATION_ID;
 
 public class NoticeUtil {
   public static void sentNotice(Context context, int id, String title, String con,
-                                int priorityLevel, boolean vibration) {
+                                int priorityLevel, boolean vibration, int... i) {
     LOG.e("NoticeUtil", "sentNotice.clearAllNotifications:");
     Intent intentTarget = new Intent(context, MainActivity.class);
     PendingIntent contentIntent = PendingIntent
@@ -26,8 +25,9 @@ public class NoticeUtil {
 
     Intent intent = new Intent(context, NotificationClickReceiver.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    LOG.e("NoticeUtil", "sentNotice.createNotificationChannel:" + i);
     Notification notification = NotificationUtils
-        .createNotification(context, title, con, R.mipmap.ic_launcher, intent);
+        .createNotification(context, title, con, R.mipmap.ic_launcher, intent, i);
     if (priorityLevel > 0) {
       notification.priority = Notification.PRIORITY_MAX;
     } else {
@@ -49,15 +49,16 @@ public class NoticeUtil {
   }
 
   public static Notification getNotification(Context context, String title, String con,
-                                             boolean vibration) {
+                                             boolean vibration, int... i) {
     Intent intentTarget = new Intent(context, MainActivity.class);
     PendingIntent contentIntent = PendingIntent
         .getActivity(context, 0, intentTarget, PendingIntent.FLAG_CANCEL_CURRENT);
 
     Intent intent = new Intent(context, NotificationClickReceiver.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    LOG.e("NoticeUtil", "getNotification.59:createNotificationChannel");
     Notification notification = NotificationUtils
-        .createNotification(context, title, con, R.mipmap.ic_launcher, intent);
+        .createNotification(context, title, con, R.mipmap.ic_launcher, intent, i);
     if (vibration) {
       notification.vibrate = new long[]{1000L, 1000L, 1000L, 1000L, 1000L};
     }

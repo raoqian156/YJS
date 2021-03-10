@@ -1,5 +1,3 @@
-include ':jpush'
-include ':test'
 include ':comon_base'
 include ':permmission'
 include ':net_library'

@@ -2,7 +2,6 @@ package com.yskrq.yjs.util;
 
 import android.content.SharedPreferences;
 
-import com.yskrq.common.AppInfo;
 import com.yskrq.common.BASE;
 import com.yskrq.common.util.SPUtil;
 
@@ -18,16 +17,16 @@ public class YJSNotifyManager {
 
   public static void change(String groupid, String sIdStr, String expendTime) {
     int tag = getShowStatus(groupid);
-    AppInfo.setWaitType(BASE.getCxt(), tag);
-    if (tag == 2) {
-      int sId = Integer.parseInt(sIdStr);
-      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
-    } else if (tag == 1) {
-      AppInfo.setWait(BASE.getCxt(), expendTime);
-      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
-    } else {
-      AppInfo.setWait(BASE.getCxt(), "");
-    }
+//    AppInfo.setWaitType(BASE.getCxt(), tag);
+//    if (tag == 2) {
+//      int sId = Integer.parseInt(sIdStr);
+//      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
+//    } else if (tag == 1) {
+//      AppInfo.setWait(BASE.getCxt(), expendTime);
+//      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
+//    } else {
+//      AppInfo.setWait(BASE.getCxt(), "");
+//    }
   }
 
   public static int getShowStatus(String groupId) {// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
@@ -45,15 +44,15 @@ public class YJSNotifyManager {
   }
 
   public static void change(int tag, int sId, String expendTime) {
-    AppInfo.setWaitType(BASE.getCxt(), tag);
-    if (tag == 2) {
-      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
-    } else if (tag == 1) {
-      AppInfo.setWait(BASE.getCxt(), expendTime);
-      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
-    } else {
-      AppInfo.setWait(BASE.getCxt(), "");
-    }
+//    AppInfo.setWaitType(BASE.getCxt(), tag);
+//    if (tag == 2) {
+//      AppInfo.saveRunningTargetTime(BASE.getCxt(), sId * 1000);
+//    } else if (tag == 1) {
+//      AppInfo.setWait(BASE.getCxt(), expendTime);
+//      AppInfo.saveRunningTargetTime(BASE.getCxt(), 0);
+//    } else {
+//      AppInfo.setWait(BASE.getCxt(), "");
+//    }
   }
 
 }

@@ -1,6 +1,5 @@
 package com.yskrq.yjs.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,7 +39,8 @@ import com.yskrq.yjs.keep.KeepManager;
 import com.yskrq.yjs.net.HttpManager;
 import com.yskrq.yjs.util.LocationUtil;
 import com.yskrq.yjs.util.PhoneUtil;
-import com.yskrq.yjs.util.SpeakManager;
+import com.yskrq.yjs.util.SoundUtils;
+import com.yskrq.yjs.util.TechStatusManager;
 import com.yskrq.yjs.util.status.NetWorkMonitor;
 import com.yskrq.yjs.util.status.NetWorkMonitorManager;
 import com.yskrq.yjs.util.status.NetWorkState;
@@ -72,7 +72,9 @@ import static com.yskrq.yjs.net.Constants.TransCode.brandnoIn;
 public class HomeFragment extends BaseFragment implements OnItemClickListener, View.OnClickListener,
                                                           RunningHelper.OnSecondTickListener,
                                                           KeepAliveService.RefuseListener,
-                                                          JpushHelper.OnPushListener {
+                                                          JpushHelper.OnPushListener,
+                                                          TechStatusManager.OnTechStatusListener,
+                                                          TechStatusManager.OnDataChangeListener {
   @Override
   protected int layoutId() {
     return R.layout.fra_home;
@@ -82,6 +84,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   BaseAdapter newTaskAdapter;
   BaseAdapter caierAdapter;
   boolean canCaiEr = false;
+  SoundUtils mSoundUtils;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +94,9 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     } catch (Exception e) {
 
     }
+    mSoundUtils = new SoundUtils(getActivity(), SoundUtils.RING_SOUND);
+    mSoundUtils.putSound(0, R.raw.fiveremind);
+
     KeepAliveService.addRefuseListener(this);
     RunningHelper.getInstance().register(this);
     NetWorkMonitorManager.getInstance().register(this);
@@ -99,6 +105,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     HttpManager.refuseSaleDate(this);
     AppInfo.getColors(getContext());
     JpushHelper.addOnPushListener(this);
+    TechStatusManager.getInstance().addOnTechStatusListener(this);
+    TechStatusManager.getInstance().addDataChangeListener(this);
   }
 
   @Override
@@ -208,13 +216,16 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
         SPUtil.saveString(getContext(), TAG_SAVE_RUSH, rush);
       }
     } else if (type.is(GetRelaxServerList)) {
-      if (isRefuse) {
-        isRefuse = false;
+      if (isClickRefuse) {
+        isClickRefuse = false;
         toast("刷新成功");
         lastRefuseTime = 0;
       }
       RelaxListBean bean = (RelaxListBean) data;
-      refuseList(bean);
+      if (bean != null) {
+        TechStatusManager.getInstance().refuseFromService(bean);
+      }
+      //      TechStatusManager.getInstance().refuseFromService(bean);
       if (bean == null || bean.getValue() == null || bean.getValue().size() == 0) {
         if (KeepAliveService.READ_WAY == 1) KeepManager.startAliveRun();
       }
@@ -230,9 +241,12 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       loadData();
       Speaker.speakOut(getContext(), "上钟打卡成功");
       PhoneUtil.closeVoice(getContext());
+      if (AppInfo.needScreenKeep()) {
+        KeepOnActivity.start(getContext());
+      }
     } else if (type.is(BrandnoOut)) {
       Speaker.speakOut(getContext(), "下钟打卡成功");
-      AppInfo.saveRunningTargetTime(getContext(), 0);
+      TechStatusManager.getInstance().brandOut();
       loadData();
     } else if (type.is(SelectServerlistView)) {
       CaiErListBean bean = (CaiErListBean) data;
@@ -257,54 +271,29 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   }
 
   int skitTimes = 0;
+  private int mStatus;
 
-
-  private void refuseList(RelaxListBean bean) {
-    Context context = getContext();
-    if (bean == null || bean.getValue() == null || bean.getValue().size() <= 0) {
-      setVisibility(R.id.ll_new_task, View.GONE);
-      openRunning = false;
-      resetTimePan();
-      first = null;
-      LOG.e("HomeFragment", "setWaitType.253:");
-      AppInfo.setWaitType(context, 0);
-      AppInfo.setWait(context, "");
-      AppInfo.saveRunningTargetTime(context, 0);
-      return;
-    }
-    refuseByFirst(bean.getValue().get(0), context);
-    LOG.e("HomeFragment", "refuseList.:");
-    HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "播报来源:HomeFragment");
-    LOG.e("HomeFragment", "播报来源.refuseList");
-    int show = SpeakManager.isRead(getContext(), bean.getValue().get(0));
-    LOG.e("HomeFragment", "refuseList.272:" + show);
-    //GroupId：9000未安排 9001 已打卡  9002待打卡 9003已下钟
-    newTaskAdapter.setData(bean.getValue());
-  }
-
-  private void refuseByFirst(RelaxListBean.ValueBean first, Context context) {
+  @Override
+  public void onStatus(RelaxListBean.ValueBean first, int status, long runningTargetTime,
+                       String notifyShowTime) {
     this.first = first;
-    int tag = first.getShowStatus();
-    AppInfo.setWaitType(context, tag);
-    if (tag == 2) {
-
-      AppInfo.setWait(context, first.getExpendtime());
-      try {
-        int secondLeft = Integer.parseInt(first.getSid());
-        LOG.e("KeepAliveService", "notify.first.getSid():" + first.getSid());
-        AppInfo.saveRunningTargetTime(context, secondLeft * 1000);
-      } catch (Exception e) {
-      }
-    } else if (tag == 1) {
-      AppInfo.saveRunningTargetTime(context, 0);
-    } else {
-      AppInfo.setWait(context, "");
+    openRunning = status > 0;
+    if (mStatus != 1 && status == 1) {
+      mStatus = 1;
+      loadData();
     }
-
-    openRunning = true;
-    setVisibility(R.id.ll_new_task, View.VISIBLE);
-    needRunning(tag);
+    setViewTag(R.id.tv_center, status);
+    if (status <= 0) resetTimePan();
+    LOG.e("HomeFragment", "onStatus.status:" + status);
+    LOG.e("HomeFragment", "onStatus.runningTargetTime:" + runningTargetTime);
+    LOG.e("HomeFragment", "onStatus.notifyShowTime:" + notifyShowTime);
   }
+
+  public void refuseList(RelaxListBean bean) {
+    if (bean != null) newTaskAdapter.setData(bean.getValue());
+    setVisibility(R.id.ll_new_task, bean == null ? View.GONE : View.VISIBLE);
+  }
+
 
   @Override
   public <T extends BaseBean> void onResponseError(@NonNull RequestType type, @NonNull T data) {
@@ -342,26 +331,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (canCaiEr) HttpManager.SelectServerlistView(this, hoteDate);
   }
 
-  private void needRunning(int tag) {
-    try {
-      int secondLeft = Integer.parseInt(first.getSid());
-      if (tag == 1) {
-        LOG.e("HomeFragment", "notify.first.getSid():" + first.getSid());
-        AppInfo.saveRunningTargetTime(getContext(), secondLeft * 1000);
-      }
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
-      simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-      openRunning = true;
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-
   private void resetTimePan() {
     setTextView2View(R.id.tv_center, "---\n00:00:00");
-    PhoneUtil.openVoice(HomeFragment.this.getContext());
     setViewTag(R.id.tv_center, 0);
     setViewBackResource(R.id.tv_center, R.drawable.circle_bg_blue);
     if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
@@ -452,15 +423,20 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       }
       showZhongDialog();
     } else if (v.getId() == R.id.tv_center) {
+      //      mSoundUtils.playSound(0, SoundUtils.SINGLE_PLAY);
       if (v.getTag() instanceof Integer) {
         int tag = (int) v.getTag();// 0-不能打卡  1-代打卡   2-已打卡 3-已下钟
         LOG.e("HomeFragment", "onClick.433:" + tag);
+        if (tag != 1 && AppInfo.needScreenKeep() && !TechStatusManager.getInstance().willClose()) {
+          KeepOnActivity.start(getContext());
+          return;
+        }
         sing(tag, first);
       } else {
         LOG.e("HomeFragment", "onClick.446:");
       }
     } else if (v.getId() == R.id.btn_refuse) {//刷新
-      isRefuse = true;
+      isClickRefuse = true;
       lastRefuseTime = 0;
       LOG.e("HomeFragment", "refuseList.327:");
       if (canCaiEr) HttpManager.SelectServerlistView(this);
@@ -617,7 +593,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
   }
 
-  boolean isRefuse = false;
+  boolean isClickRefuse = false;
 
   @Override
   public void on15Second() {
@@ -637,10 +613,11 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     if (!openRunning) {
       return;
     }
-    if (AppInfo.getWaitType() == 0) {
+    int tag = TechStatusManager.getInstance().getWaitType();
+    if (tag == 0) {
+      resetTimePan();
       return;
     }
-    int tag = AppInfo.getWaitType();
     setViewTag(R.id.tv_center, tag);
     if (tag == 0) {
       openRunning = false;
@@ -650,7 +627,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       setTextView2View(R.id.tv_center, "上钟\n" + "00:00:00");
     } else if (tag == 2) {
       if (KeepAliveService.READ_WAY == 1) KeepManager.stopAliveRun();
-      long timeLeft = AppInfo.getRunningLeftTime(getContext());
+      long timeLeft = TechStatusManager.getInstance().getRunningLeftTime();
       SimpleDateFormat simpleDateFormat;
       simpleDateFormat = new SimpleDateFormat("下钟\nHH:mm:ss");
       if (timeLeft < 0) {
@@ -715,6 +692,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       boolean refuse = s.endsWith("30") || s.endsWith("00");
       if (refuse && tag > 0) {
         loadData();
+      } else {
+        LOG.e("HomeFragment", "checkShowStr.744:");
       }
     } catch (Exception e) {
 

@@ -105,6 +105,10 @@
         <activity android:name=".ui.OrderDetailActivity" />
         <activity android:name=".ui.OrderListActivity" />
         <activity android:name=".ui.RoomListActivity" />
+        <activity
+            android:name=".ui.KeepOnActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/FullActivity" />
 
 
         <activity
