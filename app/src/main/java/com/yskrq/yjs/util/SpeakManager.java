@@ -28,7 +28,7 @@ public class SpeakManager {
 
   public static int isRead(final Context context, final RelaxListBean.ValueBean first,
                            String... tag) {
-    if (first == null) {
+    if (first == null || context == null) {
       return 0;
     }
     if (tag != null && tag.length > 0 && !TextUtils.isEmpty(tag[0])) {
@@ -36,13 +36,13 @@ public class SpeakManager {
     }
     final String rcvTime = new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis());
     if (first.hasNewTask()) {
-      LOG.showUserWhere("SpeakManager"+rcvTime);
+      LOG.showUserWhere("SpeakManager" + rcvTime);
       String key = first.getAccount() + "1";
       if (readTimeTag.containsKey(key)) {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
-          LOG.e("SpeakManager", "isRead.播报.72:"+rcvTime);
-          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.72"+rcvTime);
+          LOG.e("SpeakManager", "isRead.播报.72:" + rcvTime);
+          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.72" + rcvTime);
           return 0;
         }
         readTimeTag.put(key, System.currentTimeMillis());
@@ -50,13 +50,13 @@ public class SpeakManager {
       if (!PhoneUtil.openVoice(context)) {
         return 0;
       }
-      LOG.e("SpeakManager", context.toString() + ".isRead.播报.78:您有新的任务"+rcvTime);
-      HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.78:您有新的任务"+rcvTime);
+      LOG.e("SpeakManager", context.toString() + ".isRead.播报.78:您有新的任务" + rcvTime);
+      HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.78:您有新的任务" + rcvTime);
       Speaker.speakOut(context, "您有新的任务", new Speaker.OnSpeakListener() {
         @Override
         public void onFinish(int status) {
           if (TextToSpeech.SUCCESS == status) {
-            LOG.e("SpeakManager", context.toString() + ".isRead.播报成功:您有新的任务"+rcvTime);
+            LOG.e("SpeakManager", context.toString() + ".isRead.播报成功:您有新的任务" + rcvTime);
             new Thread(new Runnable() {
               @Override
               public void run() {
@@ -72,13 +72,13 @@ public class SpeakManager {
       if (!PhoneUtil.openVoice(context)) {
         return 0;
       }
-      LOG.e("SpeakManager", "isRead.播报.79:"+rcvTime);
+      LOG.e("SpeakManager", "isRead.播报.79:" + rcvTime);
       String key = first.getAccount() + "2";
       if (readTimeTag.containsKey(key)) {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
-          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.96"+rcvTime);
-          LOG.e("SpeakManager", "isRead.播报.96:"+rcvTime);
+          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.96" + rcvTime);
+          LOG.e("SpeakManager", "isRead.播报.96:" + rcvTime);
           return 0;
         }
         readTimeTag.put(key, System.currentTimeMillis());
@@ -91,7 +91,7 @@ public class SpeakManager {
         @Override
         public void onFinish(int status) {
           if (TextToSpeech.SUCCESS == status) {
-            LOG.e("SpeakManager", "isRead.播报成功:5分钟下钟"+rcvTime);
+            LOG.e("SpeakManager", "isRead.播报成功:5分钟下钟" + rcvTime);
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 0);
           }
@@ -103,8 +103,8 @@ public class SpeakManager {
       if (readTimeTag.containsKey(key)) {
         long time = readTimeTag.get(key);
         if (System.currentTimeMillis() - time < 10000) {
-          LOG.e("SpeakManager", "isRead.播报.127:"+rcvTime);
-          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.127"+rcvTime);
+          LOG.e("SpeakManager", "isRead.播报.127:" + rcvTime);
+          HttpManagerBase.senError("极光" + AppInfo.getTechNum(), "isRead.127" + rcvTime);
           //          14:42:45.230 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=516817775, msgId='20266313553991304', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"252","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
           //          14:42:30.315 21556-21797/com.yskrq.yjs E/PushMessageReceiver: [onNotifyMessageArrived] NotificationMessage{notificationId=464847687, msgId='2251914957360196', appkey='447f2da0d311500893b0445d', notificationContent='5555技师还有5分钟到钟', notificationAlertType=-1, notificationTitle='云技师', notificationSmallIcon='', notificationLargeIcon='', notificationExtras='{"account":"L000026373","countdowns":"0","expendtime":"1","groupid":"9001","rsuhtimes":"0","sid":"267","uploadstatus":"0"}', notificationStyle=0, notificationBuilderId=0, notificationBigText='', notificationBigPicPath='', notificationInbox='', notificationPriority=0, notificationCategory='', developerArg0='', platform=0, notificationChannelId='', displayForeground='', notificationType=0', inAppMsgType=1', inAppMsgShowType=2', inAppMsgShowPos=0', inAppMsgTitle=, inAppMsgContentBody=}
           return 0;
@@ -123,13 +123,13 @@ public class SpeakManager {
         public void onFinish(int status) {
           LOG.e("SpeakManager", "onFinish.98:" + status);
           if (TextToSpeech.SUCCESS == status) {
-            LOG.e("SpeakManager", "isRead.播报成功:已到钟"+rcvTime);
+            LOG.e("SpeakManager", "isRead.播报成功:已到钟" + rcvTime);
             HttpManager
                 .hasSend(context, first.getAccount(), first.getSeqnum(), first.getFacilityno(), 1);
           }
         }
       });
-      LOG.e("SpeakManager", "isRead.播报.122:"+rcvTime);
+      LOG.e("SpeakManager", "isRead.播报.122:" + rcvTime);
       return 3;
     }
     PhoneUtil.closeVoice(context);

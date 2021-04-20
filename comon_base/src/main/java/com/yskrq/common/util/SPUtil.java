@@ -24,64 +24,64 @@ public class SPUtil {
    * @param value
    */
   public static void saveString(Context context, String key, String value) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putString(key, value);
     edit.apply();
   }
 
   public static void saveLong(Context context, String key, long value) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putLong(key, value);
     edit.apply();
   }
 
   public static void saveInt(Context context, String key, int value) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putInt(key, value);
     edit.apply();
   }
 
   public static int getInt(Context context, String key) {
-    if (context == null) return -1;
+    if (context == null || init(context) == null) return -1;
     return init(context).getInt(key, -1);
   }
 
   public static void setString(Context context, String key, String value) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putString(key, value);
     edit.apply();
   }
 
   public static String getString(Context context, String key) {
-    if (context == null) return "";
+    if (context == null || init(context) == null) return "";
     return init(context).getString(key, "");
   }
 
   public static void setBoolean(Context context, String key, Boolean b) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putBoolean(key, b);
     edit.apply();
   }
 
   public static boolean getBoolean(Context context, String key) {
-    if (context == null) return false;
+    if (context == null || init(context) == null) return false;
     return init(context).getBoolean(key, false);
   }
 
   public static void setLong(Context context, String key, Long b) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putLong(key, b);
     edit.apply();
   }
 
   public static Long getLong(Context context, String key) {
-    if (context == null) return 0L;
+    if (context == null || init(context) == null) return 0L;
     return init(context).getLong(key, 0L);
   }
 
@@ -91,7 +91,7 @@ public class SPUtil {
    * @param key
    */
   public static String getSharePreferencesData(Context context, String key) {
-    if (context == null) return "";
+    if (context == null || init(context) == null) return "";
     return init(context).getString(key, "");
 
   }
@@ -102,14 +102,14 @@ public class SPUtil {
    * @param key
    */
   public static void deleteSharePreferencesData(Context context, String key) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putString(key, "");
     edit.apply();
   }
 
   public static void deleteInt(Context context, String key) {
-    if (context == null) return;
+    if (context == null || init(context) == null) return;
     SharedPreferences.Editor edit = init(context).edit();
     edit.putInt(key, -1);
     edit.apply();
@@ -124,7 +124,7 @@ public class SPUtil {
    * @return
    */
   public static boolean isExistData(Context context, String key) {
-    if (context == null) return false;
+    if (context == null || init(context) == null) return false;
     if (!TextUtils.isEmpty(getSharePreferencesData(context, key))) {
       return true;
     } else {

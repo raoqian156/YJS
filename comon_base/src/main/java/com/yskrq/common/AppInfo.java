@@ -302,4 +302,11 @@ public class AppInfo {
     setAutoLogin(BASE.getCxt(), false);
   }
 
+  public static void setShowYiSi(boolean b) {
+    SPUtil.setBoolean(BASE.getCxt(), "hasShowXieYi", b);
+  }
+
+  public static boolean showXieYi(){
+    return !SPUtil.getBoolean(BASE.getCxt(),"hasShowXieYi");
+  }
 }

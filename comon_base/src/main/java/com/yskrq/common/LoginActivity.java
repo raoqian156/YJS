@@ -18,6 +18,7 @@ import com.yskrq.common.ui.TableWindowActivity;
 import com.yskrq.common.util.AppUtils;
 import com.yskrq.common.util.LOG;
 import com.yskrq.common.util.SPUtil;
+import com.yskrq.common.util.TextViewUtil;
 import com.yskrq.common.util.ToastUtil;
 import com.yskrq.common.widget.DialogHelper;
 import com.yskrq.common.widget.DownloadUtils;
@@ -55,8 +56,35 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     findViewById(R.id.btn_login).setOnClickListener(this);
     findViewById(R.id.btn_user_clear).setOnClickListener(this);
     findViewById(R.id.btn_pass_show).setOnClickListener(this);
-
     userInput.addTextChangedListener(this);
+    if (AppInfo.showXieYi()) {
+      DialogHelper
+          .showYinSi(this, getString(R.string.app_user_diaolog), new TextViewUtil.OnTextInnerClick() {
+            @Override
+            public void onClick(View v, String clickCon) {
+              if ("《隐私政策》".equals(clickCon)) {
+                WebActivity
+                    .start(LoginActivity.this, "《隐私政策》", "https://hotel16.yskvip.com/privacy.htm");
+              }
+              if ("《用户协议》".equals(clickCon)) {
+                WebActivity
+                    .start(LoginActivity.this, "《用户协议》", "http://hotel16.yskvip.com/agreement.htm");
+              }
+            }
+
+            @Override
+            public void onCancel() {
+              finish();
+            }
+
+            @Override
+            public void onSure() {
+              AppInfo.setShowYiSi(true);
+            }
+          });
+      return;
+    }
+
     setString2View(R.id.et_user, SPUtil.getString(this, "user"));//226725  226692
     setString2View(R.id.et_pass, SPUtil.getString(this, "pass"));
     ((CheckBox) findViewById(R.id.tv_local_service)).setChecked(AppInfo.isAutoLogin(this));
@@ -102,8 +130,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
   }
 
   private void login() {
-    PermissionUtil.selectLocalFile(this, this);
-    //        PermissionUtil.openIMEI(this, this);
+    PermissionUtil.selectLocalFile(LoginActivity.this, LoginActivity.this);
   }
 
   @Override

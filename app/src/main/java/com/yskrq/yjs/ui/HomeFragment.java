@@ -290,7 +290,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
   }
 
   public void refuseList(RelaxListBean bean) {
-    if (bean != null) newTaskAdapter.setData(bean.getValue());
+    if (bean != null && newTaskAdapter != null) newTaskAdapter.setData(bean.getValue());
     setVisibility(R.id.ll_new_task, bean == null ? View.GONE : View.VISIBLE);
   }
 

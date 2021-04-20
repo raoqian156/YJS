@@ -65,7 +65,10 @@
         <activity
             android:name="com.yskrq.common.LoginActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name="com.yskrq.common.WebActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.yskrq.common.ui.TableWindowActivity"
             android:theme="@style/WindowActivity" />

@@ -27,6 +27,7 @@ import android.widget.TimePicker;
 
 import com.yskrq.common.R;
 import com.yskrq.common.util.LOG;
+import com.yskrq.common.util.TextViewUtil;
 import com.yskrq.common.util.ToastUtil;
 
 import java.util.Calendar;
@@ -86,6 +87,44 @@ public class DialogHelper {
     void onSure();
 
     void onCancel();
+  }
+
+  /**
+   * @param content 隐私展示提示内容
+   * @param listener onClick() "《用户协议》", "《隐私政策》"
+   */
+  public static void showYinSi(Context context, String content,
+                               final TextViewUtil.OnTextInnerClick listener) {
+    final View contentView = LayoutInflater.from(context).inflate(R.layout.dialog_ys, null);
+    final TextView tvContent = contentView.findViewById(R.id.tv_content);
+    CharSequence con = TextViewUtil
+        .getColorAndClick(tvContent, content, 1F, R.color.colorPrimary, listener, "《用户协议》", "《隐私政策》");
+    tvContent.setText(con);
+    final Dialog dialog = new AlertDialog.Builder(context).setView(contentView)
+                                                          .setNegativeButton("暂不同意", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(
+                                                                DialogInterface dialog, int which) {
+                                                              if (listener != null)
+                                                                listener.onCancel();
+                                                            }
+                                                          })
+                                                          .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(
+                                                                DialogInterface dialog, int which) {
+                                                              if (listener != null)
+                                                                listener.onSure();
+                                                              dialog.dismiss();
+                                                            }
+                                                          }).create();
+    ((TextView) contentView.findViewById(R.id.tv_title)).setText("用户协议与隐私政策");
+    dialog.setCancelable(false);
+    try {
+      dialog.show();
+    } catch (Exception e) {
+
+    }
   }
 
 
