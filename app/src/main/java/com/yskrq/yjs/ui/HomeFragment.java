@@ -80,9 +80,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     return R.layout.fra_home;
   }
 
-  BaseAdapter clickAdapter;
-  BaseAdapter newTaskAdapter;
-  BaseAdapter caierAdapter;
+  BaseAdapter clickAdapter, newTaskAdapter, caierAdapter;
   boolean canCaiEr = false;
   SoundUtils mSoundUtils;
 
@@ -97,8 +95,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     mSoundUtils = new SoundUtils(getActivity(), SoundUtils.RING_SOUND);
     mSoundUtils.putSound(0, R.raw.fiveremind);
 
-    KeepAliveService.addRefuseListener(this);
-    RunningHelper.getInstance().register(this);
     NetWorkMonitorManager.getInstance().register(this);
     canCaiEr = "1".equals(AppInfo.getTechType(getContext()));
     LOG.e("HomeFragment", "onCreate.canCaiEr:" + canCaiEr);
@@ -136,6 +132,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
           iv.setImageResource(R.mipmap.ic_home_tab_5);
         } else if ("包厢点单".equals(bean)) {
           iv.setImageResource(R.mipmap.ic_home_tab_1);
+        } else if ("考勤打卡".equals(bean)) {
+          iv.setImageResource(R.mipmap.ic_sign);
         }
       }
     };
@@ -159,14 +157,6 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     }
 
     setTextView2View(R.id.tv_num, "技师号:" + AppInfo.getTechNum());
-    List<String> btn = new ArrayList<>();
-    btn.add("包厢点单");//晚一点
-    btn.add("个人业绩");
-    btn.add("我的预约");
-    btn.add("加项目");
-    btn.add("呼叫服务");//晚一点
-    //采耳子页面        //晚一点
-    clickAdapter.setData(btn);
     if (canCaiEr) {
       setVisibility(R.id.ll_caier, View.VISIBLE);
       caierAdapter = new BaseAdapter(getContext(), R.layout.item_caier, EasyViewHolder.class) {
@@ -183,6 +173,7 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
       caierAdapter.addOnItemClickListener(this, R.id.btn_commit);
       setRecyclerView(R.id.recycler_caier, caierAdapter);
     }
+
   }
 
   boolean openRunning = false;
@@ -202,9 +193,30 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
     } else if (type.is(GetHotelCode)) {
       LOG.e("MainActivity", "onResponseSucceed.56:");
       ListParamBean bean = (ListParamBean) data;
-      if (bean != null && bean.getValue() != null && bean.getValue().size() > 0) {
-        String isOpenAll = bean.getValue().get(0).getData();
-        SPUtil.saveString(getContext(), TAG_SAVE_OPEN_ALL, isOpenAll);
+      if (bean.getValue() != null && bean.getValue().size() > 0) {
+        boolean isOpenAll = "1".equals(bean.getValue().get(0).getData());
+        List<String> btn = new ArrayList<>();
+        setVisibility(R.id.ll_ct, isOpenAll ? View.VISIBLE : View.GONE);
+        setVisibility(R.id.ll_bt, isOpenAll ? View.VISIBLE : View.GONE);
+        setVisibility(R.id.tv_center, isOpenAll ? View.VISIBLE : View.GONE);
+        setVisibility(R.id.ll_caier, isOpenAll ? View.VISIBLE : View.GONE);
+        if (!isOpenAll) {
+          btn.add("个人业绩");
+          btn.add("我的预约");
+          btn.add("考勤打卡");
+          btn.add("呼叫服务");
+          KeepManager.stopAliveRun();
+        } else {
+          KeepAliveService.addRefuseListener(this);
+          RunningHelper.getInstance().register(this);
+          btn.add("包厢点单");
+          btn.add("个人业绩");
+          btn.add("我的预约");
+          btn.add("加项目");
+          btn.add("呼叫服务");
+          //采耳子页面
+        }
+        clickAdapter.setData(btn);
         HttpManager.getRush(this);
         loadData();
         LOG.e("MainActivity", "onResponseSucceed.isOpenAll:" + isOpenAll);
@@ -378,6 +390,8 @@ public class HomeFragment extends BaseFragment implements OnItemClickListener, V
             toast("网络数据异常，请稍后重试");
           }
         }, getContext());
+      } else if ("考勤打卡".equals(o)) {
+        onClick(findViewById(R.id.btn_sign));
       } else if ("包厢点单".equals(o)) {
         if (first == null || first.getShowStatus() != 2) {
           toast("未发现已上钟的项目，暂不可点单");

@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -178,11 +176,13 @@ public class KeepAliveService extends Service {
   private void onRead() {
     onRunning(this);
   }
-
-  static Handler mainHandler = new Handler(Looper.getMainLooper());
   static long workDateCheckTime = 0;
 
   private static void onRunning(final Context context) {
+    LOG.e("KeepAliveService", "onRunning.GetRelaxServerList:" + stop);
+    if (stop) {
+      return;
+    }
     if (System.currentTimeMillis() - workDateCheckTime > 1000 * 60 * 30) {
       workDateCheckTime = System.currentTimeMillis();
       HttpManager.justRefuseSaleDate(context);
@@ -192,7 +192,6 @@ public class KeepAliveService extends Service {
     param.put("brandno", AppInfo.getTechNum());
     param.put("profitcenter", AppInfo.getProfitCenter());
     param.put("hoteldate", AppInfo.getWorkDate());
-    LOG.e("KeepAliveService", "onRunning.GetRelaxServerList:");
     HttpManager.GetRelaxServerList(context, new HttpInnerListener() {
       @Override
       public void onString(String json) {

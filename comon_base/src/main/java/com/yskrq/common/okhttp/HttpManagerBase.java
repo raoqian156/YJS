@@ -135,45 +135,41 @@ public class HttpManagerBase {
                 AppInfo.setTechNum((String) teach.get(String.class, "Value"));
                 AppInfo.setTechType(view.getContext(), (String) teach.get(String.class, "Comment"));
                 AppInfo.setTechSex(view.getContext(), (String) teach.get(String.class, "sex"));
-                getFoot(login, bean, new HttpInnerListener() {
+                getColors(login, new HttpInnerListener() {
                   @Override
                   public void onString(String json) {
-                    ProfitCenterBean bean = new Gson().fromJson(json, ProfitCenterBean.class);
-                    if (bean.isOk()) {
-                      AppInfo.saveLoginInfo(login);
-                      if (bean.getProfitCenter_value() != null && bean.getProfitCenter_value()
-                                                                      .size() <= 1) {
-                        AppInfo
-                            .setProfitCenter(view.getContext(), bean.getProfitCenter_value().get(0)
-                                                                    .getCode());
-                        getColors(login, new HttpInnerListener() {
-                          @Override
-                          public void onString(String json) {
-                            TecColorBean tecColorBean = new Gson()
-                                .fromJson(json, TecColorBean.class);
-                            if (tecColorBean != null && tecColorBean.isOk()) {
-                              AppInfo.saveColor(view.getContext(), tecColorBean.getValue());
-                              view.onResponseSucceed(new RequestType(LOGIN_Luo), login);
+                    TecColorBean tecColorBean = new Gson().fromJson(json, TecColorBean.class);
+                    if (tecColorBean != null && tecColorBean.isOk()) {
+                      AppInfo.saveColor(view.getContext(), tecColorBean.getValue());
+                      getFoot(login, bean, new HttpInnerListener() {
+                        @Override
+                        public void onString(String json) {
+                          ProfitCenterBean profitCenterBean = new Gson()
+                              .fromJson(json, ProfitCenterBean.class);
+                          if (profitCenterBean.isOk()) {
+                            AppInfo.saveLoginInfo(login);
+                            if (profitCenterBean.getProfitCenter_value() != null && profitCenterBean
+                                .getProfitCenter_value().size() <= 1) {
+                              AppInfo.setProfitCenter(view.getContext(), profitCenterBean
+                                  .getProfitCenter_value().get(0).getCode());
                             } else {
-                              view.onResponseError(new RequestType(LOGIN_Luo), tecColorBean);
+                              view.onResponseError(new RequestType(LOGIN_Luo)
+                                  .more(login), profitCenterBean);
                             }
                           }
-
-                          @Override
-                          public void onEmptyResponse() {
-
-                          }
-                        }, view);
-                      } else {
-                        view.onResponseError(new RequestType(LOGIN_Luo), bean);
-                      }
+                        }
+                        @Override
+                        public void onEmptyResponse() {
+                          LOG.e("HttpManagerBase", "onEmptyResponse.125:");
+                          view.onConnectError(new RequestType(LOGIN_Luo));
+                        }
+                      }, view);
                     }
                   }
 
                   @Override
                   public void onEmptyResponse() {
-                    LOG.e("HttpManagerBase", "onEmptyResponse.125:");
-                    view.onConnectError(new RequestType(LOGIN_Luo));
+
                   }
                 }, view);
               }
